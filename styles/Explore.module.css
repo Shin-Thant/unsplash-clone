@@ -1,0 +1,121 @@
+.cards {
+    min-height: 200vh;
+    columns: 3;
+    column-gap: 1.5rem;
+    padding: 1.5rem 0;
+}
+
+.introText {
+    word-spacing: 0.1em;
+    position: relative;
+}
+
+.intro {
+    height: max-content;
+    z-index: 8;
+    position: relative;
+    font-family: var(--saira) !important;
+}
+.intro::before {
+    content: "";
+    position: absolute;
+    transform: scaleX(1);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: left;
+    background-color: var(--background);
+    animation: showText 2s ease forwards;
+}
+
+@keyframes showText {
+    100% {
+        transform: scaleX(0);
+    }
+}
+
+.outline {
+    position: absolute;
+    bottom: -400%;
+    left: 0;
+    width: 100%;
+    height: max-content;
+    opacity: 0;
+    transition: transform 0.9s ease;
+    animation: up 1s ease forwards;
+}
+@keyframes up {
+    100% {
+        opacity: 0.7;
+        bottom: -280%;
+    }
+}
+
+.outlineImg {
+    width: 100%;
+    object-fit: cover;
+    pointer-events: all;
+}
+
+.letter {
+    transition: color 500ms ease, transform 0.5s ease;
+}
+.letter:hover {
+    transform: translateY(-25px);
+    fill: black;
+}
+
+.previousBtn {
+    color: var(--brown-1000);
+    border: 2px solid var(--brown-1000);
+    position: relative;
+    overflow: hidden;
+    transition: all 300ms ease;
+}
+.previousBtn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--brown-1000);
+    transform: translateX(100%);
+    z-index: -1;
+    transition: transform 300ms ease;
+}
+.previousBtn:hover {
+    color: white;
+    box-shadow: inset 5px 5px 12px 1px rgba(0, 0, 0, 0.3);
+}
+.previousBtn:hover::before {
+    transform: translateX(0);
+}
+
+.nextBtn {
+    color: var(--brown-1000);
+    border: 2px solid var(--brown-1000);
+    position: relative;
+    overflow: hidden;
+    transition: all 300ms ease;
+}
+.nextBtn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--brown-1000);
+    transform: translateX(-100%);
+    z-index: -1;
+    transition: transform 300ms ease;
+}
+.nextBtn:hover {
+    color: white;
+    box-shadow: inset 5px 5px 12px 1px rgba(0, 0, 0, 0.3);
+}
+.nextBtn:hover::before {
+    transform: translateX(0);
+}

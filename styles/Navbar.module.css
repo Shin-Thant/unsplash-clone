@@ -1,0 +1,81 @@
+.searchInput {
+    width: 100%;
+    display: block;
+    border: 0;
+    outline: 0;
+    background-color: transparent !important;
+    font-size: 1.1rem;
+    font-weight: 500;
+    opacity: 0.9;
+}
+.searchInput::placeholder {
+    color: black;
+    opacity: 0.9;
+}
+
+.linksContainer {
+    --link-width: 140px;
+
+    width: max-content;
+    height: 100%;
+    font-size: 0.9rem;
+    position: relative !important;
+    display: flex;
+    gap: 0;
+    align-items: center;
+}
+
+.routes {
+    width: var(--link-width);
+    padding: 0.6rem 0;
+    z-index: 2;
+    text-align: center;
+}
+
+.text {
+    position: relative !important;
+    cursor: pointer !important;
+    transition: all 200ms ease;
+}
+
+.text:hover,
+.text:focus {
+    color: white;
+}
+
+.home,
+.explore,
+.collection,
+.contact {
+    display: none;
+}
+
+.slider {
+    width: var(--link-width);
+    height: 100%;
+    display: inline-block !important;
+    position: absolute;
+    transition: transform 300ms ease;
+    box-shadow: inset 7px 7px 8px rgba(92, 56, 33, 0.863),
+        inset -2px -2px 7px rgba(116, 72, 43, 0.808);
+
+    /* another version */
+    /* box-shadow: inset 7px 7px 8px rgb(171, 166, 148, 0.9),
+        inset -2px -2px 7px rgb(217, 212, 188, 0.808); */
+}
+
+.home:checked ~ .slider {
+    transform: translateX(0);
+}
+
+.explore:checked ~ .slider {
+    transform: translateX(100%);
+}
+
+.collection:checked ~ .slider {
+    transform: translateX(200%);
+}
+
+.contact:checked ~ .slider {
+    transform: translateX(300%);
+}
