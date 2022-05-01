@@ -91,14 +91,16 @@ export default function Home() {
                         <Box className={styles.img_container}>
                             {isLoading ? (
                                 <Skeleton
-                                    startColor="#230D0D"
-                                    endColor="#9E6E44"
+                                    // startColor="#230D0D"
+                                    // endColor="#9E6E44"
+                                    startColor="#F0F0F0"
+                                    endColor="#6A6A6A"
                                     h="100%"
                                     w="100%"
                                     borderRadius="200px 200px 0 0"
                                 />
                             ) : data?.urls?.regular ? (
-                                <img
+                                <Image
                                     src={data?.urls?.regular}
                                     alt={
                                         data?.description

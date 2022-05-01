@@ -19,7 +19,7 @@ export const UpBtn = () => {
             position="fixed"
             bottom="2.5rem"
             right={{ base: "1.3rem", lgMobile: "1.7rem" }}
-            zIndex="5"
+            zIndex="11"
             transition="all 200ms ease"
             _hover={{
                 shadow: "xl",

@@ -1,13 +1,38 @@
-import { Box, Grid } from "@chakra-ui/react";
+import { Box, Flex, Grid, Image, position, Text } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { ImgCard } from "./ImgCard";
 
 export const CardList = ({ data, avgCards }) => {
-    useEffect(() => {
-        data?.length && console.log(data);
-    }, [data]);
-
-    return (
+    return data?.length < 1 ? (
+        <Flex w="100%" minHeight="60vh" justify="center" align="center">
+            <Box
+                w={{
+                    base: "50%",
+                    mobile: "45%",
+                    sm: "37%",
+                    miniTablet: "30%",
+                    md: "28%",
+                    lg: "27%",
+                    xl: "25%",
+                }}
+            >
+                <Image
+                    src="/archive.svg"
+                    alt="No Images"
+                    w="100%"
+                    objectFit="cover"
+                />
+                <Text
+                    textAlign="center"
+                    mt="1.5rem"
+                    fontWeight="600"
+                    fontSize="1.1rem"
+                >
+                    No Images
+                </Text>
+            </Box>
+        </Flex>
+    ) : (
         <Grid
             zIndex="15"
             w="100%"
@@ -40,9 +65,10 @@ export const CardList = ({ data, avgCards }) => {
                         description={img?.description || img?.alt_description}
                         imgs={img?.urls}
                         links={img?.links}
-                        name={img?.user?.name}
-                        username={img?.user?.username}
-                        profileImgs={img?.user?.profile_image}
+                        blur_hash={img?.blur_hash}
+                        categories={img?.categories}
+                        current_user_collections={img?.current_user_collections}
+                        user={img?.user}
                     />
                 ))}
             </Box>
@@ -64,9 +90,10 @@ export const CardList = ({ data, avgCards }) => {
                         description={img?.description || img?.alt_description}
                         imgs={img?.urls}
                         links={img?.links}
-                        name={img?.user?.name}
-                        username={img?.user?.username}
-                        profileImgs={img?.user?.profile_image}
+                        blur_hash={img?.blur_hash}
+                        categories={img?.categories}
+                        current_user_collections={img?.current_user_collections}
+                        user={img?.user}
                     />
                 ))}
             </Box>
@@ -88,9 +115,10 @@ export const CardList = ({ data, avgCards }) => {
                         description={img?.description || img?.alt_description}
                         imgs={img?.urls}
                         links={img?.links}
-                        name={img?.user?.name}
-                        username={img?.user?.username}
-                        profileImgs={img?.user?.profile_image}
+                        blur_hash={img?.blur_hash}
+                        categories={img?.categories}
+                        current_user_collections={img?.current_user_collections}
+                        user={img?.user}
                     />
                 ))}
             </Box>
@@ -116,9 +144,10 @@ export const CardList = ({ data, avgCards }) => {
                         description={img?.description || img?.alt_description}
                         imgs={img?.urls}
                         links={img?.links}
-                        name={img?.user?.name}
-                        username={img?.user?.username}
-                        profileImgs={img?.user?.profile_image}
+                        blur_hash={img?.blur_hash}
+                        categories={img?.categories}
+                        current_user_collections={img?.current_user_collections}
+                        user={img?.user}
                     />
                 ))}
             </Box>
@@ -142,9 +171,10 @@ export const CardList = ({ data, avgCards }) => {
                         description={img?.description || img?.alt_description}
                         imgs={img?.urls}
                         links={img?.links}
-                        name={img?.user?.name}
-                        username={img?.user?.username}
-                        profileImgs={img?.user?.profile_image}
+                        blur_hash={img?.blur_hash}
+                        categories={img?.categories}
+                        current_user_collections={img?.current_user_collections}
+                        user={img?.user}
                     />
                 ))}
             </Box>
@@ -163,9 +193,10 @@ export const CardList = ({ data, avgCards }) => {
                         description={img?.description || img?.alt_description}
                         imgs={img?.urls}
                         links={img?.links}
-                        name={img?.user?.name}
-                        username={img?.user?.username}
-                        profileImgs={img?.user?.profile_image}
+                        blur_hash={img?.blur_hash}
+                        categories={img?.categories}
+                        current_user_collections={img?.current_user_collections}
+                        user={img?.user}
                     />
                 ))}
             </Box>

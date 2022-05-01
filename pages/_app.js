@@ -5,6 +5,8 @@ import { extendTheme } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
+import { Store } from "../app/store";
+import { Provider } from "react-redux";
 
 const breakpoints = createBreakpoints({
     base: "320px",
@@ -45,14 +47,16 @@ const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }) {
     return (
-        <QueryClientProvider client={queryClient}>
-            <ChakraProvider theme={theme}>
-                <Layout>
-                    <ReactQueryDevtools initialIsOpen={false} />
-                    <Component {...pageProps} />
-                </Layout>
-            </ChakraProvider>
-        </QueryClientProvider>
+        <Provider store={Store}>
+            <QueryClientProvider client={queryClient}>
+                <ChakraProvider theme={theme}>
+                    <Layout>
+                        <ReactQueryDevtools initialIsOpen={false} />
+                        <Component {...pageProps} />
+                    </Layout>
+                </ChakraProvider>
+            </QueryClientProvider>
+        </Provider>
     );
 }
 

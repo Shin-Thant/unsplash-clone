@@ -4,7 +4,7 @@
     border: 0;
     outline: 0;
     background-color: transparent !important;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     font-weight: 500;
     opacity: 0.9;
 }
@@ -78,4 +78,10 @@
 
 .contact:checked ~ .slider {
     transform: translateX(300%);
+}
+
+.recentSearch {
+    position: absolute;
+    bottom: -5.8rem;
+    left: 0;
 }

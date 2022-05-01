@@ -4,6 +4,9 @@ import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
 import { BsPlusLg } from "react-icons/bs";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useDispatch } from "react-redux";
+import { addImage } from "../features/SavedImgSlice";
+import { useRouter } from "next/router";
 
 export const ImgCard = ({
     id,
@@ -12,10 +15,36 @@ export const ImgCard = ({
     description,
     imgs,
     links,
-    name,
-    username,
-    profileImgs,
+    blur_hash,
+    categories,
+    current_user_collections,
+    user,
 }) => {
+    const dispatch = useDispatch();
+    const router = useRouter();
+
+    const saveImg = () => {
+        dispatch(
+            addImage({
+                id,
+                width,
+                height,
+                description,
+                imgs,
+                links,
+                blur_hash,
+                categories,
+                current_user_collections,
+                user,
+            })
+        );
+    };
+
+    const goDetail = () => {
+        console.log("details");
+        router.push(`/photos/${id}`);
+    };
+
     if (!imgs?.regular || !imgs?.thumb || !imgs?.full || !imgs?.raw)
         return (
             <Flex
@@ -44,17 +73,8 @@ export const ImgCard = ({
                 w="100%"
                 borderRadius="15px"
                 bg="rgb(168, 168, 168)"
-                // minHeight={
-                //     height > 3000
-                //         ? height > 4000
-                //             ? height > 5000
-                //                 ? height >= 6000
-                //                     ? "400px"
-                //                     : "260px"
-                //                 : "250px"
-                //             : "210px"
-                //         : "200px"
-                // }
+                cursor="pointer"
+                onClick={goDetail}
             >
                 <Box
                     fontSize="1.1rem"
@@ -63,6 +83,7 @@ export const ImgCard = ({
                     cursor="pointer"
                     borderRadius="5px"
                     className={styles.addBtn}
+                    onClick={saveImg}
                 >
                     <BsPlusLg className={styles.addIcon} />
                 </Box>
@@ -79,7 +100,6 @@ export const ImgCard = ({
                         width="100%"
                         height="100%"
                         style={{
-                            borderRadius: "15px",
                             objectFit: "cover",
                             minHeight:
                                 height > 3000
@@ -116,8 +136,8 @@ export const ImgCard = ({
                 <Flex align="center" gap="0.8rem" className={styles.userInfo}>
                     <Box>
                         <Image
-                            src={profileImgs?.large}
-                            alt={username}
+                            src={user?.profile_image?.large}
+                            alt={user?.username}
                             w="40px"
                             h="40px"
                             cursor="pointer"
@@ -131,7 +151,7 @@ export const ImgCard = ({
                         cursor="pointer"
                         fontSize={{
                             base: "0.9rem",
-                            sm: "0.95rem",
+                            mobile: "0.95rem",
                             lg: "1rem",
                         }}
                         transition="all 250ms ease"
@@ -139,7 +159,7 @@ export const ImgCard = ({
                             opacity: 1,
                         }}
                     >
-                        {name}
+                        {user?.name}
                     </Text>
                 </Flex>
 

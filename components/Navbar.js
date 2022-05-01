@@ -8,6 +8,8 @@ import Head from "next/head";
 import { IoClose } from "react-icons/io5";
 import { CustomToast } from "./CustomToast";
 import { useStorage } from "../hooks/useStorage";
+import { useSelector } from "react-redux";
+import { useRecent } from "../hooks/useRecent";
 
 export default function Navbar() {
     const home = useRef(null);
@@ -32,19 +34,30 @@ export default function Navbar() {
 
     const [storage, setStorage] = useStorage("search");
 
+    // * states for recent search list box
+    const [show, setShow] = useState(false);
+    const [recent, error, setRecent, recentSearch] = useRecent("recentSearch");
+
     useEffect(() => {
-        setStorage(search.current.value);
-    }, [search.current?.value]);
+        // * set recent if there is a value in the input
+        if (storage) setRecent(storage);
+    }, []);
+
+    // const { images } = useSelector((state) => state.savedImg);
 
     // useEffect(() => {
-    //     if(router.pathname === '/search/[search]' && storage.length < 1) {
-    //         setStorage(router)
-    //     }
-    // }, [])
+    //     console.log("saved images", images);
+    // }, [images]);
+
+    // useEffect(() => {
+    //     // * setting storage whenever the input changes
+    //     setStorage(search.current.value);
+    //     console.log(search.current?.value);
+    // }, [search.current?.value]);
 
     useEffect(() => {
+        // * setting storage if the current page is not search page
         if (router.pathname !== "/search/[search]") setStorage("");
-        console.log(router.query);
     }, [router]);
 
     useEffect(() => {
@@ -148,9 +161,15 @@ export default function Navbar() {
                     shallow: true,
                 });
             }
+
+            // * setting recent search
+            setRecent(storage);
+
+            // * make input blur
+            search?.current?.blur();
         } else {
             toast({
-                duration: 4000,
+                duration: 3000,
                 position: "bottom-left",
                 isClosable: true,
                 // * adding custom toast with close button
@@ -175,6 +194,11 @@ export default function Navbar() {
 
     const closeSearch = () => {
         setStorage("");
+        search?.current?.focus();
+        setShow(true);
+        console.log(search.current?.value);
+        console.log("refocus the input", show);
+        console.log(document?.activeElement === search?.current);
     };
 
     return (
@@ -200,7 +224,7 @@ export default function Navbar() {
                 mb="0.5rem"
                 style={{ background: "#D5D2C3" }}
                 shadow="lg"
-                zIndex="10"
+                zIndex="20"
             >
                 <Flex
                     w="max-content"
@@ -222,6 +246,8 @@ export default function Navbar() {
                         gap="1rem"
                         border="2px solid black"
                         align="center"
+                        position="relative"
+                        // onClick={(e) => console.log(e.target)}
                     >
                         <Text
                             w="max-content"
@@ -238,6 +264,14 @@ export default function Navbar() {
                         </Text>
 
                         <input
+                            onFocus={() => {
+                                // console.log("focus");
+                                setShow(true);
+                            }}
+                            onBlur={() => {
+                                // console.log("blur");
+                                setShow(false);
+                            }}
                             ref={search}
                             onKeyUp={pressedEnter}
                             onChange={searchController}
@@ -257,11 +291,61 @@ export default function Navbar() {
                             _hover={{
                                 opacity: "1",
                             }}
-                            display={storage?.length < 1 ? "none" : "block"}
+                            display={
+                                typeof window !== "undefined" &&
+                                storage?.length < 1
+                                    ? "none"
+                                    : "block"
+                            }
                             onClick={closeSearch}
                         >
                             <IoClose />
                         </Text>
+
+                        {recentSearch?.length &&
+                        show &&
+                        search?.current?.value?.length < 1 ? (
+                            <Box
+                                className={styles.recentSearch}
+                                onClick={() => {
+                                    console.log("clicked");
+                                    search?.current?.focus();
+                                    setShow(true);
+                                }}
+                                boxShadow="xl"
+                                w="100%"
+                                bg="white"
+                                p="1rem 1.5rem"
+                                borderRadius="15px"
+                            >
+                                <Text mb="1rem" fontWeight="600">
+                                    Recent{" "}
+                                    {recentSearch?.length > 1
+                                        ? "Searches"
+                                        : "Search"}
+                                </Text>
+
+                                <Flex align="center" gap="1rem" wrap="wrap">
+                                    {recentSearch?.map((item, index) => (
+                                        <Box
+                                            key={index}
+                                            border="1.5px solid black"
+                                            borderRadius="10px"
+                                            px="0.8rem"
+                                            cursor="pointer"
+                                            onClick={() => {
+                                                console.log(item);
+                                                router.push(`/search/${item}`);
+                                            }}
+                                        >
+                                            {item}
+                                        </Box>
+                                    ))}
+                                </Flex>
+                            </Box>
+                        ) : (
+                            ""
+                        )}
                     </Flex>
                 </FormControl>
 

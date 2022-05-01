@@ -8,13 +8,18 @@
 .introText {
     word-spacing: 0.1em;
     position: relative;
+    margin-bottom: 11rem;
 }
 
 .intro {
     height: max-content;
     z-index: 8;
+    font-size: 2.9rem;
     position: relative;
-    font-family: var(--saira) !important;
+}
+.firstText,
+.secondText {
+    font-family: "Saira Condensed", sans-serif !important;
 }
 .intro::before {
     content: "";
@@ -37,33 +42,34 @@
 
 .outline {
     position: absolute;
-    bottom: -400%;
+    bottom: -350%;
     left: 0;
     width: 100%;
     height: max-content;
     opacity: 0;
-    transition: transform 0.9s ease;
+    transition: transform 0.7s ease;
     animation: up 1s ease forwards;
 }
 @keyframes up {
     100% {
-        opacity: 0.7;
-        bottom: -280%;
+        opacity: 0.9;
+        bottom: -300%;
     }
 }
 
 .outlineImg {
     width: 100%;
+    height: max-content;
     object-fit: cover;
     pointer-events: all;
 }
 
 .letter {
-    transition: color 500ms ease, transform 0.5s ease;
+    border: 10px solid black;
+    transition: color 0.5s ease;
 }
 .letter:hover {
-    transform: translateY(-25px);
-    fill: black;
+    fill: #2a2a27;
 }
 
 .previousBtn {
@@ -118,4 +124,141 @@
 }
 .nextBtn:hover::before {
     transform: translateX(0);
+}
+
+/* * unsplash text image responsize codes */
+@media screen and (max-width: 1320px) {
+    .introText {
+        margin-bottom: 10rem;
+    }
+    @keyframes up {
+        100% {
+            bottom: -270%;
+            opacity: 0.9;
+        }
+    }
+}
+
+@media screen and (max-width: 1170px) {
+    @keyframes up {
+        100% {
+            bottom: -260%;
+            opacity: 0.9;
+        }
+    }
+}
+
+@media screen and (max-width: 1110px) {
+    .introText {
+        margin-bottom: 9.5rem;
+    }
+    @keyframes up {
+        100% {
+            bottom: -245%;
+            opacity: 0.9;
+        }
+    }
+}
+
+@media screen and (max-width: 1060px) {
+    .introText {
+        margin-bottom: 8.8rem;
+    }
+}
+
+@media screen and (max-width: 959px) {
+    .introText {
+        margin-bottom: 7.5rem;
+    }
+    @keyframes up {
+        100% {
+            bottom: -220%;
+            opacity: 0.9;
+        }
+    }
+}
+
+@media screen and (max-width: 878px) {
+    .introText {
+        margin-bottom: 7rem;
+    }
+    @keyframes up {
+        100% {
+            bottom: -200%;
+            opacity: 0.9;
+        }
+    }
+}
+
+@media screen and (max-width: 785px) {
+    .introText {
+        margin-bottom: 6rem;
+    }
+    @keyframes up {
+        100% {
+            bottom: -205%;
+            opacity: 0.9;
+        }
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .introText {
+        margin-bottom: 5.8rem;
+    }
+    @keyframes up {
+        100% {
+            bottom: -170%;
+            opacity: 0.9;
+        }
+    }
+}
+
+@media screen and (max-width: 642px) {
+    .introText {
+        margin-bottom: 5rem;
+    }
+}
+
+@media screen and (max-width: 599px) {
+    @keyframes up {
+        100% {
+            bottom: -170%;
+            opacity: 0.9;
+        }
+    }
+}
+
+@media screen and (max-width: 584px) {
+    .introText {
+        margin-bottom: 1.5rem;
+    }
+    .outline {
+        display: none;
+    }
+}
+
+/* * intro text fontsize responseive */
+@media screen and (max-width: 1050px) {
+    .intro {
+        font-size: 2.6rem;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    .intro {
+        font-size: 2.4rem;
+    }
+}
+
+@media screen and (max-width: 645px) {
+    .intro {
+        font-size: 2.2rem;
+    }
+}
+
+@media screen and (max-width: 515px) {
+    .intro {
+        font-size: 2rem;
+    }
 }
