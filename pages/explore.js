@@ -1,14 +1,15 @@
-import { Box, Flex, Grid, Image, Text } from "@chakra-ui/react";
+import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import styles from "../styles/Explore.module.css";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { ImgCard } from "../components/ImgCard";
 import Head from "next/head";
 import { useQuery } from "react-query";
 import { CardSkeleton } from "../components/CardSkeleton";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import { UpBtn } from "../components/UpBtn";
 import { CardList } from "../components/CardList";
+
+export let pageNum = 1;
 
 const getPhotos = async ({ queryKey }) => {
     const [_key, page] = queryKey;
@@ -20,21 +21,36 @@ const getPhotos = async ({ queryKey }) => {
     return data;
 };
 
-export default function explore({ images }) {
+export default function explore() {
     const [avgCards, setAvgCards] = useState(0);
 
     const outline = useRef(null);
 
     const [page, setPage] = useState(1);
 
-    const { isLoading, error, data } = useQuery(
-        ["getPhotos", page],
-        getPhotos,
-        {
-            initialData: images,
-            staleTime: 3600000,
-        }
-    );
+    useEffect(() => {
+        let isMounted = true;
+        if (isMounted && page !== pageNum) pageNum = page;
+
+        return () => {
+            isMounted = false;
+        };
+    }, [page]);
+
+    // const [loading, setLoading] = useState(true);
+
+    // useEffect(() => {
+    //     if (images?.length >= 1) setLoading(false);
+    // }, []);
+
+    const {
+        isLoading,
+        error,
+        data: images,
+    } = useQuery(["getPhotos", page], getPhotos, {
+        // initialData: images,
+        staleTime: 3600000,
+    });
 
     useEffect(() => {
         function scrolled() {
@@ -60,17 +76,19 @@ export default function explore({ images }) {
     }, []);
 
     useEffect(() => {
-        if (data?.length) {
-            setAvgCards(Math.floor(data?.length / 3));
+        if (images?.length) {
+            setAvgCards(Math.floor(images?.length / 3));
         }
-    }, [data, data?.length]);
+    }, [images, images?.length]);
 
     const goPrevious = () => {
+        // pageNum -= 1;
         setPage(page - 1);
         window.scrollTo(0, 0);
     };
 
     const goNext = () => {
+        // pageNum += 1;
         setPage(page + 1);
         window.scrollTo(0, 0);
     };
@@ -183,7 +201,7 @@ export default function explore({ images }) {
                     <CardSkeleton />
                 ) : (
                     // * presentational component
-                    <CardList data={data} avgCards={avgCards} />
+                    <CardList data={images} avgCards={avgCards} />
                 )}
 
                 <Flex
@@ -230,12 +248,14 @@ export default function explore({ images }) {
     );
 }
 
-// export const getStaticProps = async() => {
-//     const data = await getPhotos();
+// export const getStaticProps = async () => {
+//     const { data } = await axios.get(
+//         `https://api.unsplash.com/photos/?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&per_page=30&page=${pageNum}`
+//     );
 
 //     return {
 //         props: {
-//             images: data
-//         }
-//     }
-// }
+//             images: data,
+//         },
+//     };
+// };

@@ -5,7 +5,7 @@
 /* font-family: 'Saira Condensed', sans-serif; */
 
 :root {
-    --background: #c2bda8;
+    --background: #cdc8b7;
 
     --brown-1000: #95633a;
     --brown-2000: #684026;
@@ -30,5 +30,5 @@ html {
 }
 
 body {
-    background-color: #c2bda8 !important;
+    background-color: #cdc8b7 !important;
 }

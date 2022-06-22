@@ -8,8 +8,9 @@ import Head from "next/head";
 import { IoClose } from "react-icons/io5";
 import { CustomToast } from "./CustomToast";
 import { useStorage } from "../hooks/useStorage";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRecent } from "../hooks/useRecent";
+import { fetchUserImages } from "../features/FollowSlice";
 
 export default function Navbar() {
     const home = useRef(null);
@@ -38,6 +39,9 @@ export default function Navbar() {
     const [show, setShow] = useState(false);
     const [recent, error, setRecent, recentSearch] = useRecent("recentSearch");
 
+    const historyBox = useRef(null);
+    const recentList = useRef(null);
+
     useEffect(() => {
         // * set recent if there is a value in the input
         if (storage) setRecent(storage);
@@ -49,15 +53,12 @@ export default function Navbar() {
     //     console.log("saved images", images);
     // }, [images]);
 
-    // useEffect(() => {
-    //     // * setting storage whenever the input changes
-    //     setStorage(search.current.value);
-    //     console.log(search.current?.value);
-    // }, [search.current?.value]);
-
     useEffect(() => {
         // * setting storage if the current page is not search page
-        if (router.pathname !== "/search/[search]") setStorage("");
+        if (router.pathname !== "/search/[search]") {
+            setStorage("");
+            search.current.value = "";
+        }
     }, [router]);
 
     useEffect(() => {
@@ -152,6 +153,7 @@ export default function Navbar() {
         }
     }, [router]);
 
+    // * searching input handler
     const goSearch = () => {
         if (storage) {
             if (router.pathname !== "/search/[search]") {
@@ -161,12 +163,14 @@ export default function Navbar() {
                     shallow: true,
                 });
             }
-
             // * setting recent search
             setRecent(storage);
 
-            // * make input blur
-            search?.current?.blur();
+            // * remove focus from input
+            search.current?.blur();
+
+            // * hide history box
+            setShow(false);
         } else {
             toast({
                 duration: 3000,
@@ -180,26 +184,46 @@ export default function Navbar() {
         }
     };
 
-    const pressedEnter = (e) => {
-        const ENTER_KEY_CODE = 13;
-
-        if (e.keyCode === ENTER_KEY_CODE) {
-            goSearch();
-        }
-    };
-
+    // * search input handler
     const searchController = (e) => {
         setStorage(e.target.value);
     };
 
+    // * reset search input handler
     const closeSearch = () => {
         setStorage("");
-        search?.current?.focus();
-        setShow(true);
-        console.log(search.current?.value);
-        console.log("refocus the input", show);
-        console.log(document?.activeElement === search?.current);
+        search.current.value = "";
     };
+
+    // * add click event to document body to handle history box visibility
+    useEffect(() => {
+        const bodyClickHandler = function (e) {
+            if (
+                e.target !== historyBox.current &&
+                e.target !== search.current &&
+                e.target?.parentElement !== historyBox.current &&
+                e.target?.parentElement !== recentList.current
+            ) {
+                setShow(false);
+            } else {
+                setShow(true);
+            }
+        };
+
+        if (typeof window !== "undefined") {
+            document.body.addEventListener("click", bodyClickHandler);
+        }
+
+        return () => {
+            document.body.removeEventListener("click", bodyClickHandler);
+            // console.log("event removed");
+        };
+    }, []);
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(fetchUserImages());
+    }, []);
 
     return (
         <>
@@ -237,7 +261,13 @@ export default function Navbar() {
                     <FaUnsplash title="Unsplash" cursor="pointer" />
                 </Flex>
 
-                <FormControl width="50%">
+                <form
+                    className={styles.form}
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        goSearch();
+                    }}
+                >
                     <Flex
                         w="100%"
                         px="0.9rem"
@@ -247,7 +277,6 @@ export default function Navbar() {
                         border="2px solid black"
                         align="center"
                         position="relative"
-                        // onClick={(e) => console.log(e.target)}
                     >
                         <Text
                             w="max-content"
@@ -265,21 +294,15 @@ export default function Navbar() {
 
                         <input
                             onFocus={() => {
-                                // console.log("focus");
                                 setShow(true);
                             }}
-                            onBlur={() => {
-                                // console.log("blur");
-                                setShow(false);
-                            }}
+                            list="recentSearch"
                             ref={search}
-                            onKeyUp={pressedEnter}
                             onChange={searchController}
                             value={storage}
-                            type="text"
+                            type="search"
                             placeholder="Search free high-resolution photos"
                             className={styles.searchInput}
-                            required
                         />
 
                         <Text
@@ -292,8 +315,7 @@ export default function Navbar() {
                                 opacity: "1",
                             }}
                             display={
-                                typeof window !== "undefined" &&
-                                storage?.length < 1
+                                search.current?.value?.length < 1
                                     ? "none"
                                     : "block"
                             }
@@ -302,40 +324,72 @@ export default function Navbar() {
                             <IoClose />
                         </Text>
 
-                        {recentSearch?.length &&
-                        show &&
-                        search?.current?.value?.length < 1 ? (
+                        {recentSearch?.length && show && storage?.length < 1 ? (
                             <Box
                                 className={styles.recentSearch}
-                                onClick={() => {
-                                    console.log("clicked");
-                                    search?.current?.focus();
-                                    setShow(true);
-                                }}
+                                // * change display property according to the screend width
+                                ref={historyBox}
                                 boxShadow="xl"
                                 w="100%"
                                 bg="white"
                                 p="1rem 1.5rem"
-                                borderRadius="15px"
+                                borderRadius="8px"
                             >
-                                <Text mb="1rem" fontWeight="600">
-                                    Recent{" "}
-                                    {recentSearch?.length > 1
-                                        ? "Searches"
-                                        : "Search"}
-                                </Text>
+                                <Flex
+                                    mb="1.5rem"
+                                    align="center"
+                                    justify="space-between"
+                                >
+                                    <Text fontWeight="600" fontSize="1.2rem">
+                                        Recent{" "}
+                                        {recentSearch?.length > 1
+                                            ? "Searches"
+                                            : "Search"}
+                                    </Text>
+                                    <Text
+                                        cursor="pointer"
+                                        fontWeight="500"
+                                        fontSize="0.8rem"
+                                        _hover={{
+                                            textDecoration: "underline",
+                                        }}
+                                        onClick={() => setRecent([])}
+                                    >
+                                        Clear
+                                    </Text>
+                                </Flex>
 
-                                <Flex align="center" gap="1rem" wrap="wrap">
+                                <Flex
+                                    ref={recentList}
+                                    align="center"
+                                    gap="1rem"
+                                    wrap="wrap"
+                                >
                                     {recentSearch?.map((item, index) => (
                                         <Box
                                             key={index}
-                                            border="1.5px solid black"
-                                            borderRadius="10px"
-                                            px="0.8rem"
+                                            border="2px solid"
+                                            borderColor="myblack"
+                                            borderRadius="8px"
+                                            color="myblack"
+                                            fontWeight="400"
+                                            p="0.3rem 0.8rem"
                                             cursor="pointer"
+                                            fontSize="0.9rem"
+                                            bg="white"
+                                            _hover={{
+                                                boxShadow: "lg",
+                                            }}
+                                            className={styles.recentItem}
                                             onClick={() => {
-                                                console.log(item);
                                                 router.push(`/search/${item}`);
+                                                setStorage(item);
+                                                search.current.value = storage;
+
+                                                setRecent(item);
+
+                                                // * hide history box
+                                                setShow(false);
                                             }}
                                         >
                                             {item}
@@ -347,7 +401,7 @@ export default function Navbar() {
                             ""
                         )}
                     </Flex>
-                </FormControl>
+                </form>
 
                 <div className={styles.linksContainer}>
                     <input

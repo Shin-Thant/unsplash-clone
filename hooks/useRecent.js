@@ -14,18 +14,22 @@ export const useRecent = (name) => {
         try {
             let tempo = [...storage];
 
-            if (recent?.length) {
-                if (!tempo?.includes(recent)) {
-                    tempo?.unshift(recent);
-                    if (tempo?.length > 5) tempo.pop();
+            if (typeof recent === "string") {
+                if (recent?.length) {
+                    if (!tempo?.includes(recent)) {
+                        tempo?.unshift(recent);
+                        if (tempo?.length > 5) tempo.pop();
 
-                    setStorage([...tempo]);
-                } else {
-                    let tempo2 = tempo?.filter((t) => t !== recent);
-                    tempo2.unshift(recent);
+                        setStorage([...tempo]);
+                    } else {
+                        let tempo2 = tempo?.filter((t) => t !== recent);
+                        tempo2.unshift(recent);
 
-                    setStorage(tempo2);
+                        setStorage(tempo2);
+                    }
                 }
+            } else {
+                setStorage([]);
             }
         } catch (err) {
             console.error(err);

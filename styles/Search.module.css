@@ -148,12 +148,12 @@
     z-index: 2;
     background-color: var(--brown-1000);
     color: white;
-    width: 35px;
+    width: 30px;
     height: 85%;
     transform: translateY(-50%);
     border-radius: 50px;
     font-size: 1.3rem !important;
-    transition: right 200ms ease, background-color 300ms ease, width 0.5s ease;
+    transition: right 200ms ease, background-color 300ms ease, width 300ms ease;
 }
 
 /* .closeBtn:hover .closeText {

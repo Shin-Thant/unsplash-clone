@@ -6,6 +6,10 @@ const savedImgsFromLocal =
         : [];
 
 const initialState = {
+    ids: [...savedImgsFromLocal]?.reduce(
+        (prev, curr) => [...prev, curr?.id],
+        []
+    ),
     images: [...savedImgsFromLocal],
 };
 
@@ -23,6 +27,7 @@ const savedImgSlice = createSlice({
             console.log("existed", existedImg);
 
             if (!existedImg) {
+                state.ids = [...state.ids, newImg.id];
                 state.images = [...state.images, newImg];
 
                 localStorage.setItem(
@@ -32,6 +37,8 @@ const savedImgSlice = createSlice({
             }
         },
         removeImage: (state, action) => {
+            state.ids = state.ids.filter((i) => i !== action.payload);
+
             state.images = state.images.filter(
                 (img) => img?.id !== action.payload
             );
@@ -41,8 +48,9 @@ const savedImgSlice = createSlice({
                 JSON.stringify([...state.images])
             );
         },
+        // isAdded: (state, action) => {}
     },
 });
 
-export const { addImage } = savedImgSlice.actions;
+export const { addImage, removeImage } = savedImgSlice.actions;
 export default savedImgSlice.reducer;

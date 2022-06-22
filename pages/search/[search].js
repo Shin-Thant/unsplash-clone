@@ -30,6 +30,10 @@ import { Collection } from "../../components/Collection";
 import { CollectionSkeleton } from "../../components/CollectionSkeleton";
 import { MdClose } from "react-icons/md";
 import { CardList } from "../../components/CardList";
+import { ImageFilter } from "../../components/filter/ImageFilter";
+
+import { pageNum } from "../explore";
+import { CollectionList } from "../../components/containers/CollectionList";
 
 const getSearchedResults = async ({ queryKey }) => {
     const [_key, query, field, page, filters] = queryKey;
@@ -53,7 +57,6 @@ const getSearchedResults = async ({ queryKey }) => {
     const color = filters.color ? `&color=${filters.color}` : "";
 
     if (query && field) {
-        console.log(field);
         const { data } = await axios.get(
             `https://api.unsplash.com/search/${field}?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&per_page=${per_page}&page=${page}&query=${query}${order_by}${orientation}${color}`
         );
@@ -72,6 +75,15 @@ export default function search() {
     const [active, setActive] = useState(1);
 
     const [page, setPage] = useState(1);
+
+    useEffect(() => {
+        let isMounted = true;
+        if (isMounted && page !== pageNum) pageNum = page;
+
+        return () => {
+            isMounted = false;
+        };
+    }, [page]);
 
     const [field, setField] = useState("photos");
 
@@ -113,11 +125,13 @@ export default function search() {
     }, [data?.results]);
 
     const goPrevious = () => {
+        pageNum -= 1;
         setPage(page - 1);
         window.scrollTo(0, 0);
     };
 
     const goNext = () => {
+        pageNum += 1;
         setPage(page + 1);
         window.scrollTo(0, 0);
     };
@@ -196,7 +210,7 @@ export default function search() {
                     gap="5px"
                     h="max-content"
                     position="relative"
-                    mb="1.5rem"
+                    mb={field === "photos" ? "1.5rem" : "5rem"}
                     pb="1.5rem"
                 >
                     <Flex
@@ -324,360 +338,20 @@ export default function search() {
                 </Flex>
 
                 {/* Filters */}
-                {
-                    // * change it later
-                    // field === "photos"
-                    false && (
-                        <Flex
-                            w="100%"
-                            justify="space-between"
-                            align="center"
-                            h="max-content"
-                            px="1rem"
-                            mb="5rem"
-                        >
-                            <Flex
-                                align="center"
-                                w="max-content"
-                                h="max-content"
-                                gap="1rem"
-                            >
-                                {/* MenuList for orientation */}
-                                <Menu closeOnBlur={true} autoSelect={false}>
-                                    <MenuButton
-                                        border="2px solid black"
-                                        borderRadius="50px"
-                                        px="1.1rem"
-                                        py="0.4rem"
-                                    >
-                                        <Flex align="center" gap="0.5rem">
-                                            <Text>{orientation}</Text>{" "}
-                                            <FiChevronDown />
-                                        </Flex>
-                                    </MenuButton>
-                                    <MenuList
-                                        fontSize="0.9rem"
-                                        boxShadow="3px 3px 15px 1px rgba(0, 0, 0, 0.15)"
-                                    >
-                                        <MenuOptionGroup
-                                            defaultValue={
-                                                filters?.orientation || "any"
-                                            }
-                                            type="radio"
-                                        >
-                                            <MenuItemOption
-                                                value="any"
-                                                onClick={() => {
-                                                    setFilters({
-                                                        ...filters,
-                                                        orientation: "",
-                                                    });
-                                                    setOrientation(
-                                                        "Any Orientation"
-                                                    );
-                                                }}
-                                            >
-                                                Any Orientation
-                                            </MenuItemOption>
-                                            <MenuItemOption
-                                                value="portrait"
-                                                onClick={() => {
-                                                    setFilters({
-                                                        ...filters,
-                                                        orientation: "portrait",
-                                                    });
-                                                    setOrientation("Portrait");
-                                                }}
-                                            >
-                                                Portrait
-                                            </MenuItemOption>
-                                            <MenuItemOption
-                                                value="landscape"
-                                                onClick={() => {
-                                                    setFilters({
-                                                        ...filters,
-                                                        orientation:
-                                                            "landscape",
-                                                    });
-                                                    setOrientation("Landscape");
-                                                }}
-                                            >
-                                                Landscape
-                                            </MenuItemOption>
-                                            <MenuItemOption
-                                                value="squarish"
-                                                onClick={() => {
-                                                    setFilters({
-                                                        ...filters,
-                                                        orientation: "squarish",
-                                                    });
-                                                    setOrientation("Squarish");
-                                                }}
-                                            >
-                                                Squarish
-                                            </MenuItemOption>
-                                        </MenuOptionGroup>
-                                    </MenuList>
-                                </Menu>
-
-                                {/* MenuList for Color */}
-                                <Menu closeOnBlur={true} autoSelect={false}>
-                                    <MenuButton
-                                        border="2px solid black"
-                                        borderRadius="50px"
-                                        px="1.1rem"
-                                        py="0.4rem"
-                                    >
-                                        <Flex align="center" gap="0.5rem">
-                                            {color !== "Any Color" &&
-                                            color !== "Black and White" ? (
-                                                <Flex
-                                                    align="center"
-                                                    gap="0.5rem"
-                                                >
-                                                    <Box
-                                                        bg={`${color}`}
-                                                        w="19px"
-                                                        h="19px"
-                                                        borderRadius="50%"
-                                                        cursor="pointer"
-                                                        borderWidth="1.8px"
-                                                        borderColor="gray.400"
-                                                        _hover={{
-                                                            borderWidth: "3px",
-                                                        }}
-                                                    ></Box>
-                                                    <Text>{color}</Text>
-                                                </Flex>
-                                            ) : (
-                                                <Text>{color}</Text>
-                                            )}{" "}
-                                            <FiChevronDown />
-                                        </Flex>
-                                    </MenuButton>
-                                    <MenuList
-                                        boxShadow="3px 3px 15px 1px rgba(0, 0, 0, 0.15)"
-                                        fontSize="0.9rem"
-                                    >
-                                        <MenuOptionGroup
-                                            defaultValue={
-                                                filters?.color ? "tone" : "any"
-                                            }
-                                            type="radio"
-                                        >
-                                            <MenuItemOption
-                                                value="any"
-                                                onClick={() => {
-                                                    setFilters({
-                                                        ...filters,
-                                                        color: "",
-                                                    });
-                                                    setColor("Any Color");
-                                                }}
-                                            >
-                                                Any Color
-                                            </MenuItemOption>
-                                            <MenuItemOption
-                                                value="black_and_white"
-                                                onClick={() => {
-                                                    setFilters({
-                                                        ...filters,
-                                                        color: "black_and_white",
-                                                    });
-                                                    setColor("Black and White");
-                                                }}
-                                            >
-                                                Black and White
-                                            </MenuItemOption>
-
-                                            <Text pl="1rem" cursor="default">
-                                                Tone
-                                            </Text>
-
-                                            <MenuItemOption
-                                                value="tone"
-                                                cursor="default"
-                                                _hover={{
-                                                    bg: "transparent",
-                                                }}
-                                            >
-                                                <Box w="max-content">
-                                                    <Flex
-                                                        w="100%"
-                                                        justify="space-evenly"
-                                                        align="center"
-                                                        gap="0.5rem"
-                                                        mb="0.6rem"
-                                                    >
-                                                        {colors
-                                                            ?.slice(
-                                                                0,
-                                                                colors.length /
-                                                                    2
-                                                            )
-                                                            ?.map((clr) => (
-                                                                <Box
-                                                                    onClick={() => {
-                                                                        setFilters(
-                                                                            {
-                                                                                ...filters,
-                                                                                color: clr,
-                                                                            }
-                                                                        );
-                                                                        setColor(
-                                                                            clr
-                                                                        );
-                                                                    }}
-                                                                    key={clr}
-                                                                    bg={`${clr}`}
-                                                                    w="19px"
-                                                                    h="19px"
-                                                                    borderRadius="50%"
-                                                                    cursor="pointer"
-                                                                    borderWidth="1.8px"
-                                                                    borderColor="gray.400"
-                                                                    _hover={{
-                                                                        borderWidth:
-                                                                            "3px",
-                                                                    }}
-                                                                ></Box>
-                                                            ))}
-                                                    </Flex>
-                                                    <Flex
-                                                        w="100%"
-                                                        justify="space-evenly"
-                                                        align="center"
-                                                        gap="0.5rem"
-                                                    >
-                                                        {colors
-                                                            ?.slice(
-                                                                colors.length /
-                                                                    2,
-                                                                colors.length
-                                                            )
-                                                            ?.map((clr) => (
-                                                                <Box
-                                                                    onClick={() => {
-                                                                        setFilters(
-                                                                            {
-                                                                                ...filters,
-                                                                                color: clr,
-                                                                            }
-                                                                        );
-                                                                        setColor(
-                                                                            clr
-                                                                        );
-                                                                    }}
-                                                                    key={clr}
-                                                                    bg={`${clr}`}
-                                                                    w="19px"
-                                                                    h="19px"
-                                                                    borderRadius="50%"
-                                                                    cursor="pointer"
-                                                                    borderWidth="1.8px"
-                                                                    borderColor="gray.400"
-                                                                    _hover={{
-                                                                        borderWidth:
-                                                                            "3px",
-                                                                    }}
-                                                                ></Box>
-                                                            ))}
-                                                    </Flex>
-                                                </Box>
-                                            </MenuItemOption>
-                                        </MenuOptionGroup>
-                                    </MenuList>
-                                </Menu>
-
-                                {/* MenuList for sorting */}
-                                <Menu closeOnBlur={true} autoSelect={false}>
-                                    <MenuButton
-                                        border="2px solid black"
-                                        borderRadius="50px"
-                                        px="1.1rem"
-                                        py="0.4rem"
-                                    >
-                                        <Flex align="center" gap="0.5rem">
-                                            <Text>{sort}</Text>{" "}
-                                            <FiChevronDown />
-                                        </Flex>
-                                    </MenuButton>
-                                    <MenuList
-                                        boxShadow="3px 3px 15px 1px rgba(0, 0, 0, 0.15)"
-                                        fontSize="0.9rem"
-                                    >
-                                        <MenuOptionGroup
-                                            defaultValue={
-                                                filters?.order_by || "relevance"
-                                            }
-                                            type="radio"
-                                        >
-                                            <MenuItemOption
-                                                value="relevance"
-                                                onClick={() => {
-                                                    setFilters({
-                                                        ...filters,
-                                                        order_by: "",
-                                                    });
-                                                    setSort("Relevance");
-                                                }}
-                                            >
-                                                Relevance
-                                            </MenuItemOption>
-                                            <MenuItemOption
-                                                value="latest"
-                                                onClick={() => {
-                                                    setFilters({
-                                                        ...filters,
-                                                        order_by: "latest",
-                                                    });
-                                                    setSort("Latest");
-                                                }}
-                                            >
-                                                Latest
-                                            </MenuItemOption>
-                                        </MenuOptionGroup>
-                                    </MenuList>
-                                </Menu>
-                            </Flex>
-
-                            {Object.values(filters).filter(Boolean).length ? (
-                                <Flex
-                                    onClick={resetFilter}
-                                    w="120px"
-                                    justify="space-between"
-                                    align="center"
-                                    gap="0.5rem"
-                                    py="0.4rem"
-                                    px="1.1rem"
-                                    border="2px solid black"
-                                    borderRadius="50px"
-                                    cursor="pointer"
-                                    position="relative"
-                                    overflow="hidden"
-                                    className={styles.closeBtn}
-                                >
-                                    <Text
-                                        data-text="Reset"
-                                        className={styles.closeText}
-                                    >
-                                        Reset
-                                    </Text>
-                                    <Flex
-                                        align="center"
-                                        justify="center"
-                                        fontSize="1.6rem"
-                                        className={styles.close}
-                                    >
-                                        <MdClose />
-                                    </Flex>
-                                </Flex>
-                            ) : (
-                                ""
-                            )}
-                        </Flex>
-                    )
-                }
+                {field === "photos" && (
+                    <ImageFilter
+                        filters={filters}
+                        orientation={orientation}
+                        setOrientation={setOrientation}
+                        color={color}
+                        colors={colors}
+                        setColor={setColor}
+                        setFilters={setFilters}
+                        sort={sort}
+                        setSort={setSort}
+                        resetFilter={resetFilter}
+                    />
+                )}
 
                 {/* main */}
                 {field === "photos" ? (
@@ -690,15 +364,7 @@ export default function search() {
                     isLoading ? (
                         <CollectionSkeleton />
                     ) : (
-                        <Grid
-                            templateColumns="repeat(3, 1fr)"
-                            gap="1.5rem"
-                            mt="5rem"
-                        >
-                            {data?.results.map((item) => (
-                                <Collection key={item?.id} collection={item} />
-                            ))}
-                        </Grid>
+                        <CollectionList data={data?.results} />
                     )
                 ) : (
                     ""

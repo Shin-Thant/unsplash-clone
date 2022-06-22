@@ -69,6 +69,7 @@ export const CardList = ({ data, avgCards }) => {
                         categories={img?.categories}
                         current_user_collections={img?.current_user_collections}
                         user={img?.user}
+                        item={img}
                     />
                 ))}
             </Box>
@@ -94,6 +95,7 @@ export const CardList = ({ data, avgCards }) => {
                         categories={img?.categories}
                         current_user_collections={img?.current_user_collections}
                         user={img?.user}
+                        item={img}
                     />
                 ))}
             </Box>
@@ -119,6 +121,7 @@ export const CardList = ({ data, avgCards }) => {
                         categories={img?.categories}
                         current_user_collections={img?.current_user_collections}
                         user={img?.user}
+                        item={img}
                     />
                 ))}
             </Box>
@@ -148,6 +151,7 @@ export const CardList = ({ data, avgCards }) => {
                         categories={img?.categories}
                         current_user_collections={img?.current_user_collections}
                         user={img?.user}
+                        item={img}
                     />
                 ))}
             </Box>
@@ -175,6 +179,7 @@ export const CardList = ({ data, avgCards }) => {
                         categories={img?.categories}
                         current_user_collections={img?.current_user_collections}
                         user={img?.user}
+                        item={img}
                     />
                 ))}
             </Box>
@@ -197,6 +202,7 @@ export const CardList = ({ data, avgCards }) => {
                         categories={img?.categories}
                         current_user_collections={img?.current_user_collections}
                         user={img?.user}
+                        item={img}
                     />
                 ))}
             </Box>

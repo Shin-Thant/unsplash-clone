@@ -46,7 +46,7 @@
     bottom: 0;
     width: 100%;
     height: 2px;
-    background-color: var(--black);
+    background-color: var(--brown-1000);
     border-radius: 50px;
     transform: scaleX(0);
     transform-origin: right;

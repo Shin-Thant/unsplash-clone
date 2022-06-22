@@ -145,28 +145,43 @@ export const Collection = ({ collection }) => {
             </Grid>
 
             <Box p="0.5rem" w="100%">
-                <Text fontSize="1.3rem" fontWeight="bold" mb="1rem">
+                <Text fontSize="1.1rem" fontWeight="bold" mb="1rem">
                     {collection?.title}
                 </Text>
 
                 <Box>
-                    <Box fontWeight="400" color="myblack" mb="0.2rem">
+                    <Box
+                        fontWeight="500"
+                        color="myblack"
+                        fontSize="0.95rem"
+                        mb="0.2rem"
+                    >
                         <Text
                             display="inline-block"
-                            fontWeight="600"
-                            fontSize="1.05rem"
+                            fontWeight="500"
+                            bg="brown.1000"
+                            color="white"
+                            px="0.8rem"
+                            py="0.2rem"
+                            borderRadius="5px"
                         >
                             {collection?.total_photos}
                         </Text>{" "}
                         photo{collection?.total_photos > 1 && "s"}
                     </Box>
-                    <Box fontWeight="400" color="myblack" mb="1rem">
+                    <Box
+                        fontWeight="500"
+                        color="myblack"
+                        mb="1rem"
+                        fontSize="0.95rem"
+                    >
                         Created by{" "}
                         <Text
                             className={styles.username}
                             display="inline-block"
                             fontWeight="600"
-                            fontSize="1.05rem"
+                            fontSize="1rem"
+                            color="brown.1000"
                             cursor="pointer"
                         >
                             {collection?.user?.name
@@ -190,10 +205,12 @@ export const Collection = ({ collection }) => {
                                                       )
                                                   }
                                                   key={`${t.title}${index}`}
-                                                  bg="myblack"
+                                                  bg="transparent"
+                                                  border="1.5px solid black"
+                                                  fontWeight="600"
                                                   p="0.3rem 0.8rem"
-                                                  color="white"
-                                                  borderRadius="8px"
+                                                  color="myblack"
+                                                  borderRadius="5px"
                                                   fontSize="0.9rem"
                                                   cursor="pointer"
                                               >

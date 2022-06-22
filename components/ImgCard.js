@@ -4,8 +4,8 @@ import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
 import { BsPlusLg } from "react-icons/bs";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useDispatch } from "react-redux";
-import { addImage } from "../features/SavedImgSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addImage, removeImage } from "../features/SavedImgSlice";
 import { useRouter } from "next/router";
 
 export const ImgCard = ({
@@ -19,29 +19,23 @@ export const ImgCard = ({
     categories,
     current_user_collections,
     user,
+    item,
 }) => {
     const dispatch = useDispatch();
     const router = useRouter();
 
-    const saveImg = () => {
-        dispatch(
-            addImage({
-                id,
-                width,
-                height,
-                description,
-                imgs,
-                links,
-                blur_hash,
-                categories,
-                current_user_collections,
-                user,
-            })
-        );
+    const { ids } = useSelector((state) => state.savedImg);
+
+    const saveAndRemove = () => {
+        if (ids.includes(id)) {
+            console.log("existed");
+            dispatch(removeImage(id));
+        } else {
+            dispatch(addImage({ ...item }));
+        }
     };
 
     const goDetail = () => {
-        console.log("details");
         router.push(`/photos/${id}`);
     };
 
@@ -74,22 +68,10 @@ export const ImgCard = ({
                 borderRadius="15px"
                 bg="rgb(168, 168, 168)"
                 cursor="pointer"
-                onClick={goDetail}
             >
-                <Box
-                    fontSize="1.1rem"
-                    bg="white"
-                    p={{ base: "0.5rem 0.65rem", sm: "0.6rem 0.65rem" }}
-                    cursor="pointer"
-                    borderRadius="5px"
-                    className={styles.addBtn}
-                    onClick={saveImg}
-                >
-                    <BsPlusLg className={styles.addIcon} />
-                </Box>
-
                 {imgs?.regular || imgs?.thumb || imgs?.full || imgs?.raw ? (
                     <LazyLoadImage
+                        onClick={goDetail}
                         src={
                             imgs?.regular ||
                             imgs?.thumb ||
@@ -125,6 +107,27 @@ export const ImgCard = ({
                         Image not available!
                     </Flex>
                 )}
+
+                <Box
+                    fontSize="1.1rem"
+                    bg="white"
+                    cursor="pointer"
+                    borderRadius="5px"
+                    className={styles.addBtn}
+                    onClick={saveAndRemove}
+                    title={
+                        ids.includes(id) ? "Remove from list" : "Add to list"
+                    }
+                >
+                    <Box
+                        className={`${styles.addIcon} ${
+                            ids.includes(id) ? styles.added : ""
+                        }`}
+                        bg="black"
+                        borderRadius="50px"
+                    ></Box>
+                    {/* <BsPlusLg className={styles.addIcon} /> */}
+                </Box>
             </Box>
 
             <Flex
@@ -171,7 +174,7 @@ export const ImgCard = ({
                     borderRadius="8px"
                     className={styles.downloadBtn}
                 >
-                    <a href={links?.download} target="_blank">
+                    <a href={links?.download} target="_blank" download>
                         <FiDownload className={styles.downloadIcon} />
                     </a>
                 </Box>
