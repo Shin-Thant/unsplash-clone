@@ -9,15 +9,19 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Head from "next/head";
 import styles from "../../styles/ImageDetails.module.css";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useQuery } from "react-query";
+import { dehydrate, QueryClient, useQuery } from "react-query";
 import { pageNum } from "../explore";
 import { FiDownload } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import { addImage, removeImage } from "../../features/SavedImgSlice";
+import {
+    addImage,
+    removeImage,
+    selectAllIds,
+} from "../../features/SavedImgSlice";
 import { FaRegEye } from "react-icons/fa";
 import { BsFillCalendarFill, BsFillCameraFill } from "react-icons/bs";
 import { IoLocationSharp } from "react-icons/io5";
@@ -27,38 +31,29 @@ import { motion } from "framer-motion";
 const getPhotoDetails = async ({ queryKey }) => {
     const [_key, id] = queryKey;
 
-    if (id) {
-        const { data } = await axios.get(
-            `https://api.unsplash.com/photos/${id}?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}`
-        );
+    const { data } = await axios.get(
+        `https://api.unsplash.com/photos/${id}?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}`
+    );
 
-        return data;
-    }
+    return data;
 };
 
 function ImageDetail() {
     const router = useRouter();
     const dispatch = useDispatch();
 
-    const { ids, images } = useSelector((state) => state.savedImg);
-
-    const [isFetched, setIsFetched] = useState(false);
-
-    const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        if (image) setLoading(false);
-    }, []);
+    const ids = useSelector((state) => selectAllIds(state));
 
     const {
         isLoading,
         data: image,
         error,
     } = useQuery(["imgDetails", router?.query?.id], getPhotoDetails, {
-        staleTime: 3600000,
+        staleTime: 10800000,
     });
 
     const saveAndRemove = () => {
-        if (ids.includes(image?.id)) {
+        if (ids?.includes(image?.id)) {
             console.log("existed");
             dispatch(removeImage(image?.id));
         } else {
@@ -129,14 +124,14 @@ function ImageDetail() {
                                     onClick={saveAndRemove}
                                     className={styles.addBtn}
                                     title={
-                                        ids.includes(image?.id)
+                                        ids?.includes(image?.id)
                                             ? "Remove from list"
                                             : "Add to list"
                                     }
                                 >
                                     <Box
                                         className={`${styles.addIcon} ${
-                                            ids.includes(image?.id)
+                                            ids?.includes(image?.id)
                                                 ? styles.added
                                                 : ""
                                         }`}
@@ -176,29 +171,40 @@ function ImageDetail() {
                         mb="2.5rem"
                     >
                         {isLoading ? (
-                            <Skeleton
-                                w="60%"
-                                h="80vh"
-                                borderRadius="15px"
-                                startColor="#F0F0F0"
-                                endColor="#6A6A6A"
-                            />
-                        ) : image?.urls?.regular &&
+                            // <Skeleton
+                            //     w="60%"
+                            //     h="80vh"
+                            //     borderRadius="15px"
+                            //     startColor="#F0F0F0"
+                            //     endColor="#6A6A6A"
+                            // />
+                            <div
+                                style={{
+                                    height: "30vh",
+                                    backgroundColor: "tomato",
+                                }}
+                            >
+                                hello world
+                            </div>
+                        ) : image &&
+                          image?.urls?.regular &&
                           image?.urls?.thumb &&
                           image?.urls?.full &&
                           image?.urls?.raw ? (
-                            <motion.div
-                                initial={{
-                                    width: "400px",
-                                    height: "400px",
-                                }}
-                                animate={{
-                                    width: "max-content",
-                                    height: "83vh",
-                                }}
-                                transition={{
-                                    duration: 0.5,
-                                }}
+                            <div
+                                // layout={true}
+                                // initial={{
+                                //     width: "300px",
+                                //     height: "300px",
+                                // }}
+                                // animate={{
+                                //     width: "max-content",
+                                //     height: "83vh",
+                                // }}
+                                // transition={{
+                                //     duration: 0.5,
+                                //     delay: 1,
+                                // }}
                                 className={styles.imgContainer}
                                 bg="rgb(168, 168, 168)"
                             >
@@ -216,7 +222,7 @@ function ImageDetail() {
                                         ""
                                     }
                                 />
-                            </motion.div>
+                            </div>
                         ) : (
                             <Flex
                                 w="100%"
@@ -466,37 +472,23 @@ function ImageDetail() {
 
 export default ImageDetail;
 
-// export const getStaticPaths = async () => {
-//     console.log(pageNum);
+export const getStaticPaths = async () => {
+    return {
+        paths: [],
+        fallback: "blocking",
+    };
+};
 
-//     const { data } = await axios.get(
-//         `https://api.unsplash.com/photos/?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&per_page=30&page=${pageNum}`
-//     );
-//     console.log(data);
+export const getStaticProps = async (context) => {
+    const queryClient = new QueryClient();
 
-//     const paths = data.map((img) => {
-//         return {
-//             params: {
-//                 id: img?.id,
-//             },
-//         };
-//     });
+    const id = context.params?.id;
 
-//     return {
-//         paths,
-//         fallback: false,
-//     };
-// };
+    await queryClient.prefetchQuery(["imgDetails", id], getPhotoDetails);
 
-// export const getStaticProps = async (context) => {
-//     let id = context.params?.id;
-//     console.log(id);
-
-//     const { data } = await axios.get(
-//         `https://api.unsplash.com/photos/${id}?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}`
-//     );
-
-//     return {
-//         props: { image: data },
-//     };
-// };
+    return {
+        props: {
+            dehydratedState: dehydrate(queryClient),
+        },
+    };
+};

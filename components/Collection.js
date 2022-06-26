@@ -2,6 +2,7 @@ import { Box, Flex, Grid, GridItem, Image, Text } from "@chakra-ui/react";
 import React from "react";
 import { useRouter } from "next/router";
 import styles from "../styles/Collection.module.css";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export const Collection = ({ collection }) => {
     const router = useRouter();
@@ -31,6 +32,8 @@ export const Collection = ({ collection }) => {
                             {
                                 <Image
                                     className={styles.photos}
+                                    width="100%"
+                                    height="100%"
                                     src={
                                         collection?.preview_photos[0]?.urls
                                             ?.regular
@@ -42,6 +45,8 @@ export const Collection = ({ collection }) => {
                         <GridItem overflow="hidden" className={styles.gridItem}>
                             <Image
                                 className={styles.photos}
+                                width="100%"
+                                height="100%"
                                 src={
                                     collection?.preview_photos[1]?.urls?.regular
                                 }
@@ -86,6 +91,8 @@ export const Collection = ({ collection }) => {
 
                             <Image
                                 className={styles.photos}
+                                width="100%"
+                                height="100%"
                                 src={
                                     collection?.preview_photos[2]?.urls?.regular
                                 }
@@ -102,6 +109,8 @@ export const Collection = ({ collection }) => {
                         >
                             <Image
                                 className={styles.photos}
+                                width="100%"
+                                height="100%"
                                 src={
                                     collection?.preview_photos[0]?.urls?.regular
                                 }
@@ -115,6 +124,8 @@ export const Collection = ({ collection }) => {
                         >
                             <Image
                                 className={styles.photos}
+                                width="100%"
+                                height="100%"
                                 src={
                                     collection?.preview_photos[1]?.urls?.regular
                                 }
@@ -132,6 +143,8 @@ export const Collection = ({ collection }) => {
                             >
                                 <Image
                                     className={styles.photos}
+                                    width="100%"
+                                    height="100%"
                                     src={
                                         collection?.preview_photos[0]?.urls
                                             ?.regular
@@ -228,9 +241,11 @@ export const Collection = ({ collection }) => {
                                                   )
                                               }
                                               key={`${tag.title}${index}`}
-                                              bg="myblack"
+                                              bg="transparent"
+                                              border="1.5px solid black"
+                                              fontWeight="600"
                                               p="0.3rem 0.8rem"
-                                              color="white"
+                                              color="myblack"
                                               borderRadius="8px"
                                               fontSize="0.9rem"
                                               cursor="pointer"

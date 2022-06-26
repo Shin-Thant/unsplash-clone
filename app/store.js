@@ -5,6 +5,6 @@ import savedImgSlice from "../features/SavedImgSlice";
 export const Store = configureStore({
     reducer: {
         savedImg: savedImgSlice,
-        following: FollowSlice,
+        // following: FollowSlice,
     },
 });

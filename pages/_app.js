@@ -2,11 +2,12 @@ import "../styles/globals.css";
 import { ChakraProvider } from "@chakra-ui/react";
 import Layout from "../components/Layout";
 import { extendTheme } from "@chakra-ui/react";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
 import { Store } from "../app/store";
 import { Provider } from "react-redux";
+import { useRef, useState } from "react";
 
 const breakpoints = createBreakpoints({
     base: "320px",
@@ -43,18 +44,20 @@ const theme = extendTheme({
     breakpoints,
 });
 
-const queryClient = new QueryClient();
-
 function MyApp({ Component, pageProps }) {
+    const [queryClient] = useState(() => new QueryClient());
+
     return (
         <Provider store={Store}>
             <QueryClientProvider client={queryClient}>
-                <ChakraProvider theme={theme}>
-                    <Layout>
-                        <ReactQueryDevtools initialIsOpen={false} />
-                        <Component {...pageProps} />
-                    </Layout>
-                </ChakraProvider>
+                <Hydrate state={pageProps.dehydratedState}>
+                    <ChakraProvider theme={theme}>
+                        <Layout>
+                            <ReactQueryDevtools initialIsOpen={false} />
+                            <Component {...pageProps} />
+                        </Layout>
+                    </ChakraProvider>
+                </Hydrate>
             </QueryClientProvider>
         </Provider>
     );

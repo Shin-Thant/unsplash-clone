@@ -49,18 +49,6 @@ export default function Navbar() {
 
     // const { images } = useSelector((state) => state.savedImg);
 
-    // useEffect(() => {
-    //     console.log("saved images", images);
-    // }, [images]);
-
-    useEffect(() => {
-        // * setting storage if the current page is not search page
-        if (router.pathname !== "/search/[search]") {
-            setStorage("");
-            search.current.value = "";
-        }
-    }, [router]);
-
     useEffect(() => {
         if (typeof window !== undefined) {
             // if (currentRoute === 1) {
@@ -131,7 +119,11 @@ export default function Navbar() {
     };
     const goCollections = () => {
         setCurrentRoute(3);
-        // router.push("/collections");
+        router.push("/collections");
+        // router.push({
+        //     pathname: "/collections",
+        //     query: { search: "hello world".replaceAll(" ", "") },
+        // });
     };
     const goContact = () => {
         setCurrentRoute(4);
@@ -139,17 +131,24 @@ export default function Navbar() {
     };
 
     useEffect(() => {
-        //  handling currentRoute state on router change
+        // * handling currentRoute state on router change
         if (router.pathname === "/") setCurrentRoute(1);
         else if (router.pathname === "/explore") setCurrentRoute(2);
         else if (router.pathname === "/collections") setCurrentRoute(3);
         else if (router.pathname === "/contact") setCurrentRoute(4);
 
-        // handling search bar value with parameter from url
-        if (router?.query?.search) {
+        // * handling search bar value with parameter from url
+        if (router.query?.search) {
             if (storage !== router?.query?.search) {
                 setStorage(router?.query?.search);
             }
+            setRecent(router.query?.search);
+        }
+
+        // * setting storage if the current page is not search page
+        if (router.pathname !== "/search/[search]") {
+            setStorage("");
+            search.current.value = "";
         }
     }, [router]);
 

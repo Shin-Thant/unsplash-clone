@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 
 const savedImgsFromLocal =
     typeof window !== "undefined" && localStorage.getItem("savedImgs")
@@ -19,12 +19,12 @@ const savedImgSlice = createSlice({
     reducers: {
         addImage: (state, action) => {
             const newImg = action.payload;
-            console.log("new", newImg);
+            // console.log("new", newImg);
 
             const existedImg = state?.images?.find(
                 (img) => img?.id === newImg?.id
             );
-            console.log("existed", existedImg);
+            // console.log("existed", existedImg);
 
             if (!existedImg) {
                 state.ids = [...state.ids, newImg.id];
@@ -51,6 +51,18 @@ const savedImgSlice = createSlice({
         // isAdded: (state, action) => {}
     },
 });
+
+export const selectAllIds = createSelector(
+    [(state) => state.savedImg],
+    (state) => {
+        return state?.ids;
+    }
+);
+
+export const selectAllImages = createSelector(
+    [(state) => state.images],
+    (images) => images
+);
 
 export const { addImage, removeImage } = savedImgSlice.actions;
 export default savedImgSlice.reducer;

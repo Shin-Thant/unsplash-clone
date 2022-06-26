@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState, Skeleton } from "react";
 import styles from "../styles/ImgCard.module.css";
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
+// import Image from "next/image";
 import { FiDownload } from "react-icons/fi";
 import { BsPlusLg } from "react-icons/bs";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useDispatch, useSelector } from "react-redux";
-import { addImage, removeImage } from "../features/SavedImgSlice";
+import { addImage, removeImage, selectAllIds } from "../features/SavedImgSlice";
 import { useRouter } from "next/router";
 
 export const ImgCard = ({
@@ -24,10 +25,10 @@ export const ImgCard = ({
     const dispatch = useDispatch();
     const router = useRouter();
 
-    const { ids } = useSelector((state) => state.savedImg);
+    const ids = useSelector((state) => selectAllIds(state));
 
     const saveAndRemove = () => {
-        if (ids.includes(id)) {
+        if (ids?.includes(id)) {
             console.log("existed");
             dispatch(removeImage(id));
         } else {
@@ -82,6 +83,8 @@ export const ImgCard = ({
                         width="100%"
                         height="100%"
                         style={{
+                            // width: "100%",
+                            // height: "100%",
                             objectFit: "cover",
                             minHeight:
                                 height > 3000
@@ -116,12 +119,12 @@ export const ImgCard = ({
                     className={styles.addBtn}
                     onClick={saveAndRemove}
                     title={
-                        ids.includes(id) ? "Remove from list" : "Add to list"
+                        ids?.includes(id) ? "Remove from list" : "Add to list"
                     }
                 >
                     <Box
                         className={`${styles.addIcon} ${
-                            ids.includes(id) ? styles.added : ""
+                            ids?.includes(id) ? styles.added : ""
                         }`}
                         bg="black"
                         borderRadius="50px"
@@ -138,14 +141,18 @@ export const ImgCard = ({
             >
                 <Flex align="center" gap="0.8rem" className={styles.userInfo}>
                     <Box>
-                        <Image
+                        <LazyLoadImage
                             src={user?.profile_image?.large}
                             alt={user?.username}
-                            w="40px"
-                            h="40px"
-                            cursor="pointer"
-                            borderRadius="50%"
-                            objectFit="cover"
+                            width="40px"
+                            height="40px"
+                            style={{
+                                // width: "40px",
+                                // height: "40px",
+                                cursor: "pointer",
+                                borderRadius: "50%",
+                                objectFit: "cover",
+                            }}
                         />
                     </Box>
                     <Text

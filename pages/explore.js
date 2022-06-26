@@ -3,19 +3,18 @@ import styles from "../styles/Explore.module.css";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Head from "next/head";
-import { useQuery } from "react-query";
+import { dehydrate, QueryClient, useQuery } from "react-query";
 import { CardSkeleton } from "../components/CardSkeleton";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import { UpBtn } from "../components/UpBtn";
 import { CardList } from "../components/CardList";
 
-export let pageNum = 1;
-
+let pageNum = 1;
 const getPhotos = async ({ queryKey }) => {
     const [_key, page] = queryKey;
 
     const { data } = await axios.get(
-        `https://api.unsplash.com/photos/?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&per_page=30&page=${page}`
+        `https://api.unsplash.com/photos/?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&per_page=18&page=${page}`
     );
 
     return data;
@@ -28,15 +27,6 @@ export default function explore() {
 
     const [page, setPage] = useState(1);
 
-    useEffect(() => {
-        let isMounted = true;
-        if (isMounted && page !== pageNum) pageNum = page;
-
-        return () => {
-            isMounted = false;
-        };
-    }, [page]);
-
     // const [loading, setLoading] = useState(true);
 
     // useEffect(() => {
@@ -48,7 +38,9 @@ export default function explore() {
         error,
         data: images,
     } = useQuery(["getPhotos", page], getPhotos, {
-        // initialData: images,
+        // enabled: page >= 1,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         staleTime: 3600000,
     });
 
@@ -198,6 +190,14 @@ export default function explore() {
                 </Box>
 
                 {isLoading ? (
+                    // <h2
+                    //     style={{
+                    //         backgroundColor: "tomato",
+                    //         height: "50vh",
+                    //     }}
+                    // >
+                    //     loading
+                    // </h2>
                     <CardSkeleton />
                 ) : (
                     // * presentational component
@@ -248,14 +248,14 @@ export default function explore() {
     );
 }
 
-// export const getStaticProps = async () => {
-//     const { data } = await axios.get(
-//         `https://api.unsplash.com/photos/?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&per_page=30&page=${pageNum}`
-//     );
+export const getStaticProps = async () => {
+    const queryClient = new QueryClient();
 
-//     return {
-//         props: {
-//             images: data,
-//         },
-//     };
-// };
+    await queryClient.prefetchQuery(["getPhotos", 1], getPhotos);
+
+    return {
+        props: {
+            dehydratedState: dehydrate(queryClient),
+        },
+    };
+};

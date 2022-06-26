@@ -74,7 +74,7 @@ const followSlice = createSlice({
             state.userImgCache = [...action.payload]?.sort(
                 (a, b) => 0.5 - Math.random()
             );
-            console.log(state.userImgCache);
+            // console.log(state.userImgCache);
         });
     },
 });

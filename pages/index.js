@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Box, Flex, Image, Skeleton, Text } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useState } from "react";
-import { useQuery } from "react-query";
+import { dehydrate, QueryClient, useQuery } from "react-query";
 import styles from "../styles/Home.module.css";
 import { CgArrowLongRight } from "react-icons/cg";
 import { FaFacebookF, FaTwitter } from "react-icons/fa";
@@ -25,6 +25,8 @@ export default function Home() {
     };
 
     const { isLoading, error, data } = useQuery("randomImg", getRandomImg, {
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
         staleTime: 900000,
     });
 
@@ -219,3 +221,16 @@ export default function Home() {
         </>
     );
 }
+
+// ! new ramdom image is fetched whenever you visit the page
+// export const getStaticProps = async () => {
+//     const queryClient = new QueryClient();
+
+//     await queryClient.prefetchQuery("randomImg", getRandomImg);
+
+//     return {
+//         props: {
+//             dehydratedState: dehydrate(queryClient),
+//         },
+//     };
+// };

@@ -88,6 +88,7 @@
     /* * height changed (from 100% to 75vh) along with .img_container class */
     height: 75vh;
     object-fit: cover;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
 
 .highlight {

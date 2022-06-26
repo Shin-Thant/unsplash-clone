@@ -25,7 +25,7 @@ export const useRecent = (name) => {
                         let tempo2 = tempo?.filter((t) => t !== recent);
                         tempo2.unshift(recent);
 
-                        setStorage(tempo2);
+                        setStorage([...tempo2]);
                     }
                 }
             } else {

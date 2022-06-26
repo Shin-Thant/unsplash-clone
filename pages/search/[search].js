@@ -1,20 +1,9 @@
-import {
-    Box,
-    Flex,
-    Grid,
-    Text,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItemOption,
-    MenuOptionGroup,
-    Skeleton,
-} from "@chakra-ui/react";
+import { Box, Flex, Text, Skeleton } from "@chakra-ui/react";
 import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
-import { useQuery } from "react-query";
+import { dehydrate, QueryClient, useQuery } from "react-query";
 import { CardSkeleton } from "../../components/CardSkeleton";
 import { ImgCard } from "../../components/ImgCard";
 import { UpBtn } from "../../components/UpBtn";
@@ -34,6 +23,7 @@ import { ImageFilter } from "../../components/filter/ImageFilter";
 
 import { pageNum } from "../explore";
 import { CollectionList } from "../../components/containers/CollectionList";
+import { UsersList } from "../../components/containers/UsersList";
 
 const getSearchedResults = async ({ queryKey }) => {
     const [_key, query, field, page, filters] = queryKey;
@@ -41,12 +31,13 @@ const getSearchedResults = async ({ queryKey }) => {
     // console.log(query, page, filters);
 
     // * Cleaning
-    const per_page =
-        field === "photos"
-            ? 30
-            : field === "collections"
-            ? 21
-            : field === "users" && 20;
+    // const per_page =
+    //     field === "photos"
+    //         ? 30
+    //         : field === "collections"
+    //         ? 20
+    //         : field === "users" && 20;
+    const per_page = 18;
 
     const order_by = filters.order_by ? `&order_by=${filters.order_by}` : "";
 
@@ -118,6 +109,11 @@ export default function search() {
         }
     );
 
+    // scrolling top
+    useEffect(() => {
+        if (typeof window !== undefined) window.scrollTo(0, 0);
+    }, []);
+
     useEffect(() => {
         if (data?.results?.length) {
             setAvgCards(Math.floor(data?.results?.length / 3));
@@ -125,13 +121,13 @@ export default function search() {
     }, [data?.results]);
 
     const goPrevious = () => {
-        pageNum -= 1;
+        // pageNum -= 1;
         setPage(page - 1);
         window.scrollTo(0, 0);
     };
 
     const goNext = () => {
-        pageNum += 1;
+        // pageNum += 1;
         setPage(page + 1);
         window.scrollTo(0, 0);
     };
@@ -356,15 +352,44 @@ export default function search() {
                 {/* main */}
                 {field === "photos" ? (
                     isLoading ? (
-                        <CardSkeleton />
+                        // <CardSkeleton />
+                        <h2
+                            style={{
+                                backgroundColor: "tomato",
+                                height: "50vh",
+                            }}
+                        >
+                            loading
+                        </h2>
                     ) : (
                         <CardList data={data?.results} avgCards={avgCards} />
                     )
                 ) : field === "collections" ? (
                     isLoading ? (
-                        <CollectionSkeleton />
+                        // <CollectionSkeleton />
+                        <h2
+                            style={{
+                                backgroundColor: "tomato",
+                                height: "50vh",
+                            }}
+                        >
+                            loading
+                        </h2>
                     ) : (
                         <CollectionList data={data?.results} />
+                    )
+                ) : field === "users" ? (
+                    isLoading ? (
+                        <h2
+                            style={{
+                                backgroundColor: "tomato",
+                                height: "50vh",
+                            }}
+                        >
+                            loading
+                        </h2>
+                    ) : (
+                        <UsersList data={data?.results} />
                     )
                 ) : (
                     ""
@@ -379,7 +404,7 @@ export default function search() {
                         mt="2.8rem"
                         pb="3rem"
                     >
-                        {page > 1 && page !== data?.total_pages && (
+                        {page > 1 && (
                             <Flex
                                 align="center"
                                 gap="0.3rem"
@@ -398,23 +423,62 @@ export default function search() {
                                 <Text>Previous</Text>
                             </Flex>
                         )}
-                        <Flex
-                            align="center"
-                            gap="0.3rem"
-                            p={{ base: "0.5rem 0.8rem", mobile: "0.6rem 1rem" }}
-                            borderRadius="8px"
-                            fontWeight="600"
-                            w="max-content"
-                            cursor="pointer"
-                            className={styles.nextBtn}
-                            onClick={goNext}
-                        >
-                            <Text>Next</Text>
-                            <IoIosArrowForward fontSize="1.5rem" />
-                        </Flex>
+                        {page !== data?.total_pages && (
+                            <Flex
+                                align="center"
+                                gap="0.3rem"
+                                p={{
+                                    base: "0.5rem 0.8rem",
+                                    mobile: "0.6rem 1rem",
+                                }}
+                                borderRadius="8px"
+                                fontWeight="600"
+                                w="max-content"
+                                cursor="pointer"
+                                className={styles.nextBtn}
+                                onClick={goNext}
+                            >
+                                <Text>Next</Text>
+                                <IoIosArrowForward fontSize="1.5rem" />
+                            </Flex>
+                        )}
                     </Flex>
                 )}
             </Box>
         </>
     );
 }
+
+// export const getStaticPaths = async () => {
+//     return {
+//         paths: [],
+//         fallback: "blocking",
+//     };
+// };
+
+export const getServerSideProps = async (context) => {
+    const queryClient = new QueryClient();
+
+    const initialReqQuery = [
+        context?.params?.search,
+        "photos",
+        1,
+        "",
+        {
+            orientation: "",
+            color: "",
+            order_by: "",
+        },
+    ];
+
+    await queryClient.prefetchQuery(
+        ["search", ...initialReqQuery],
+        getSearchedResults
+    );
+
+    return {
+        props: {
+            dehydratedState: dehydrate(queryClient),
+        },
+    };
+};
