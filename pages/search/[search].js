@@ -15,7 +15,6 @@ import {
     BsPeopleFill,
 } from "react-icons/bs";
 import { FiChevronDown } from "react-icons/fi";
-import { Collection } from "../../components/Collection";
 import { CollectionSkeleton } from "../../components/CollectionSkeleton";
 import { MdClose } from "react-icons/md";
 import { CardList } from "../../components/CardList";
@@ -24,6 +23,7 @@ import { ImageFilter } from "../../components/filter/ImageFilter";
 import { pageNum } from "../explore";
 import { CollectionList } from "../../components/containers/CollectionList";
 import { UsersList } from "../../components/containers/UsersList";
+import { UserCardSkeleton } from "../../components/skeletons/UserCardSkeleton";
 
 const getSearchedResults = async ({ queryKey }) => {
     const [_key, query, field, page, filters] = queryKey;
@@ -380,15 +380,16 @@ export default function search() {
                     )
                 ) : field === "users" ? (
                     isLoading ? (
-                        <h2
-                            style={{
-                                backgroundColor: "tomato",
-                                height: "50vh",
-                            }}
-                        >
-                            loading
-                        </h2>
+                        <UserCardSkeleton />
                     ) : (
+                        // <h2
+                        //     style={{
+                        //         backgroundColor: "tomato",
+                        //         height: "50vh",
+                        //     }}
+                        // >
+                        //     loading
+                        // </h2>
                         <UsersList data={data?.results} />
                     )
                 ) : (
