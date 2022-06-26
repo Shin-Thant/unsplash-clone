@@ -1,7 +1,7 @@
 import { Box, Flex, Grid, GridItem, Image, Text } from "@chakra-ui/react";
 import React from "react";
 import { useRouter } from "next/router";
-import styles from "../styles/Collection.module.css";
+import styles from "../../styles/Collection.module.css";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 export const Collection = ({ collection }) => {
@@ -68,7 +68,7 @@ export const Collection = ({ collection }) => {
                                     <Text
                                         color="white"
                                         fontWeight="500"
-                                        fontSize="1.15rem"
+                                        fontSize="1.05rem"
                                     >
                                         +{" "}
                                         {parseInt(collection?.total_photos) -
@@ -158,7 +158,7 @@ export const Collection = ({ collection }) => {
             </Grid>
 
             <Box p="0.5rem" w="100%">
-                <Text fontSize="1.1rem" fontWeight="bold" mb="1rem">
+                <Text fontSize="1.05rem" fontWeight="bold" mb="1rem">
                     {collection?.title}
                 </Text>
 
@@ -177,6 +177,7 @@ export const Collection = ({ collection }) => {
                             px="0.8rem"
                             py="0.2rem"
                             borderRadius="5px"
+                            fontSize="0.95rem"
                         >
                             {collection?.total_photos}
                         </Text>{" "}

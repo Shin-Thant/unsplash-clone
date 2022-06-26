@@ -4,7 +4,7 @@ import styles from "../styles/Collection.module.css";
 
 export const CollectionSkeleton = () => {
     return (
-        <Grid templateColumns="repeat(3, 1fr)" gap="1.5rem" mt="5rem">
+        <Grid templateColumns="repeat(3, 1fr)" gap="1.5rem">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((item) => (
                 <Box
                     key={item}

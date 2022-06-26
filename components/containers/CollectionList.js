@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid } from "@chakra-ui/react";
-import { Collection } from "../Collection";
+import { Collection } from "../shared-items/Collection";
 
 export const CollectionList = ({ data }) => {
     return (

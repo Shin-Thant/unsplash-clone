@@ -8,11 +8,15 @@ export const UsersList = ({ data }) => {
     }, [data]);
 
     return (
-        <Grid templateColumns="repeat(3, 1fr)" gap="1.5rem">
-            {/* {data?.map((item) => (
-        <Collection key={item?.id} collection={item} />
-    ))} */}
-            <UserCard user={data[0]} />
+        <Grid
+            w="full"
+            templateColumns="repeat(3, 1fr)"
+            gap="1.1rem"
+            rowGap="1.3rem"
+        >
+            {data?.map((item) => (
+                <UserCard key={item?.id} user={item} />
+            ))}
         </Grid>
     );
 };
