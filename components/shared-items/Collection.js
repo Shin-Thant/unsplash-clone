@@ -2,14 +2,22 @@ import { Box, Flex, Grid, GridItem, Image, Text } from "@chakra-ui/react";
 import React from "react";
 import { useRouter } from "next/router";
 import styles from "../../styles/Collection.module.css";
-import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useCollection } from "../../context/CollectionContext";
 
 export const Collection = ({ collection }) => {
     const router = useRouter();
+    const { savedCol, setSavedCol } = useCollection();
+
+    const goDetails = () => {
+        if (savedCol?.id !== collection?.id) setSavedCol({ ...collection });
+        collection?.id && router.push(`/collectionDetails/${collection?.id}`);
+    };
 
     return (
         <Box className={styles.collection} borderRadius="13px" p="0.7rem">
             <Grid
+                onClick={goDetails}
+                cursor="pointer"
                 w="100%"
                 h="300px"
                 templateColumns={
@@ -32,6 +40,8 @@ export const Collection = ({ collection }) => {
                             {
                                 <Image
                                     className={styles.photos}
+                                    onClick={goDetails}
+                                    cursor="pointer"
                                     width="100%"
                                     height="100%"
                                     src={
@@ -45,6 +55,8 @@ export const Collection = ({ collection }) => {
                         <GridItem overflow="hidden" className={styles.gridItem}>
                             <Image
                                 className={styles.photos}
+                                onClick={goDetails}
+                                cursor="pointer"
                                 width="100%"
                                 height="100%"
                                 src={
@@ -64,6 +76,7 @@ export const Collection = ({ collection }) => {
                                     justify="center"
                                     align="center"
                                     className={styles.morePhotos}
+                                    pointerEvents="none"
                                 >
                                     <Text
                                         color="white"
@@ -91,6 +104,8 @@ export const Collection = ({ collection }) => {
 
                             <Image
                                 className={styles.photos}
+                                onClick={goDetails}
+                                cursor="pointer"
                                 width="100%"
                                 height="100%"
                                 src={
@@ -109,6 +124,8 @@ export const Collection = ({ collection }) => {
                         >
                             <Image
                                 className={styles.photos}
+                                onClick={goDetails}
+                                cursor="pointer"
                                 width="100%"
                                 height="100%"
                                 src={
@@ -124,6 +141,8 @@ export const Collection = ({ collection }) => {
                         >
                             <Image
                                 className={styles.photos}
+                                onClick={goDetails}
+                                cursor="pointer"
                                 width="100%"
                                 height="100%"
                                 src={
@@ -143,6 +162,8 @@ export const Collection = ({ collection }) => {
                             >
                                 <Image
                                     className={styles.photos}
+                                    onClick={goDetails}
+                                    cursor="pointer"
                                     width="100%"
                                     height="100%"
                                     src={
@@ -158,7 +179,14 @@ export const Collection = ({ collection }) => {
             </Grid>
 
             <Box p="0.5rem" w="100%">
-                <Text fontSize="1.05rem" fontWeight="bold" mb="1rem">
+                <Text
+                    onClick={goDetails}
+                    fontSize="1.05rem"
+                    fontWeight="bold"
+                    mb="1rem"
+                    cursor="pointer"
+                    w="max-content"
+                >
                     {collection?.title}
                 </Text>
 
@@ -219,11 +247,10 @@ export const Collection = ({ collection }) => {
                                                       )
                                                   }
                                                   key={`${t.title}${index}`}
+                                                  className={styles.tags}
                                                   bg="transparent"
-                                                  border="1.5px solid black"
                                                   fontWeight="600"
                                                   p="0.3rem 0.8rem"
-                                                  color="myblack"
                                                   borderRadius="5px"
                                                   fontSize="0.9rem"
                                                   cursor="pointer"
@@ -242,11 +269,10 @@ export const Collection = ({ collection }) => {
                                                   )
                                               }
                                               key={`${tag.title}${index}`}
+                                              className={styles.tags}
                                               bg="transparent"
-                                              border="1.5px solid black"
                                               fontWeight="600"
                                               p="0.3rem 0.8rem"
-                                              color="myblack"
                                               borderRadius="8px"
                                               fontSize="0.9rem"
                                               cursor="pointer"

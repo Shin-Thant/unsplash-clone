@@ -56,3 +56,13 @@
     transform-origin: left;
     transform: scaleX(1);
 }
+
+.tags {
+    color: rgba(0, 0, 0, 0.753);
+    border: 1.6px solid rgba(0, 0, 0, 0.5);
+    transition: all 200ms ease;
+}
+.tags:hover {
+    color: black;
+    border-color: black;
+}
