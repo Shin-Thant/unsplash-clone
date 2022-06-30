@@ -244,7 +244,6 @@ export default function Navbar() {
                 gap="1.5rem"
                 py="0.8rem"
                 px="1rem"
-                mb="0.5rem"
                 style={{ background: "#D5D2C3" }}
                 shadow="lg"
                 zIndex="20"

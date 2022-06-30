@@ -8,6 +8,7 @@ import { createBreakpoints } from "@chakra-ui/theme-tools";
 import { Store } from "../app/store";
 import { Provider } from "react-redux";
 import { useRef, useState } from "react";
+import { CollectionProvider } from "../context/CollectionContext";
 
 const breakpoints = createBreakpoints({
     base: "320px",
@@ -51,12 +52,14 @@ function MyApp({ Component, pageProps }) {
         <Provider store={Store}>
             <QueryClientProvider client={queryClient}>
                 <Hydrate state={pageProps.dehydratedState}>
-                    <ChakraProvider theme={theme}>
-                        <Layout>
-                            <ReactQueryDevtools initialIsOpen={false} />
-                            <Component {...pageProps} />
-                        </Layout>
-                    </ChakraProvider>
+                    <CollectionProvider>
+                        <ChakraProvider theme={theme}>
+                            <Layout>
+                                <ReactQueryDevtools initialIsOpen={false} />
+                                <Component {...pageProps} />
+                            </Layout>
+                        </ChakraProvider>
+                    </CollectionProvider>
                 </Hydrate>
             </QueryClientProvider>
         </Provider>
