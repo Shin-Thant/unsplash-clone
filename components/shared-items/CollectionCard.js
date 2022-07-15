@@ -1,16 +1,18 @@
 import { Box, Flex, Grid, GridItem, Image, Text } from "@chakra-ui/react";
 import React from "react";
 import { useRouter } from "next/router";
-import styles from "../../styles/Collection.module.css";
-import { useCollection } from "../../context/CollectionContext";
+import styles from "../../styles/CollectionCard.module.css";
 
-export const Collection = ({ collection }) => {
+export const CollectionCard = ({ collection }) => {
     const router = useRouter();
-    const { savedCol, setSavedCol } = useCollection();
 
     const goDetails = () => {
-        if (savedCol?.id !== collection?.id) setSavedCol({ ...collection });
         collection?.id && router.push(`/collectionDetails/${collection?.id}`);
+    };
+
+    const goUserDetails = () => {
+        collection?.user?.username &&
+            router.push(`/user/${collection?.user?.username}`);
     };
 
     return (
@@ -181,7 +183,7 @@ export const Collection = ({ collection }) => {
             <Box p="0.5rem" w="100%">
                 <Text
                     onClick={goDetails}
-                    fontSize="1.05rem"
+                    fontSize="1.1rem"
                     fontWeight="bold"
                     mb="1rem"
                     cursor="pointer"
@@ -191,39 +193,34 @@ export const Collection = ({ collection }) => {
                 </Text>
 
                 <Box>
-                    <Box
-                        fontWeight="500"
-                        color="myblack"
-                        fontSize="0.95rem"
-                        mb="0.2rem"
-                    >
+                    <Box fontWeight="500" color="myblack" mb="0.2rem">
                         <Text
                             display="inline-block"
-                            fontWeight="500"
-                            bg="brown.1000"
-                            color="white"
-                            px="0.8rem"
-                            py="0.2rem"
+                            fontWeight="600"
+                            // border="2.5px solid"
+                            // bg="brown.1000"
+                            // borderColor="brown.1000"
+                            color="brown-tea"
+                            // px="0.5rem"
+                            // py="0.1rem"
                             borderRadius="5px"
-                            fontSize="0.95rem"
+                            fontSize="1rem"
+                            mr="0.1rem"
+                            position="relative"
                         >
                             {collection?.total_photos}
                         </Text>{" "}
                         photo{collection?.total_photos > 1 && "s"}
                     </Box>
-                    <Box
-                        fontWeight="500"
-                        color="myblack"
-                        mb="1rem"
-                        fontSize="0.95rem"
-                    >
+                    <Box fontWeight="500" color="myblack" mb="1rem">
                         Created by{" "}
                         <Text
+                            onClick={goUserDetails}
                             className={styles.username}
                             display="inline-block"
                             fontWeight="600"
-                            fontSize="1rem"
-                            color="brown.1000"
+                            fontSize="1.1rem"
+                            color="myblack"
                             cursor="pointer"
                         >
                             {collection?.user?.name

@@ -1,6 +1,5 @@
 import Head from "next/head";
 import { Box, Flex, Image, Skeleton, Text } from "@chakra-ui/react";
-import axios from "axios";
 import React, { useState } from "react";
 import { dehydrate, QueryClient, useQuery } from "react-query";
 import styles from "../styles/Home.module.css";
@@ -8,10 +7,11 @@ import { CgArrowLongRight } from "react-icons/cg";
 import { FaFacebookF, FaTwitter } from "react-icons/fa";
 import { FiInstagram } from "react-icons/fi";
 import { useRouter } from "next/router";
+import axios from "../services/axios";
 
 const getRandomImg = async () => {
     const { data } = await axios.get(
-        `https://api.unsplash.com/photos/random?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&query=brown&orientation=portrait`
+        `photos/random?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&query=brown&orientation=portrait`
     );
 
     return data;
@@ -24,11 +24,14 @@ export default function Home() {
         router.push("/explore");
     };
 
-    const { isLoading, error, data } = useQuery("randomImg", getRandomImg, {
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        staleTime: 900000,
-    });
+    const { isLoading, error, data, isPreviousData } = useQuery(
+        "randomImg",
+        getRandomImg,
+        {
+            keepPreviousData: true,
+            staleTime: 900000,
+        }
+    );
 
     return (
         <>
@@ -93,16 +96,17 @@ export default function Home() {
                         <Box className={styles.img_container}>
                             {isLoading ? (
                                 <Skeleton
-                                    // startColor="#230D0D"
-                                    // endColor="#9E6E44"
                                     startColor="#F0F0F0"
                                     endColor="#6A6A6A"
-                                    h="100%"
-                                    w="100%"
+                                    width="310px"
+                                    height="75vh"
                                     borderRadius="200px 200px 0 0"
                                 />
-                            ) : data?.urls?.regular ? (
+                            ) : data?.urls?.regular ||
+                              data?.urls?.full ||
+                              data?.urls?.thumb ? (
                                 <Image
+                                    bg="gray.50"
                                     src={data?.urls?.regular}
                                     alt={
                                         data?.description

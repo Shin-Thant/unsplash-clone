@@ -1,6 +1,6 @@
 import { Box, Flex, Grid, GridItem, Skeleton } from "@chakra-ui/react";
 import React from "react";
-import styles from "../styles/Collection.module.css";
+import styles from "../../styles/CollectionCard.module.css";
 
 export const CollectionSkeleton = () => {
     return (

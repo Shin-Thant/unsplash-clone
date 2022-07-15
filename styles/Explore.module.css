@@ -8,7 +8,8 @@
 .introText {
     word-spacing: 0.1em;
     position: relative;
-    margin-bottom: 11rem;
+    /* previous value 11rem */
+    margin-bottom: 11.8rem;
 }
 
 .intro {
@@ -47,6 +48,7 @@
     width: 100%;
     height: max-content;
     opacity: 0;
+    /* z-index: -1; */
     transition: transform 0.7s ease;
     animation: up 1s ease forwards;
 }
@@ -70,6 +72,11 @@
 }
 .letter:hover {
     fill: #2a2a27;
+}
+
+.listContainer {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(4px);
 }
 
 .previousBtn {

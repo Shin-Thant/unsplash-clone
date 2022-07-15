@@ -1,12 +1,16 @@
 import React, { useEffect, useRef, useState, Skeleton } from "react";
-import styles from "../styles/ImgCard.module.css";
+import styles from "../../styles/ImgCard.module.css";
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
 // import Image from "next/image";
 import { FiDownload } from "react-icons/fi";
 import { BsPlusLg } from "react-icons/bs";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useDispatch, useSelector } from "react-redux";
-import { addImage, removeImage, selectAllIds } from "../features/SavedImgSlice";
+import {
+    addImage,
+    removeImage,
+    selectAllIds,
+} from "../../features/SavedImgSlice";
 import { useRouter } from "next/router";
 
 export const ImgCard = ({
@@ -27,6 +31,10 @@ export const ImgCard = ({
 
     const ids = useSelector((state) => selectAllIds(state));
 
+    const goUserDetails = () => {
+        user?.username && router.push(`/user/${user?.username}`);
+    };
+
     const saveAndRemove = () => {
         if (ids?.includes(id)) {
             console.log("existed");
@@ -37,7 +45,7 @@ export const ImgCard = ({
     };
 
     const goDetail = () => {
-        router.push(`/photos/${id}`);
+        id && router.push(`/user/${user?.username}`);
     };
 
     if (!imgs?.regular || !imgs?.thumb || !imgs?.full || !imgs?.raw)
@@ -59,7 +67,8 @@ export const ImgCard = ({
             zIndex={10}
             w="100%"
             h="max-content"
-            borderRadius="15px"
+            borderRadius={{ base: "8px", lgMobile: "15px" }}
+            // shadow="xl"
             className={styles.card}
         >
             {/* giving min height to image container make the cards more good looking, while the images are loading users can see the card with 250px. */}
@@ -142,6 +151,7 @@ export const ImgCard = ({
                 <Flex align="center" gap="0.8rem" className={styles.userInfo}>
                     <Box>
                         <LazyLoadImage
+                            onClick={goUserDetails}
                             src={user?.profile_image?.large}
                             alt={user?.username}
                             width="40px"
@@ -156,6 +166,7 @@ export const ImgCard = ({
                         />
                     </Box>
                     <Text
+                        onClick={goUserDetails}
                         fontWeight={600}
                         opacity="0.7"
                         cursor="pointer"

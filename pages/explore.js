@@ -1,20 +1,21 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import styles from "../styles/Explore.module.css";
 import React, { useEffect, useRef, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import Head from "next/head";
 import { dehydrate, QueryClient, useQuery } from "react-query";
-import { CardSkeleton } from "../components/CardSkeleton";
+import { CardSkeleton } from "../components/skeletons/CardSkeleton";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import { UpBtn } from "../components/UpBtn";
-import { CardList } from "../components/CardList";
+import { CardList } from "../components/containers/CardList";
+import { NormalPagination } from "../components/shared-items/NormalPagination";
+import axios from "../services/axios";
 
-let pageNum = 1;
 const getPhotos = async ({ queryKey }) => {
     const [_key, page] = queryKey;
 
     const { data } = await axios.get(
-        `https://api.unsplash.com/photos/?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&per_page=18&page=${page}`
+        `photos/?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&per_page=18&page=${page}`
     );
 
     return data;
@@ -38,11 +39,15 @@ export default function explore() {
         error,
         data: images,
     } = useQuery(["getPhotos", page], getPhotos, {
-        // enabled: page >= 1,
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
+        keepPreviousData: true,
         staleTime: 3600000,
     });
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            window.scrollTo(0, 0);
+        }
+    }, [page]);
 
     useEffect(() => {
         function scrolled() {
@@ -74,15 +79,13 @@ export default function explore() {
     }, [images, images?.length]);
 
     const goPrevious = () => {
-        // pageNum -= 1;
-        setPage(page - 1);
-        window.scrollTo(0, 0);
+        if (page > 1) {
+            setPage(page - 1);
+        }
     };
 
     const goNext = () => {
-        // pageNum += 1;
         setPage(page + 1);
-        window.scrollTo(0, 0);
     };
 
     return (
@@ -189,6 +192,13 @@ export default function explore() {
                     </Box>
                 </Box>
 
+                {/* <Box
+                    className={styles.listContainer}
+                    w="100%"
+                    padding="1.3rem"
+                    borderRadius="10px"
+                    zIndex="10"
+                > */}
                 {isLoading ? (
                     // <h2
                     //     style={{
@@ -204,45 +214,14 @@ export default function explore() {
                     <CardList data={images} avgCards={avgCards} />
                 )}
 
-                <Flex
-                    justify="center"
-                    align="center"
-                    w="100%"
-                    gap="2rem"
-                    mt="2.5rem"
-                    pb="3rem"
-                >
-                    {page > 1 && (
-                        <Flex
-                            align="center"
-                            gap="0.3rem"
-                            p={{ base: "0.5rem 0.8rem", mobile: "0.6rem 1rem" }}
-                            borderRadius="8px"
-                            fontWeight="600"
-                            w="max-content"
-                            cursor="pointer"
-                            className={styles.previousBtn}
-                            onClick={goPrevious}
-                        >
-                            <IoIosArrowBack fontSize="1.5rem" />
-                            <Text>Previous</Text>
-                        </Flex>
-                    )}
-                    <Flex
-                        align="center"
-                        gap="0.3rem"
-                        p={{ base: "0.5rem 0.8rem", mobile: "0.6rem 1rem" }}
-                        borderRadius="8px"
-                        fontWeight="600"
-                        w="max-content"
-                        cursor="pointer"
-                        className={styles.nextBtn}
-                        onClick={goNext}
-                    >
-                        <Text>Next</Text>
-                        <IoIosArrowForward fontSize="1.5rem" />
-                    </Flex>
+                <Flex w="100%" justify="center" align="center" mt="5rem">
+                    <NormalPagination
+                        goNext={goNext}
+                        goPrevious={goPrevious}
+                        current={page}
+                    />
                 </Flex>
+                {/* </Box> */}
             </Box>
         </>
     );

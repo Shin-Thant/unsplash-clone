@@ -12,7 +12,14 @@ export const UserCardSkeleton = () => {
     return (
         <Grid templateColumns="repeat(3, 1fr)" gap="1.3rem">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((item) => (
-                <Box w="100%" bg="white" px="0.8rem" py="1rem" rounded="lg">
+                <Box
+                    key={item}
+                    w="100%"
+                    bg="white"
+                    px="0.8rem"
+                    py="1rem"
+                    rounded="lg"
+                >
                     <Grid
                         h="max-content"
                         templateColumns="max-content max-content 1fr"

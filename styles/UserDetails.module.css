@@ -1,0 +1,130 @@
+.profileImg {
+    position: absolute;
+    left: 50%;
+    top: -90px;
+    transform: translate(-50%);
+}
+.profileImg::before {
+    content: "";
+    width: 25px;
+    height: 50px;
+    position: absolute;
+    left: -23px;
+    top: 90px;
+    border-top-right-radius: 23px;
+    box-shadow: 0 -25px 0 0 #cdc8b7;
+}
+.profileImg::after {
+    content: "";
+    width: 25px;
+    height: 50px;
+    position: absolute;
+    right: -23px;
+    top: 90px;
+    border-top-left-radius: 23px;
+    box-shadow: 0 -25px 0 0 #cdc8b7;
+}
+
+.location {
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 250ms ease;
+}
+.location:hover,
+.location:focus {
+    text-decoration: underline;
+}
+
+.username {
+    position: relative;
+    z-index: 2;
+    cursor: default;
+}
+/* .username::before {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    left: -0.4rem;
+    transform-origin: left;
+    transform: scaleX(0.48);
+    width: calc(100% + 0.8rem);
+    height: 14px;
+    background-color: #e78c42;
+    border-radius: 50px;
+    z-index: -1;
+
+    transition: transform 300ms ease;
+}
+.username:hover::before {
+    transform: scaleX(1);
+} */
+
+.highlight {
+    display: inline-block;
+    position: absolute;
+    bottom: 2px;
+    left: -0.4rem;
+    transform-origin: left;
+    /* transform: scaleX(0.48); */
+    width: calc(100% + 0.8rem);
+    height: 14px;
+    background-color: var(--brown-tea);
+    border-radius: 50px;
+    z-index: -1;
+}
+
+.previousBtn {
+    color: var(--brown-1000);
+    border: 2px solid var(--brown-1000);
+    position: relative;
+    overflow: hidden;
+    transition: all 300ms ease;
+}
+.previousBtn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--brown-1000);
+    transform: translateX(100%);
+    z-index: -2;
+    transition: transform 300ms ease;
+}
+.previousBtn:hover {
+    color: white;
+    box-shadow: inset 5px 5px 12px 1px rgba(0, 0, 0, 0.3);
+}
+.previousBtn:hover::before {
+    transform: translateX(0);
+}
+
+.nextBtn {
+    color: var(--brown-1000);
+    border: 2px solid var(--brown-1000);
+    position: relative;
+    overflow: hidden;
+    transition: all 300ms ease;
+}
+.nextBtn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background-color: var(--brown-1000); */
+    background-color: tomato;
+    transform: translateX(-100%);
+    z-index: -2;
+    transition: transform 300ms ease;
+}
+.nextBtn:hover {
+    color: white;
+    box-shadow: inset 5px 5px 12px 1px rgba(0, 0, 0, 0.3);
+}
+.nextBtn:hover::before {
+    transform: translateX(0);
+}
