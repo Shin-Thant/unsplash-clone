@@ -6,7 +6,7 @@ export const UserCard = ({ user }) => {
     const router = useRouter();
 
     const goDetails = () => {
-        // router.push(`/user/${user?.id}`);
+        user?.id && router.push(`/user/${user?.username}`);
     };
 
     return (
@@ -44,7 +44,9 @@ export const UserCard = ({ user }) => {
                         fontWeight="600"
                         mb="0.1rem"
                     >
-                        {user?.name}
+                        {user?.name?.length > 17
+                            ? `${user?.name?.slice(0, 18)}...`
+                            : user?.name}
                     </Text>
                     <Text
                         onClick={goDetails}
@@ -53,7 +55,10 @@ export const UserCard = ({ user }) => {
                         fontWeight="500"
                         opacity="0.8"
                     >
-                        @{user?.username}
+                        @
+                        {user?.username?.length > 17
+                            ? `${user?.username?.slice(0, 18)}...`
+                            : user?.username}
                     </Text>
                 </Box>
                 <Flex
@@ -86,6 +91,12 @@ export const UserCard = ({ user }) => {
                 <Grid w="full" templateColumns="repeat(3, 1fr)" gap="0.6rem">
                     {user?.photos?.slice(0, 4)?.map((photo) => (
                         <GridItem
+                            key={
+                                photo?.urls?.small ||
+                                photo?.urls?.regular ||
+                                photo?.urls?.full ||
+                                photo?.urls?.raw
+                            }
                             onClick={goDetails}
                             cursor="pointer"
                             w="100%"
@@ -122,7 +133,8 @@ export const UserCard = ({ user }) => {
                 display="flex"
                 justify="center"
                 align="center"
-                border="1.5px solid black"
+                border="1.5px solid"
+                borderColor="rgba(0,0,0,0.7)"
                 fontWeight="600"
                 fontSize="0.95rem"
                 borderRadius="5px"
@@ -130,6 +142,7 @@ export const UserCard = ({ user }) => {
                 opacity="0.8"
                 _hover={{
                     opacity: "1",
+                    borderColor: "black",
                 }}
                 transition="all 220ms ease"
             >

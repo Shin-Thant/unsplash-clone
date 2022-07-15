@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
     Box,
     Flex,
@@ -25,6 +25,18 @@ export const ImageFilter = ({
     setSort,
     resetFilter,
 }) => {
+    const orientationRef = useRef(null);
+    const colorRef = useRef(null);
+    const sortRef = useRef(null);
+
+    const reset = () => {
+        // fix with click() method
+        orientationRef.current?.click();
+        colorRef.current?.click();
+        sortRef.current?.click();
+        resetFilter();
+    };
+
     return (
         <Flex
             w="100%"
@@ -52,7 +64,7 @@ export const ImageFilter = ({
                         py="0.3rem"
                     >
                         <Flex align="center" gap="0.5rem">
-                            <Text>{orientation}</Text>{" "}
+                            <Text>{filters?.orientation || "any"}</Text>{" "}
                             <FiChevronDown fontSize="1.3rem" />
                         </Flex>
                     </MenuButton>
@@ -61,10 +73,15 @@ export const ImageFilter = ({
                         boxShadow="3px 3px 15px 1px rgba(0, 0, 0, 0.15)"
                     >
                         <MenuOptionGroup
-                            defaultValue={filters?.orientation || "any"}
+                            defaultValue={
+                                filters?.orientation
+                                    ? filters?.orientation
+                                    : "any"
+                            }
                             type="radio"
                         >
                             <MenuItemOption
+                                ref={orientationRef}
                                 value="any"
                                 onClick={() => {
                                     setFilters({
@@ -159,6 +176,7 @@ export const ImageFilter = ({
                             type="radio"
                         >
                             <MenuItemOption
+                                ref={colorRef}
                                 value="any"
                                 onClick={() => {
                                     setFilters({
@@ -291,6 +309,7 @@ export const ImageFilter = ({
                             type="radio"
                         >
                             <MenuItemOption
+                                ref={sortRef}
                                 value="relevance"
                                 onClick={() => {
                                     setFilters({
@@ -321,7 +340,7 @@ export const ImageFilter = ({
 
             {Object.values(filters).filter(Boolean).length ? (
                 <Flex
-                    onClick={resetFilter}
+                    onClick={reset}
                     w="120px"
                     justify="space-between"
                     align="center"

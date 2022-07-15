@@ -38,22 +38,24 @@
 
 .username {
     position: relative;
+    z-index: 2;
     transition: all 300ms ease;
 }
 .username::before {
     content: "";
     position: absolute;
     bottom: 0;
-    width: 100%;
-    height: 2px;
-    background-color: var(--brown-1000);
-    border-radius: 50px;
-    transform: scaleX(0);
-    transform-origin: right;
+    left: -0.2rem;
+    width: calc(100% + 0.4rem);
+    height: 4px;
+    background-color: var(--brown-tea);
+    border-radius: 3px;
+    z-index: -1;
+    transform: scaleX(0.5);
+    transform-origin: left;
     transition: transform 300ms ease;
 }
 .username:hover::before {
-    transform-origin: left;
     transform: scaleX(1);
 }
 

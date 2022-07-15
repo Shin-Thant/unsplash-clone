@@ -26,6 +26,7 @@ const theme = extendTheme({
         background: "#CDC8B7",
         text: "#9E6E44",
         brown: {
+            'tea': '#df853c',
             1000: "#95633A",
             2000: "#684026",
             3000: "#230D0D",

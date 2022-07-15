@@ -245,7 +245,7 @@ export default function Navbar() {
                 py="0.8rem"
                 px="1rem"
                 style={{ background: "#D5D2C3" }}
-                shadow="lg"
+                shadow="md"
                 zIndex="20"
             >
                 <Flex
@@ -322,6 +322,7 @@ export default function Navbar() {
                             <IoClose />
                         </Text>
 
+                        {/* recent search */}
                         {recentSearch?.length && show && storage?.length < 1 ? (
                             <Box
                                 className={styles.recentSearch}
@@ -366,11 +367,11 @@ export default function Navbar() {
                                     {recentSearch?.map((item, index) => (
                                         <Box
                                             key={index}
-                                            border="2px solid"
+                                            border="1.5px solid"
                                             borderColor="myblack"
                                             borderRadius="8px"
                                             color="myblack"
-                                            fontWeight="400"
+                                            fontWeight="500"
                                             p="0.3rem 0.8rem"
                                             cursor="pointer"
                                             fontSize="0.9rem"

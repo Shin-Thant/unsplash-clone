@@ -1,6 +1,14 @@
-import { Box, Flex, Grid, Image, position, Text } from "@chakra-ui/react";
+import {
+    Box,
+    Flex,
+    Grid,
+    GridItem,
+    Image,
+    position,
+    Text,
+} from "@chakra-ui/react";
 import React, { useEffect } from "react";
-import { ImgCard } from "./ImgCard";
+import { ImgCard } from "../shared-items/ImgCard";
 
 export const CardList = ({ data, avgCards }) => {
     return data?.length < 1 ? (
@@ -32,6 +40,41 @@ export const CardList = ({ data, avgCards }) => {
                 </Text>
             </Box>
         </Flex>
+    ) : data?.length > 0 && data?.length < 3 ? (
+        <Grid
+            w="100%"
+            templateColumns={{
+                base: "1fr",
+                lgMobile: "repeat(2, 1fr)",
+                lg: "repeat(3, 1fr)",
+            }}
+            gridGap={{
+                sm: "1.1rem",
+                lg: "1.25rem",
+            }}
+        >
+            {data?.map((img) => (
+                <GridItem
+                    w="100%"
+                    mb={{ base: "1.25rem", lgMobile: "" }}
+                    key={img?.id}
+                >
+                    <ImgCard
+                        id={img?.id}
+                        width={img?.width}
+                        height={img?.height}
+                        description={img?.description || img?.alt_description}
+                        imgs={img?.urls}
+                        links={img?.links}
+                        blur_hash={img?.blur_hash}
+                        categories={img?.categories}
+                        current_user_collections={img?.current_user_collections}
+                        user={img?.user}
+                        item={img}
+                    />
+                </GridItem>
+            ))}
+        </Grid>
     ) : (
         <Grid
             zIndex="15"
@@ -41,10 +84,10 @@ export const CardList = ({ data, avgCards }) => {
                 lgMobile: "repeat(2, 1fr)",
                 lg: "repeat(3, 1fr)",
             }}
-            alignItems="start"
+            alignItems="flex-start"
             gridColumnGap={{
                 sm: "1.1rem",
-                lg: "1.2rem",
+                lg: "1.25rem",
             }}
         >
             {/* for laptop screens */}
@@ -52,7 +95,7 @@ export const CardList = ({ data, avgCards }) => {
                 display={{ base: "none", lg: "grid" }}
                 gridRowGap={{
                     sm: "1.1rem",
-                    lg: "1.2rem",
+                    lg: "1.25rem",
                 }}
                 height="max-content"
             >
@@ -78,7 +121,7 @@ export const CardList = ({ data, avgCards }) => {
                 display={{ base: "none", lg: "grid" }}
                 gridRowGap={{
                     sm: "1.1rem",
-                    lg: "1.2rem",
+                    lg: "1.25rem",
                 }}
                 height="max-content"
             >
@@ -104,7 +147,7 @@ export const CardList = ({ data, avgCards }) => {
                 display={{ base: "none", lg: "grid" }}
                 gridRowGap={{
                     sm: "1.1rem",
-                    lg: "1.2rem",
+                    lg: "1.25rem",
                 }}
                 height="max-content"
             >

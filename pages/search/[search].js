@@ -1,11 +1,10 @@
 import { Box, Flex, Text, Skeleton } from "@chakra-ui/react";
-import axios from "axios";
+// import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import { dehydrate, QueryClient, useQuery } from "react-query";
-import { CardSkeleton } from "../../components/CardSkeleton";
-import { ImgCard } from "../../components/ImgCard";
+import { CardSkeleton } from "../../components/skeletons/CardSkeleton";
 import { UpBtn } from "../../components/UpBtn";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import styles from "../../styles/Search.module.css";
@@ -14,16 +13,14 @@ import {
     BsFillCollectionFill,
     BsPeopleFill,
 } from "react-icons/bs";
-import { FiChevronDown } from "react-icons/fi";
-import { CollectionSkeleton } from "../../components/CollectionSkeleton";
-import { MdClose } from "react-icons/md";
-import { CardList } from "../../components/CardList";
+import { CollectionSkeleton } from "../../components/skeletons/CollectionSkeleton";
+import { CardList } from "../../components/containers/CardList";
 import { ImageFilter } from "../../components/filter/ImageFilter";
-
-import { pageNum } from "../explore";
 import { CollectionList } from "../../components/containers/CollectionList";
 import { UsersList } from "../../components/containers/UsersList";
 import { UserCardSkeleton } from "../../components/skeletons/UserCardSkeleton";
+import { Pagination } from "../../components/shared-items/Pagination";
+import axios from "../../services/axios";
 
 const getSearchedResults = async ({ queryKey }) => {
     const [_key, query, field, page, filters] = queryKey;
@@ -49,7 +46,7 @@ const getSearchedResults = async ({ queryKey }) => {
 
     if (query && field) {
         const { data } = await axios.get(
-            `https://api.unsplash.com/search/${field}?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&per_page=${per_page}&page=${page}&query=${query}${order_by}${orientation}${color}`
+            `search/${field}?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&per_page=${per_page}&page=${page}&query=${query}${order_by}${orientation}${color}`
         );
 
         return data;
@@ -69,13 +66,13 @@ export default function search() {
 
     useEffect(() => {
         let isMounted = true;
-        if (isMounted && page !== pageNum) pageNum = page;
 
         return () => {
             isMounted = false;
         };
     }, [page]);
 
+    const validFields = ["photos", "collections", "users"];
     const [field, setField] = useState("photos");
 
     const [colors, setColors] = useState([
@@ -101,34 +98,17 @@ export default function search() {
         order_by: "",
     });
 
-    const { isLoading, data } = useQuery(
+    const { isLoading, data, isFetching, isPreviousData } = useQuery(
         ["search", router.query?.search, field, page, filters],
         getSearchedResults,
         {
+            keepPreviousData: true,
             staleTime: 86400000,
         }
     );
 
-    // scrolling top
-    useEffect(() => {
-        if (typeof window !== undefined) window.scrollTo(0, 0);
-    }, []);
-
-    useEffect(() => {
-        if (data?.results?.length) {
-            setAvgCards(Math.floor(data?.results?.length / 3));
-        }
-    }, [data?.results]);
-
-    const goPrevious = () => {
-        // pageNum -= 1;
-        setPage(page - 1);
-        window.scrollTo(0, 0);
-    };
-
-    const goNext = () => {
-        // pageNum += 1;
-        setPage(page + 1);
+    const changePage = (num) => {
+        setPage(num);
         window.scrollTo(0, 0);
     };
 
@@ -138,30 +118,44 @@ export default function search() {
             color: "",
             order_by: "",
         });
+        setColor("Any Color");
+        setOrientation("Any Orientation");
+        setSort("Relevance");
     };
 
-    // * testing
-    // useEffect(() => {
-    //     if (data?.results?.length && field !== "photos") {
-    //         console.log(data?.results);
-    //     }
-    // }, [data?.results]);
-
+    // scrolling top
     useEffect(() => {
-        switch (field) {
-            case "photos":
-                setActive(1);
-                break;
-            case "collections":
-                setActive(2);
-                break;
-            case "users":
-                setActive(3);
-                break;
-            default:
-                setActive(0);
+        if (typeof window !== undefined) window.scrollTo(0, 0);
+    }, []);
+
+    // setting average cards
+    useEffect(() => {
+        if (data?.results?.length) {
+            setAvgCards(Math.floor(data?.results?.length / 3));
         }
-    }, [field]);
+    }, [data?.results]);
+
+    // handle field and active field
+    const changeField = (name, num) => {
+        setField(name);
+        setActive(num);
+    };
+
+    // useEffect(() => {
+    //     switch (field) {
+    //         case "photos":
+    //             setActive(1);
+    //             break;
+    //         case "collections":
+    //             setActive(2);
+    //             break;
+    //         case "users":
+    //             setActive(3);
+    //             break;
+    //         default:
+    //             setActive(0);
+    //     }
+    // }, [field]);
 
     return (
         <>
@@ -211,10 +205,7 @@ export default function search() {
                 >
                     <Flex
                         className={styles.boxes}
-                        onClick={() => {
-                            setField("photos");
-                            setActive(1);
-                        }}
+                        onClick={() => changeField("photos", 1)}
                         color={active === 1 ? "brown.2000" : "black"}
                         justify="center"
                         align="center"
@@ -252,10 +243,7 @@ export default function search() {
 
                     <Flex
                         className={styles.boxes}
-                        onClick={() => {
-                            setField("collections");
-                            setActive(2);
-                        }}
+                        onClick={() => changeField("collections", 2)}
                         color={active === 2 ? "brown.2000" : "black"}
                         justify="center"
                         align="center"
@@ -293,10 +281,7 @@ export default function search() {
 
                     <Flex
                         className={styles.boxes}
-                        onClick={() => {
-                            setField("users");
-                            setActive(3);
-                        }}
+                        onClick={() => changeField("users", 3)}
                         color={active === 3 ? "brown.2000" : "black"}
                         justify="center"
                         align="center"
@@ -351,100 +336,34 @@ export default function search() {
 
                 {/* main */}
                 {field === "photos" ? (
-                    isLoading ? (
-                        // <CardSkeleton />
-                        <h2
-                            style={{
-                                backgroundColor: "tomato",
-                                height: "50vh",
-                            }}
-                        >
-                            loading
-                        </h2>
+                    isLoading || isFetching ? (
+                        <CardSkeleton />
                     ) : (
                         <CardList data={data?.results} avgCards={avgCards} />
                     )
                 ) : field === "collections" ? (
-                    isLoading ? (
-                        // <CollectionSkeleton />
-                        <h2
-                            style={{
-                                backgroundColor: "tomato",
-                                height: "50vh",
-                            }}
-                        >
-                            loading
-                        </h2>
+                    isLoading || isFetching ? (
+                        <CollectionSkeleton />
                     ) : (
                         <CollectionList data={data?.results} />
                     )
                 ) : field === "users" ? (
-                    isLoading ? (
+                    isLoading || isFetching ? (
                         <UserCardSkeleton />
                     ) : (
-                        // <h2
-                        //     style={{
-                        //         backgroundColor: "tomato",
-                        //         height: "50vh",
-                        //     }}
-                        // >
-                        //     loading
-                        // </h2>
                         <UsersList data={data?.results} />
                     )
                 ) : (
                     ""
                 )}
 
-                {data?.total_pages > 1 && (
-                    <Flex
-                        justify="center"
-                        align="center"
-                        w="100%"
-                        gap="2rem"
-                        mt="2.8rem"
-                        pb="3rem"
-                    >
-                        {page > 1 && (
-                            <Flex
-                                align="center"
-                                gap="0.3rem"
-                                p={{
-                                    base: "0.5rem 0.8rem",
-                                    mobile: "0.6rem 1rem",
-                                }}
-                                borderRadius="8px"
-                                fontWeight="600"
-                                w="max-content"
-                                cursor="pointer"
-                                className={styles.previousBtn}
-                                onClick={goPrevious}
-                            >
-                                <IoIosArrowBack fontSize="1.5rem" />
-                                <Text>Previous</Text>
-                            </Flex>
-                        )}
-                        {page !== data?.total_pages && (
-                            <Flex
-                                align="center"
-                                gap="0.3rem"
-                                p={{
-                                    base: "0.5rem 0.8rem",
-                                    mobile: "0.6rem 1rem",
-                                }}
-                                borderRadius="8px"
-                                fontWeight="600"
-                                w="max-content"
-                                cursor="pointer"
-                                className={styles.nextBtn}
-                                onClick={goNext}
-                            >
-                                <Text>Next</Text>
-                                <IoIosArrowForward fontSize="1.5rem" />
-                            </Flex>
-                        )}
-                    </Flex>
-                )}
+                <Flex w="100%" justify="center" mt="4rem">
+                    <Pagination
+                        changePage={changePage}
+                        itemsPerPage={18}
+                        totalPages={data?.total_pages}
+                    />
+                </Flex>
             </Box>
         </>
     );
@@ -464,7 +383,6 @@ export const getServerSideProps = async (context) => {
         context?.params?.search,
         "photos",
         1,
-        "",
         {
             orientation: "",
             color: "",

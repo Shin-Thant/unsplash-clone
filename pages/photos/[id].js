@@ -7,7 +7,6 @@ import {
     Skeleton,
     Text,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
 import Head from "next/head";
@@ -27,12 +26,13 @@ import { BsFillCalendarFill, BsFillCameraFill } from "react-icons/bs";
 import { IoLocationSharp } from "react-icons/io5";
 import { CollectionList } from "../../components/containers/CollectionList";
 import { motion } from "framer-motion";
+import axios from "../../services/axios";
 
 const getPhotoDetails = async ({ queryKey }) => {
     const [_key, id] = queryKey;
 
     const { data } = await axios.get(
-        `https://api.unsplash.com/photos/${id}?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}`
+        `photos/${id}?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}`
     );
 
     return data;
