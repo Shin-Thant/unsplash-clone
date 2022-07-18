@@ -3,24 +3,18 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { dehydrate, QueryClient, useQuery } from "react-query";
 import styles from "../../styles/UserDetails.module.css";
-import {
-    Box,
-    Flex,
-    Grid,
-    GridItem,
-    Image,
-    Link,
-    storageKey,
-    Text,
-} from "@chakra-ui/react";
+import { Box, Flex, Grid, GridItem, Image, Text } from "@chakra-ui/react";
 import { IoLocationOutline } from "react-icons/io5";
 import { FiTwitter } from "react-icons/fi";
 import { FaInstagram } from "react-icons/fa";
 import { CardSkeleton } from "../../components/skeletons/CardSkeleton";
 import { CardList } from "../../components/containers/CardList";
 import { motion } from "framer-motion";
-import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
+import { GoGlobe } from "react-icons/go";
 import axios from "../../services/axios";
+import { Pagination } from "../../components/shared-items/Pagination";
+import { CollectionSkeleton } from "../../components/skeletons/CollectionSkeleton";
+import { CollectionList } from "../../components/containers/CollectionList";
 
 const getUserProfile = async ({ queryKey }) => {
     const [_key, username] = queryKey;
@@ -35,7 +29,7 @@ const getUserProfile = async ({ queryKey }) => {
     return [];
 };
 
-const getUserPhotos = async ({ queryKey }) => {
+const getUserPhotosAndCollection = async ({ queryKey }) => {
     const [_key, username, field, page] = queryKey;
 
     if ((username, field, page)) {
@@ -50,7 +44,11 @@ const getUserPhotos = async ({ queryKey }) => {
 
 const IconBox = ({ alone, link, children }) => {
     return (
-        <Link href={`https://instagram.com/`}>
+        <a
+            style={{ display: "inline-block" }}
+            target="_blank"
+            href={`https://instagram.com/${link}`}
+        >
             <Flex
                 w="max-content"
                 h="max-content"
@@ -60,15 +58,18 @@ const IconBox = ({ alone, link, children }) => {
                 borderRadius="8px"
                 p={alone ? "" : "0.4rem"}
                 cursor="pointer"
-                opacity="0.7"
+                opacity="0.65"
                 _hover={{
+                    opacity: "1",
+                }}
+                _focus={{
                     opacity: "1",
                 }}
                 transition="opacity 250ms ease"
             >
                 {children}
             </Flex>
-        </Link>
+        </a>
     );
 };
 
@@ -77,13 +78,16 @@ export default function UserDetails() {
     const [page, setPage] = useState(1);
     const [field, setField] = useState("photos");
     const [avgCards, setAvgCards] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
 
-    const { isLoading: photosLoading, data: photos } = useQuery(
+    const {
+        isLoading: dataLoading,
+        data,
+        isFetching,
+    } = useQuery(
         ["userPhotos", router?.query?.username, field, page],
-        getUserPhotos,
-        {
-            staleTime: 10800000,
-        }
+        getUserPhotosAndCollection,
+        { keepPreviousData: true, staleTime: 10800000 }
     );
 
     const { isLoading: profileLoading, data: profile } = useQuery(
@@ -92,28 +96,76 @@ export default function UserDetails() {
         { staleTime: 10800000 }
     );
 
-    // scrolling top
     useEffect(() => {
-        if (typeof window !== undefined) window.scrollTo(0, 0);
-    }, []);
+        if (field === "photos") {
+            setTotalPages(Math.ceil(profile?.total_photos / 10));
+        } else if (field === "collections") {
+            setTotalPages(Math.ceil(profile?.total_collections / 10));
+        } else if (field === "likes") {
+            setTotalPages(Math.ceil(profile?.total_likes / 10));
+        }
+    }, [profile, field]);
+
+    // scrolling top
+    // useEffect(() => {
+    //     if (typeof window !== undefined) window.scrollTo(0, 0);
+    // }, []);
+
+    // reset field and page number when url changed
+    useEffect(() => {
+        let isMounted = true;
+        if (isMounted) changeField("photos");
+
+        return () => {
+            isMounted = false;
+        };
+    }, [router?.pathname]);
 
     // setting average card
     useEffect(() => {
-        if (photos?.length) {
-            setAvgCards(Math.floor(photos?.length / 3));
+        if (data?.length) {
+            setAvgCards(Math.floor(data?.length / 3));
         }
-    }, [photos]);
+    }, [data]);
 
-    const goPrevious = () => {
-        // pageNum -= 1;
-        setPage(page - 1);
+    const changePage = (num) => {
+        setPage(num);
         window.scrollTo(0, 0);
     };
 
-    const goNext = () => {
-        // pageNum += 1;
-        setPage(page + 1);
-        window.scrollTo(0, 0);
+    const changeField = (field) => {
+        setField(field);
+        setPage(1);
+    };
+
+    const list = {
+        hidden: {
+            opacity: 0,
+        },
+        visible: {
+            opacity: 1,
+            transition: {
+                type: "tween",
+                duration: 0.5,
+                delay: 0.7,
+                when: "beforeChildren",
+                staggerChildren: 0.3,
+            },
+        },
+    };
+
+    const itemVariant = {
+        hidden: {
+            opacity: 0,
+            y: 20,
+        },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.6,
+            },
+        },
     };
 
     return (
@@ -129,17 +181,33 @@ export default function UserDetails() {
             </Head>
             <Box
                 w="100%"
-                px={{ base: "0.8rem", sm: "1.1rem", lg: "1.2rem" }}
+                px={{
+                    base: "0",
+                    miniTablet: "0.8rem",
+                    md: "1.4rem",
+                    lg: "1.8rem",
+                    xl: "2.2rem",
+                }}
                 mt={{ base: "6rem", lg: "2rem" }}
-                mb="3.5rem"
+                mb={{
+                    base: "0",
+                    miniTablet: "0.8rem",
+                    md: "1.5rem",
+                    lg: "1.8rem",
+                    xl: "2.2rem",
+                }}
             >
                 <Box
-                    width="95%"
+                    width="100%"
                     minHeight="50vh"
                     mx="auto"
-                    borderRadius="20px"
+                    borderRadius={{
+                        base: "10px 10px 0 0",
+                        miniTablet: "15px",
+                        lg: "20px",
+                    }}
                     bg="white"
-                    px="1.8rem"
+                    px={{ base: "0.5rem", miniTablet: "1rem" }}
                     py="2rem"
                     shadow="lg"
                     mt="10%"
@@ -167,435 +235,669 @@ export default function UserDetails() {
                     </Flex>
 
                     <Flex w="100%" align="center" flexDir="column" mt="5.5rem">
-                        <Text fontSize="2.5rem" fontWeight="500">
-                            {profile?.name}
-                        </Text>
-
-                        {profile?.bio ? (
+                        {profileLoading ? (
                             <Flex
-                                width="600px"
-                                mt="0.8rem"
-                                color="myblack"
-                                fontWeight="500"
-                                // fontSize="1.05rem"
-                                opacity="0.85"
-                                flexDir="column"
-                                align="center"
-                            >
-                                {profile?.bio?.split("\r\n")?.length > 1 ? (
-                                    profile?.bio
-                                        ?.split("\r\n")
-                                        ?.map((item) => <Text>{item}</Text>)
-                                ) : (
-                                    <Text
-                                        textAlign="center"
-                                        wordBreak="break-word"
-                                    >
-                                        {profile?.bio}
-                                    </Text>
-                                )}
-                            </Flex>
-                        ) : (
-                            ""
-                        )}
-
-                        <Image
-                            src="/decorate-line.svg"
-                            alt="decoration line"
-                            w="100px"
-                            my="2rem"
-                            objectFit="cover"
-                        />
-
-                        {/* location and link */}
-                        {profile?.location?.length > 0 ? (
-                            <Flex
-                                width="max-content"
-                                height="max-content"
                                 justify="center"
                                 align="center"
-                                gap="1rem"
-                                mb="1.2rem"
+                                height="200px"
                             >
-                                <Flex
-                                    width="max-content"
-                                    height="100%"
-                                    align="center"
-                                    gap="0.2rem"
-                                >
-                                    <IoLocationOutline fontSize="1.5rem" />
-                                    <a
-                                        href={`https://www.google.com/maps/search/${profile?.location?.replaceAll(
-                                            ",",
-                                            ""
-                                        )}/`}
-                                        target="_blank"
-                                        className={styles.location}
-                                    >
-                                        {profile?.location}
-                                    </a>
-                                </Flex>
-
-                                {!profile?.social?.instagram_username &&
-                                profile?.social?.twitter_username ? (
-                                    <>
-                                        <Box
-                                            bg="black"
-                                            opacity="0.4"
-                                            w="1px"
-                                            height="20px"
-                                            borderRadius="50px"
-                                        ></Box>
-
-                                        <IconBox
-                                            link={
-                                                profile?.social
-                                                    ?.twitter_username
-                                            }
-                                            alone={
-                                                profile?.social
-                                                    ?.instagram_username
-                                                    ? false
-                                                    : true
-                                            }
-                                        >
-                                            {/* <FiTwitter /> */}
-                                            <Image
-                                                src="/custom-twitter.svg"
-                                                alt="Twitter-icon"
-                                                width="36px"
-                                                height="36px"
-                                                objectFit="cover"
-                                            />
-                                        </IconBox>
-                                    </>
-                                ) : (
-                                    ""
-                                )}
-
-                                {!profile?.social?.twitter_username &&
-                                profile?.social?.instagram_username ? (
-                                    <>
-                                        <Box
-                                            bg="black"
-                                            opacity="0.4"
-                                            w="1px"
-                                            height="20px"
-                                            borderRadius="50px"
-                                        ></Box>
-
-                                        <IconBox
-                                            link={
-                                                profile?.social
-                                                    ?.instagram_username
-                                            }
-                                            alone={
-                                                profile?.social
-                                                    ?.twitter_username
-                                                    ? false
-                                                    : true
-                                            }
-                                        >
-                                            {/* <FaInstagram /> */}
-                                            <Image
-                                                src="/custom-instagram.svg"
-                                                alt="Instagram-icon"
-                                                width="36px"
-                                                height="36px"
-                                                objectFit="cover"
-                                            />
-                                        </IconBox>
-                                    </>
-                                ) : (
-                                    ""
-                                )}
+                                <Text fontSize="1.2rem">Loading...</Text>
                             </Flex>
                         ) : (
-                            ""
-                        )}
+                            <>
+                                <h1 className={styles["profile-name"]}>
+                                    {profile?.name}
+                                </h1>
 
-                        {/* social links */}
-                        {(!profile?.location &&
-                            !profile?.social?.instagram_username) ||
-                        (!profile?.location &&
-                            !profile?.social?.twitter_username) ||
-                        (profile?.social?.twitter_username &&
-                            profile?.social?.instagram_username) ||
-                        (!profile?.location &&
-                            profile?.social?.instagram_username &&
-                            profile?.social?.twitter_username) ? (
-                            <Grid
-                                minWidth="200px"
-                                templateColumns="45% 3% 45%"
-                                justifyContent="center"
-                                alignItems="center"
-                                gap="1rem"
-                                mb="1.2rem"
-                            >
-                                {profile?.social?.twitter_username ? (
-                                    <GridItem
-                                        colSpan={
-                                            profile?.social?.instagram_username
-                                                ? ""
-                                                : 3
-                                        }
+                                {profile?.bio?.length > 0 ? (
+                                    <Flex
+                                        width={{
+                                            base: "100%",
+                                            lgMobile: "500px",
+                                        }}
+                                        px={{ base: "0.3rem", sm: "0" }}
+                                        mt="0.8rem"
+                                        color="myblack"
+                                        fontWeight="500"
+                                        opacity="0.9"
+                                        flexDir="column"
+                                        align="center"
+                                        fontSize={{
+                                            base: "0.9rem",
+                                            lgMobile: "0.95rem",
+                                            lg: "1.05rem",
+                                        }}
                                     >
-                                        <Flex
-                                            flexDir="column"
-                                            justify="center"
-                                            align="center"
-                                            gap="0.5rem"
-                                        >
-                                            <IconBox
-                                                link={
-                                                    profile?.social
-                                                        ?.twitter_username
-                                                }
-                                                alone={
-                                                    profile?.social
-                                                        ?.instagram_username
-                                                        ? false
-                                                        : true
-                                                }
+                                        {profile?.bio?.split("\r\n")?.length >
+                                        1 ? (
+                                            <motion.div
+                                                variants={list}
+                                                initial="hidden"
+                                                animate="visible"
+                                                style={{ width: "100%" }}
                                             >
-                                                <Image
-                                                    src="/custom-twitter.svg"
-                                                    alt="Twitter-icon"
-                                                    width="28px"
-                                                    height="28px"
-                                                    objectFit="cover"
-                                                />
-                                            </IconBox>
-
+                                                {profile?.bio
+                                                    ?.split("\r\n")
+                                                    ?.map((item, i) => (
+                                                        <motion.h1
+                                                            key={`${item}${i}`}
+                                                            variants={
+                                                                itemVariant
+                                                            }
+                                                        >
+                                                            <Text
+                                                                width="100%"
+                                                                height="max-content"
+                                                                textAlign="center"
+                                                                color="myblack"
+                                                                fontWeight="500"
+                                                                wordBreak="break-word"
+                                                                opacity="0.9"
+                                                            >
+                                                                {item}
+                                                            </Text>
+                                                        </motion.h1>
+                                                    ))}
+                                            </motion.div>
+                                        ) : (
                                             <Text
-                                                fontSize="0.9rem"
-                                                fontWeight="500"
-                                                cursor="pointer"
+                                                as="h1"
+                                                textAlign="center"
+                                                wordBreak="break-word"
                                             >
-                                                Twitter
+                                                <motion.p
+                                                    initial={{
+                                                        opacity: 0,
+                                                        y: 20,
+                                                    }}
+                                                    animate={{
+                                                        opacity: 1,
+                                                        y: 0,
+                                                    }}
+                                                    transition={{
+                                                        type: "tween",
+                                                        delay: 0.5,
+                                                        duration: 0.6,
+                                                    }}
+                                                >
+                                                    {profile?.bio}
+                                                </motion.p>
                                             </Text>
-                                        </Flex>
-                                    </GridItem>
+                                        )}
+                                    </Flex>
                                 ) : (
                                     ""
                                 )}
 
-                                {profile?.social?.twitter_username &&
-                                profile?.social?.instagram_username ? (
+                                {profile?.location?.length > 0 ||
+                                profile?.social?.twitter_username ||
+                                profile?.social?.instagram_username ||
+                                profile?.followers_count ||
+                                profile?.following_count ||
+                                profile?.porfolio_url ||
+                                profile?.total_likes ? (
+                                    <Image
+                                        src="/decorate-line.svg"
+                                        alt="decoration line"
+                                        w="100px"
+                                        my="2rem"
+                                        objectFit="cover"
+                                    />
+                                ) : (
+                                    ""
+                                )}
+
+                                {/* location and link */}
+                                {profile?.location?.length > 0 ? (
+                                    <Flex
+                                        width="max-content"
+                                        height="max-content"
+                                        justify="center"
+                                        align="center"
+                                        gap="1rem"
+                                        mb={{ base: "1.2rem", md: "1rem" }}
+                                    >
+                                        <Flex
+                                            width="max-content"
+                                            height="100%"
+                                            align="center"
+                                            gap="0.2rem"
+                                            fontSize={{
+                                                base: "1rem",
+                                                lg: "1.1rem",
+                                            }}
+                                        >
+                                            <IoLocationOutline
+                                                className={styles.icons}
+                                            />
+
+                                            <a
+                                                href={`https://www.google.com/maps/search/${profile?.location?.replaceAll(
+                                                    ",",
+                                                    ""
+                                                )}/`}
+                                                target="_blank"
+                                                className={styles.location}
+                                            >
+                                                {profile?.location}
+                                            </a>
+                                        </Flex>
+
+                                        {!profile?.social?.instagram_username &&
+                                        profile?.social?.twitter_username ? (
+                                            <>
+                                                <Box
+                                                    bg="black"
+                                                    opacity="0.4"
+                                                    w="1px"
+                                                    height="20px"
+                                                    borderRadius="50px"
+                                                ></Box>
+
+                                                <IconBox
+                                                    link={
+                                                        profile?.social
+                                                            ?.twitter_username
+                                                    }
+                                                    alone={
+                                                        profile?.social
+                                                            ?.instagram_username
+                                                            ? false
+                                                            : true
+                                                    }
+                                                >
+                                                    {/* <FiTwitter /> */}
+                                                    <Image
+                                                        src="/custom-twitter.svg"
+                                                        alt="Twitter-icon"
+                                                        width="36px"
+                                                        height="36px"
+                                                        objectFit="cover"
+                                                    />
+                                                </IconBox>
+                                            </>
+                                        ) : (
+                                            ""
+                                        )}
+
+                                        {!profile?.social?.twitter_username &&
+                                        profile?.social?.instagram_username ? (
+                                            <>
+                                                <Box
+                                                    bg="black"
+                                                    opacity="0.4"
+                                                    w="1px"
+                                                    height="20px"
+                                                    borderRadius="50px"
+                                                ></Box>
+
+                                                <IconBox
+                                                    link={
+                                                        profile?.social
+                                                            ?.instagram_username
+                                                    }
+                                                    alone={
+                                                        profile?.social
+                                                            ?.twitter_username
+                                                            ? false
+                                                            : true
+                                                    }
+                                                >
+                                                    {/* <FaInstagram /> */}
+                                                    <Image
+                                                        src="/custom-instagram.svg"
+                                                        alt="Instagram-icon"
+                                                        width="36px"
+                                                        height="36px"
+                                                        objectFit="cover"
+                                                    />
+                                                </IconBox>
+                                            </>
+                                        ) : (
+                                            ""
+                                        )}
+                                    </Flex>
+                                ) : (
+                                    ""
+                                )}
+
+                                {/* social links */}
+                                {(!profile?.location &&
+                                    !profile?.social?.instagram_username) ||
+                                (!profile?.location &&
+                                    !profile?.social?.twitter_username) ||
+                                (profile?.social?.twitter_username &&
+                                    profile?.social?.instagram_username) ||
+                                (!profile?.location &&
+                                    profile?.social?.instagram_username &&
+                                    profile?.social?.twitter_username) ? (
+                                    <Grid
+                                        minWidth="200px"
+                                        templateColumns="45% 3% 45%"
+                                        justifyContent="center"
+                                        alignItems="center"
+                                        gap="1rem"
+                                        mb={{ base: "1.2rem", md: "1rem" }}
+                                    >
+                                        {profile?.social?.twitter_username ? (
+                                            <GridItem
+                                                colSpan={
+                                                    profile?.social
+                                                        ?.instagram_username
+                                                        ? ""
+                                                        : 3
+                                                }
+                                            >
+                                                <Flex
+                                                    flexDir="column"
+                                                    justify="center"
+                                                    align="center"
+                                                    gap="0.5rem"
+                                                >
+                                                    <IconBox
+                                                        link={
+                                                            profile?.social
+                                                                ?.twitter_username
+                                                        }
+                                                        alone={
+                                                            profile?.social
+                                                                ?.instagram_username
+                                                                ? false
+                                                                : true
+                                                        }
+                                                    >
+                                                        <Image
+                                                            src="/custom-twitter.svg"
+                                                            alt="Twitter-icon"
+                                                            width="28px"
+                                                            height="28px"
+                                                            objectFit="cover"
+                                                        />
+                                                    </IconBox>
+
+                                                    <Text
+                                                        fontSize="0.9rem"
+                                                        fontWeight="500"
+                                                        opacity="0.9"
+                                                        cursor="pointer"
+                                                    >
+                                                        Twitter
+                                                    </Text>
+                                                </Flex>
+                                            </GridItem>
+                                        ) : (
+                                            ""
+                                        )}
+
+                                        {profile?.social?.twitter_username &&
+                                        profile?.social?.instagram_username ? (
+                                            <Box
+                                                bg="black"
+                                                opacity="0.4"
+                                                w="1px"
+                                                height="25px"
+                                                borderRadius="50px"
+                                            ></Box>
+                                        ) : (
+                                            ""
+                                        )}
+
+                                        {profile?.social?.instagram_username ? (
+                                            <GridItem
+                                                colSpan={
+                                                    profile?.social
+                                                        ?.twitter_username
+                                                        ? ""
+                                                        : 3
+                                                }
+                                            >
+                                                <Flex
+                                                    flexDir="column"
+                                                    justify="center"
+                                                    align="center"
+                                                    gap="0.5rem"
+                                                >
+                                                    <IconBox
+                                                        link={
+                                                            profile?.social
+                                                                ?.instagram_username
+                                                        }
+                                                        alone={
+                                                            profile?.social
+                                                                ?.twitter_username
+                                                                ? false
+                                                                : true
+                                                        }
+                                                    >
+                                                        <Image
+                                                            src="/custom-instagram.svg"
+                                                            alt="Instagram-icon"
+                                                            width="28px"
+                                                            height="28px"
+                                                            objectFit="cover"
+                                                        />
+                                                    </IconBox>
+                                                    <Text
+                                                        fontSize="0.9rem"
+                                                        fontWeight="500"
+                                                        opacity="0.9"
+                                                        cursor="pointer"
+                                                    >
+                                                        Instagram
+                                                    </Text>
+                                                </Flex>
+                                            </GridItem>
+                                        ) : (
+                                            ""
+                                        )}
+                                    </Grid>
+                                ) : (
+                                    ""
+                                )}
+
+                                {/* follower, following and likes */}
+                                <Flex
+                                    w="100%"
+                                    justify="center"
+                                    align="center"
+                                    gap="2rem"
+                                >
+                                    <Flex flexDir="column" align="center">
+                                        <Text
+                                            fontSize={{
+                                                base: "1.3rem",
+                                                md: "1.4rem",
+                                            }}
+                                            fontWeight="600"
+                                        >
+                                            {profile?.following_count || "-"}
+                                        </Text>
+                                        <Text
+                                            fontSize="0.9rem"
+                                            fontWeight="500"
+                                            opacity="0.9"
+                                        >
+                                            Following
+                                        </Text>
+                                    </Flex>
+
                                     <Box
                                         bg="black"
                                         opacity="0.4"
                                         w="1px"
-                                        height="25px"
+                                        height="20px"
                                         borderRadius="50px"
                                     ></Box>
-                                ) : (
-                                    ""
-                                )}
 
-                                {profile?.social?.instagram_username ? (
-                                    <GridItem
-                                        colSpan={
-                                            profile?.social?.twitter_username
-                                                ? ""
-                                                : 3
-                                        }
+                                    <Flex flexDir="column" align="center">
+                                        <Text
+                                            fontSize={{
+                                                base: "1.3rem",
+                                                md: "1.4rem",
+                                            }}
+                                            fontWeight="600"
+                                        >
+                                            {profile?.followers_count || "-"}
+                                        </Text>
+                                        <Text
+                                            fontSize="0.9rem"
+                                            fontWeight="500"
+                                            opacity="0.9"
+                                        >
+                                            Followers
+                                        </Text>
+                                    </Flex>
+
+                                    <Box
+                                        bg="black"
+                                        opacity="0.4"
+                                        w="1px"
+                                        height="20px"
+                                        borderRadius="50px"
+                                    ></Box>
+
+                                    <Flex flexDir="column" align="center">
+                                        <Text
+                                            fontSize={{
+                                                base: "1.3rem",
+                                                md: "1.4rem",
+                                            }}
+                                            fontWeight="600"
+                                        >
+                                            {profile?.total_likes || "-"}
+                                        </Text>
+                                        <Text
+                                            fontSize="0.9rem"
+                                            fontWeight="500"
+                                            opacity="0.9"
+                                        >
+                                            Likes
+                                        </Text>
+                                    </Flex>
+                                </Flex>
+
+                                {/* porfolio url */}
+                                {profile?.porfolio_url?.length > 0 ? (
+                                    <a
+                                        style={{ display: "inline-block" }}
+                                        target="_blank"
+                                        href={`${profile?.porfolio_url}`}
                                     >
                                         <Flex
-                                            flexDir="column"
+                                            w="max-content"
                                             justify="center"
                                             align="center"
+                                            mt="1.7rem"
                                             gap="0.5rem"
+                                            opacity="0.9"
+                                            transition="all 190ms ease"
+                                            _hover={{
+                                                opacity: 1,
+                                            }}
                                         >
-                                            <IconBox
-                                                link={
-                                                    profile?.social
-                                                        ?.instagram_username
-                                                }
-                                                alone={
-                                                    profile?.social
-                                                        ?.twitter_username
-                                                        ? false
-                                                        : true
-                                                }
-                                            >
-                                                <Image
-                                                    src="/custom-instagram.svg"
-                                                    alt="Instagram-icon"
-                                                    width="28px"
-                                                    height="28px"
-                                                    objectFit="cover"
-                                                />
-                                            </IconBox>
-                                            <Text
-                                                fontSize="0.9rem"
-                                                fontWeight="500"
-                                                cursor="pointer"
-                                            >
-                                                Instagram
+                                            <GoGlobe className={styles.icons} />
+
+                                            <Text fontWeight="500">
+                                                {profile?.porfolio_url}
                                             </Text>
                                         </Flex>
-                                    </GridItem>
+                                    </a>
                                 ) : (
                                     ""
                                 )}
-                            </Grid>
-                        ) : (
-                            ""
+                            </>
                         )}
-
-                        {/* follower, following and porfolio */}
-                        <Flex w="max-content" align="center" gap="2rem">
-                            <Flex flexDir="column" align="center">
-                                <Text fontSize="1.4rem" fontWeight="600">
-                                    {profile?.following_count || "-"}
-                                </Text>
-                                <Text fontSize="0.9rem" fontWeight="500">
-                                    Following
-                                </Text>
-                            </Flex>
-
-                            <Box
-                                bg="black"
-                                opacity="0.4"
-                                w="1px"
-                                height="20px"
-                                borderRadius="50px"
-                            ></Box>
-
-                            <Flex flexDir="column" align="center">
-                                <Text fontSize="1.4rem" fontWeight="600">
-                                    {profile?.followers_count || "-"}
-                                </Text>
-                                <Text fontSize="0.9rem" fontWeight="500">
-                                    Followers
-                                </Text>
-                            </Flex>
-
-                            <Box
-                                bg="black"
-                                opacity="0.4"
-                                w="1px"
-                                height="20px"
-                                borderRadius="50px"
-                            ></Box>
-
-                            <Flex flexDir="column" align="center">
-                                <Text fontSize="1.4rem" fontWeight="600">
-                                    {profile?.porfolio_url || "-"}
-                                </Text>
-                                <Text fontSize="0.9rem" fontWeight="500">
-                                    Porfolio
-                                </Text>
-                            </Flex>
-                        </Flex>
                     </Flex>
 
                     <Image
                         src="/decorate-line.svg"
                         alt="decoration line"
                         w="100px"
-                        mt="3.5rem"
+                        mt={profileLoading ? "0" : "3.5rem"}
                         mb="3rem"
                         mx="auto"
                         objectFit="cover"
                     />
 
-                    {/* user's photo list  */}
-                    <Box fontSize="1.6rem" mb="2rem">
-                        <Text display="inline-block" mr="0.7rem">
-                            Photos of
-                        </Text>
-                        <Text
-                            display="inline-block"
-                            fontWeight="600"
-                            className={styles.username}
+                    {/* field handler */}
+                    <Flex
+                        justify={{
+                            base: "center",
+                            miniTablet: "flex-start",
+                        }}
+                        align="center"
+                        gap={{
+                            base: "1.2rem",
+                            mobile: "1.3rem",
+                            sm: "1.5rem",
+                        }}
+                        width={{ base: "95%", miniTablet: "100%" }}
+                        mx="auto"
+                        borderBottom="1.5px solid"
+                        borderColor="myblack"
+                        mt="0.8rem"
+                        mb="2.5rem"
+                        py="0.6rem"
+                        px={{ base: "0", lgMobile: "0.4rem" }}
+                        position="relative"
+                        overflow="hidden"
+                        zIndex="2"
+                    >
+                        <Flex
+                            onClick={() => changeField("photos")}
+                            justify="center"
+                            align="center"
+                            w="max-content"
+                            fontWeight={field === "photos" ? "600" : "500"}
+                            cursor="pointer"
+                            px="1.1rem"
+                            py="0.5rem"
+                            gap="0.3rem"
+                            position="relative"
+                            color="myblack"
+                            opacity={field === "photos" ? "1" : "0.85"}
+                            transition="opacity 400ms ease, font-weight 250ms ease"
                         >
-                            {profile?.name}
-                            <motion.span
-                                initial={{
-                                    transform: "scaleX(0.4)",
+                            {field === "photos" && (
+                                <motion.div
+                                    layoutId="toggler"
+                                    className={styles.toggler}
+                                ></motion.div>
+                            )}
+                            <Text
+                                fontSize={{
+                                    base: "0.9rem",
+                                    md: "1rem",
                                 }}
-                                whileInView={{
-                                    transform: "scaleX(1)",
+                            >
+                                Photos
+                            </Text>
+                            <Text
+                                display={{
+                                    base: "none",
+                                    miniTablet: "inline-block",
                                 }}
-                                viewport={{
-                                    once: true,
-                                    margin: "0px 0px -50px 0px",
+                            >
+                                {profile?.total_photos}
+                            </Text>
+                        </Flex>
+                        <Flex
+                            onClick={() => changeField("collections")}
+                            justify="center"
+                            align="center"
+                            w="max-content"
+                            fontWeight={field === "collections" ? "600" : "500"}
+                            cursor="pointer"
+                            px="1.1rem"
+                            py="0.5rem"
+                            gap="0.3rem"
+                            position="relative"
+                            color="myblack"
+                            opacity={field === "collections" ? "1" : "0.85"}
+                            transition="opacity 400ms ease, font-weight 250ms ease"
+                        >
+                            {field === "collections" && (
+                                <motion.div
+                                    layoutId="toggler"
+                                    className={styles.toggler}
+                                ></motion.div>
+                            )}
+                            <Text
+                                fontSize={{
+                                    base: "0.9rem",
+                                    md: "1rem",
                                 }}
-                                transition={{
-                                    type: "tween",
-                                    duration: 0.7,
+                            >
+                                Collections
+                            </Text>
+                            <Text
+                                display={{
+                                    base: "none",
+                                    miniTablet: "inline-block",
                                 }}
-                                className={styles.highlight}
-                            ></motion.span>
-                        </Text>
-                    </Box>
-
-                    <Flex gap="1rem">
-                        <Text>Photos {profile?.total_photos}</Text>
-                        <Text>Collections {profile?.total_collections}</Text>
+                            >
+                                {profile?.total_collections}
+                            </Text>
+                        </Flex>
+                        <Flex
+                            onClick={() => changeField("likes")}
+                            justify="center"
+                            align="center"
+                            w="max-content"
+                            fontWeight={field === "likes" ? "600" : "500"}
+                            cursor="pointer"
+                            px="1.1rem"
+                            py="0.5rem"
+                            gap="0.3rem"
+                            position="relative"
+                            color="myblack"
+                            opacity={field === "likes" ? "1" : "0.85"}
+                            transition="opacity 400ms ease, font-weight 250ms ease"
+                        >
+                            {field === "likes" && (
+                                <motion.div
+                                    layoutId="toggler"
+                                    className={styles.toggler}
+                                ></motion.div>
+                            )}
+                            <Text
+                                fontSize={{
+                                    base: "0.9rem",
+                                    md: "1rem",
+                                }}
+                            >
+                                Likes
+                            </Text>
+                            <Text
+                                display={{
+                                    base: "none",
+                                    miniTablet: "inline-block",
+                                }}
+                            >
+                                {profile?.total_likes}
+                            </Text>
+                        </Flex>
                     </Flex>
 
                     <Box w="100%" mb="3rem">
-                        {photosLoading ? (
-                            <CardSkeleton />
+                        {field === "photos" ? (
+                            dataLoading ? (
+                                <CardSkeleton />
+                            ) : field !== "photos" && isFetching ? (
+                                <CardSkeleton />
+                            ) : (
+                                <CardList data={data} avgCards={avgCards} />
+                            )
+                        ) : field === "collections" ? (
+                            dataLoading ? (
+                                <CollectionSkeleton />
+                            ) : field !== "collections" && isFetching ? (
+                                <CollectionSkeleton />
+                            ) : (
+                                <CollectionList data={data} />
+                            )
+                        ) : field === "likes" ? (
+                            dataLoading ? (
+                                <CardSkeleton />
+                            ) : field !== "likes" && isFetching ? (
+                                <CardSkeleton />
+                            ) : (
+                                <CardList data={data} avgCards={avgCards} />
+                            )
                         ) : (
-                            <CardList data={photos} avgCards={avgCards} />
+                            ""
                         )}
                     </Box>
 
-                    {/* find how many pages will we get and then show pagination buttons */}
-                    {profile?.total_photos / 10 > 1 && (
-                        <Flex
-                            justify="center"
-                            align="center"
-                            w="100%"
-                            gap="2rem"
-                            mt="2.8rem"
-                            pb="3rem"
-                        >
-                            {page > 1 && (
-                                <Flex
-                                    align="center"
-                                    gap="0.3rem"
-                                    p={{
-                                        base: "0.5rem 0.8rem",
-                                        mobile: "0.6rem 1rem",
-                                    }}
-                                    borderRadius="8px"
-                                    fontWeight="600"
-                                    w="max-content"
-                                    cursor="pointer"
-                                    zIndex="2"
-                                    className={styles.previousBtn}
-                                    onClick={goPrevious}
-                                >
-                                    <IoIosArrowBack fontSize="1.5rem" />
-                                    <Text>Previous</Text>
-                                </Flex>
-                            )}
-                            {page !== profile?.total_photos / 10 && (
-                                <Flex
-                                    align="center"
-                                    gap="0.3rem"
-                                    p={{
-                                        base: "0.5rem 0.8rem",
-                                        mobile: "0.6rem 1rem",
-                                    }}
-                                    borderRadius="8px"
-                                    fontWeight="600"
-                                    w="max-content"
-                                    cursor="pointer"
-                                    zIndex="2"
-                                    className={styles.nextBtn}
-                                    onClick={goNext}
-                                >
-                                    <Text>Next</Text>
-                                    <IoIosArrowForward fontSize="1.5rem" />
-                                </Flex>
-                            )}
+                    {totalPages > 1 ? (
+                        <Flex w="100%" justify="center">
+                            <Pagination
+                                changePage={changePage}
+                                totalPages={totalPages}
+                            />
                         </Flex>
+                    ) : (
+                        ""
                     )}
                 </Box>
             </Box>
@@ -609,7 +911,7 @@ export const getServerSideProps = async (context) => {
 
     await queryClient.prefetchQuery(
         ["userPhotos", username, "photos", 1],
-        getUserPhotos
+        getUserPhotosAndCollection
     );
 
     return {

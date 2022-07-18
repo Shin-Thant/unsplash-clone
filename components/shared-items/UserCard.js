@@ -10,8 +10,11 @@ export const UserCard = ({ user }) => {
     };
 
     return (
-        <Box
+        <Flex
+            flexDir="column"
+            justify="space-between"
             w="100%"
+            h="100%"
             bg="white"
             px="0.8rem"
             py="1rem"
@@ -148,6 +151,6 @@ export const UserCard = ({ user }) => {
             >
                 View Profile
             </Flex>
-        </Box>
+        </Flex>
     );
 };

@@ -7,7 +7,8 @@
     padding: 0.5rem 0.6rem;
     transition: all 220ms ease;
 }
-.normal-paginate:hover {
+.normal-paginate:hover,
+.normal-paginate:active {
     background-color: var(--brown-1000);
     border-color: var(--brown-1000);
     box-shadow: 0 2px 10px 1px rgba(0, 0, 0, 0.35);
@@ -51,7 +52,7 @@
 
 .previous,
 .next {
-    font-size: 1.5rem;
+    font-size: 1.5rem !important;
     position: relative;
     transition: all 250ms ease;
 }
@@ -84,7 +85,52 @@
 }
 
 .disabledBtn {
-    font-size: 1.3rem;
     opacity: 0.6;
     pointer-events: none;
+}
+
+@media screen and (max-width: 950px) {
+    .previous,
+    .next,
+    .btn {
+        min-width: 35px;
+        height: 35px;
+        font-size: 0.95rem;
+    }
+
+    .next,
+    .previous {
+        font-size: 1.4rem !important;
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .pagination {
+        gap: 1.1rem;
+    }
+
+    .next,
+    .previous {
+        font-size: 1.4rem !important;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .pagination {
+        gap: 1rem;
+    }
+
+    .previous,
+    .next,
+    .btn {
+        min-width: 35px;
+        height: 35px;
+        font-size: 0.85rem;
+    }
+}
+
+@media screen and (max-width: 330px) {
+    .pagination {
+        gap: 0.75rem;
+    }
 }

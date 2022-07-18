@@ -25,7 +25,7 @@
     background-color: white;
     z-index: -1;
     pointer-events: none;
-    transition: height 400ms ease, box-shadow 300ms ease;
+    transition: height 400ms ease, box-shadow 330ms ease;
 }
 
 .imgContainer {
@@ -161,6 +161,7 @@
 @media screen and (max-width: 599px) {
     .card {
         padding-bottom: var(--hover_padding) !important;
+        box-shadow: 0 2px 10px 0px rgba(0, 0, 0, 0.2);
     }
 
     .card:hover {
@@ -178,9 +179,9 @@
         opacity: 1;
     }
 
-    .imgContainer {
-        border-radius: 15px 15px 0 0 !important;
-    }
+    /* .imgContainer {
+        border-radius: 8px 8px 0 0 !important;
+    } */
 
     .info {
         padding: var(--hover_padding) var(--hover_padding) 0

@@ -45,7 +45,7 @@ export const ImgCard = ({
     };
 
     const goDetail = () => {
-        id && router.push(`/user/${user?.username}`);
+        id && router.push(`/photos/${id}`);
     };
 
     if (!imgs?.regular || !imgs?.thumb || !imgs?.full || !imgs?.raw)
@@ -68,14 +68,13 @@ export const ImgCard = ({
             w="100%"
             h="max-content"
             borderRadius={{ base: "8px", lgMobile: "15px" }}
-            // shadow="xl"
             className={styles.card}
         >
             {/* giving min height to image container make the cards more good looking, while the images are loading users can see the card with 250px. */}
             <Box
                 className={styles.imgContainer}
                 w="100%"
-                borderRadius="15px"
+                borderRadius={{ base: "8px 8px 0 0", lgMobile: "15px" }}
                 bg="rgb(168, 168, 168)"
                 cursor="pointer"
             >
@@ -92,8 +91,6 @@ export const ImgCard = ({
                         width="100%"
                         height="100%"
                         style={{
-                            // width: "100%",
-                            // height: "100%",
                             objectFit: "cover",
                             minHeight:
                                 height > 3000
@@ -157,8 +154,7 @@ export const ImgCard = ({
                             width="40px"
                             height="40px"
                             style={{
-                                // width: "40px",
-                                // height: "40px",
+                                backgroundColor: "#CBC7C0",
                                 cursor: "pointer",
                                 borderRadius: "50%",
                                 objectFit: "cover",

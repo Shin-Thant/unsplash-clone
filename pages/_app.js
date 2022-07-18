@@ -15,6 +15,7 @@ const breakpoints = createBreakpoints({
     sm: "550px",
     lgMobile: "600px",
     miniTablet: "650px",
+    collectionBreak: "680px",
     md: "850px",
     lg: "960px",
     xl: "1200px",
@@ -26,7 +27,7 @@ const theme = extendTheme({
         background: "#CDC8B7",
         text: "#9E6E44",
         brown: {
-            'tea': '#df853c',
+            tea: "#df853c",
             1000: "#95633A",
             2000: "#684026",
             3000: "#230D0D",

@@ -107,6 +107,16 @@ export default function search() {
         }
     );
 
+    // reset field and page number when url change
+    useEffect(() => {
+        let isMounted = true;
+        if (isMounted) changeField("photos", 1);
+
+        return () => {
+            isMounted = false;
+        };
+    }, [router?.pathname]);
+
     const changePage = (num) => {
         setPage(num);
         window.scrollTo(0, 0);
@@ -139,6 +149,7 @@ export default function search() {
     const changeField = (name, num) => {
         setField(name);
         setActive(num);
+        setPage(1);
     };
 
     // useEffect(() => {
@@ -336,19 +347,25 @@ export default function search() {
 
                 {/* main */}
                 {field === "photos" ? (
-                    isLoading || isFetching ? (
+                    isLoading ? (
+                        <CardSkeleton />
+                    ) : field !== "photos" && isFetching ? (
                         <CardSkeleton />
                     ) : (
                         <CardList data={data?.results} avgCards={avgCards} />
                     )
                 ) : field === "collections" ? (
-                    isLoading || isFetching ? (
+                    isLoading ? (
+                        <CollectionSkeleton />
+                    ) : field !== "collections" && isFetching ? (
                         <CollectionSkeleton />
                     ) : (
                         <CollectionList data={data?.results} />
                     )
                 ) : field === "users" ? (
-                    isLoading || isFetching ? (
+                    isLoading ? (
+                        <UserCardSkeleton />
+                    ) : field !== "likes" && isFetching ? (
                         <UserCardSkeleton />
                     ) : (
                         <UsersList data={data?.results} />

@@ -1,7 +1,6 @@
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import styles from "../../styles/Pagination.module.css";
-import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import ReactPaginate from "react-paginate";
 
 export const Pagination = ({ changePage, totalPages }) => {
@@ -9,6 +8,7 @@ export const Pagination = ({ changePage, totalPages }) => {
 
     useEffect(() => {
         setPageCount(Math.ceil(parseInt(totalPages)));
+        // console.log(totalPages);
     }, [totalPages]);
 
     // console.log(pageCount);
