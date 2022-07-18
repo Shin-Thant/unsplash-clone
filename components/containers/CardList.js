@@ -7,38 +7,32 @@ import {
     position,
     Text,
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React from "react";
 import { ImgCard } from "../shared-items/ImgCard";
 
 export const CardList = ({ data, avgCards }) => {
     return data?.length < 1 ? (
-        <Flex w="100%" minHeight="60vh" justify="center" align="center">
-            <Box
-                w={{
-                    base: "50%",
-                    mobile: "45%",
-                    sm: "37%",
-                    miniTablet: "30%",
-                    md: "28%",
-                    lg: "27%",
-                    xl: "25%",
-                }}
+        <Flex
+            w="100%"
+            minHeight="60vh"
+            flexDir="column"
+            justify="center"
+            align="center"
+        >
+            <Image
+                src="/empty-img.svg"
+                alt="No Images"
+                width={{ base: "90%", lgMobile: "350px" }}
+                objectFit="cover"
+            />
+            <Text
+                textAlign="center"
+                mt="1rem"
+                fontWeight="600"
+                fontSize="1.1rem"
             >
-                <Image
-                    src="/archive.svg"
-                    alt="No Images"
-                    w="100%"
-                    objectFit="cover"
-                />
-                <Text
-                    textAlign="center"
-                    mt="1.5rem"
-                    fontWeight="600"
-                    fontSize="1.1rem"
-                >
-                    No Images
-                </Text>
-            </Box>
+                No Collections
+            </Text>
         </Flex>
     ) : data?.length > 0 && data?.length < 3 ? (
         <Grid
@@ -198,6 +192,7 @@ export const CardList = ({ data, avgCards }) => {
                     />
                 ))}
             </Box>
+
             <Box
                 display={{
                     base: "none",
@@ -229,7 +224,7 @@ export const CardList = ({ data, avgCards }) => {
 
             <Box
                 display={{ base: "grid", lgMobile: "none" }}
-                gridRowGap={{ base: "1.1rem", sm: "1.3rem" }}
+                gridRowGap={{ base: "1.5rem", sm: "1.6rem" }}
                 height="max-content"
             >
                 {data?.map((img) => (

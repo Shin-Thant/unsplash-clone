@@ -16,7 +16,13 @@ export const CollectionCard = ({ collection }) => {
     };
 
     return (
-        <Box className={styles.collection} borderRadius="13px" p="0.7rem">
+        <Box
+            w="100%"
+            h="100%"
+            className={styles.collection}
+            borderRadius="13px"
+            p="0.7rem"
+        >
             <Grid
                 onClick={goDetails}
                 cursor="pointer"
