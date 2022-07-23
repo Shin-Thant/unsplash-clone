@@ -2,7 +2,7 @@ import { Box, Flex, Text, Skeleton } from "@chakra-ui/react";
 // import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { dehydrate, QueryClient, useQuery } from "react-query";
 import { CardSkeleton } from "../../components/skeletons/CardSkeleton";
 import { UpBtn } from "../../components/UpBtn";
@@ -19,7 +19,10 @@ import { ImageFilter } from "../../components/filter/ImageFilter";
 import { CollectionList } from "../../components/containers/CollectionList";
 import { UsersList } from "../../components/containers/UsersList";
 import { UserCardSkeleton } from "../../components/skeletons/UserCardSkeleton";
-import { Pagination } from "../../components/shared-items/Pagination";
+import {
+    MemoPagination,
+    Pagination,
+} from "../../components/shared-items/Pagination";
 import axios from "../../services/axios";
 
 const getSearchedResults = async ({ queryKey }) => {
@@ -27,15 +30,7 @@ const getSearchedResults = async ({ queryKey }) => {
 
     // console.log(query, page, filters);
 
-    // * Cleaning
-    // const per_page =
-    //     field === "photos"
-    //         ? 30
-    //         : field === "collections"
-    //         ? 20
-    //         : field === "users" && 20;
     const per_page = 18;
-
     const order_by = filters.order_by ? `&order_by=${filters.order_by}` : "";
 
     const orientation = filters.orientation
@@ -64,16 +59,18 @@ export default function search() {
 
     const [page, setPage] = useState(1);
 
-    useEffect(() => {
-        let isMounted = true;
+    // useEffect(() => {
+    //     let isMounted = true;
 
-        return () => {
-            isMounted = false;
-        };
-    }, [page]);
+    //     return () => {
+    //         isMounted = false;
+    //     };
+    // }, [page]);
 
-    const validFields = ["photos", "collections", "users"];
     const [field, setField] = useState("photos");
+
+    // track previous field
+    const [prevField, setPrevField] = useState("");
 
     const [colors, setColors] = useState([
         "black",
@@ -110,19 +107,24 @@ export default function search() {
     // reset field and page number when url change
     useEffect(() => {
         let isMounted = true;
-        if (isMounted) changeField("photos", 1);
+        if (isMounted && field !== "photos" && active !== 1)
+            changeField("photos", 1);
 
         return () => {
             isMounted = false;
         };
     }, [router?.pathname]);
 
-    const changePage = (num) => {
+    // handle page change
+    const changePage = useCallback((num) => {
+        setPrevField(field);
+
         setPage(num);
         window.scrollTo(0, 0);
-    };
+    }, []);
 
-    const resetFilter = () => {
+    // reset filter handler
+    const resetFilter = useCallback(() => {
         setFilters({
             orientation: "",
             color: "",
@@ -131,7 +133,7 @@ export default function search() {
         setColor("Any Color");
         setOrientation("Any Orientation");
         setSort("Relevance");
-    };
+    }, []);
 
     // scrolling top
     useEffect(() => {
@@ -147,6 +149,9 @@ export default function search() {
 
     // handle field and active field
     const changeField = (name, num) => {
+        // set previous field
+        setPrevField(field);
+
         setField(name);
         setActive(num);
         setPage(1);
@@ -171,7 +176,15 @@ export default function search() {
     return (
         <>
             <Head>
-                <title>Unsplash | Search</title>
+                <title>
+                    Search |{" "}
+                    {router.query?.search
+                        ?.replace(
+                            router.query?.search[0],
+                            router.query?.search[0].toUpperCase()
+                        )
+                        .replace("-", " ")}
+                </title>
             </Head>
 
             <Box
@@ -245,7 +258,7 @@ export default function search() {
                                     {data?.total >= 1000
                                         ? `${Math.floor(
                                               (data?.total / 1000).toFixed(1)
-                                          )}k`
+                                          )}K`
                                         : data?.total}
                                 </Text>
                             )}
@@ -283,7 +296,7 @@ export default function search() {
                                     {data?.total >= 1000
                                         ? `${Math.floor(
                                               (data?.total / 1000).toFixed(1)
-                                          )}k`
+                                          )}K`
                                         : data?.total}
                                 </Text>
                             )}
@@ -321,7 +334,7 @@ export default function search() {
                                     {data?.total >= 1000
                                         ? `${Math.floor(
                                               (data?.total / 1000).toFixed(1)
-                                          )}k`
+                                          )}K`
                                         : data?.total}
                                 </Text>
                             )}
@@ -349,7 +362,7 @@ export default function search() {
                 {field === "photos" ? (
                     isLoading ? (
                         <CardSkeleton />
-                    ) : field !== "photos" && isFetching ? (
+                    ) : prevField !== "photos" && isFetching ? (
                         <CardSkeleton />
                     ) : (
                         <CardList data={data?.results} avgCards={avgCards} />
@@ -357,7 +370,7 @@ export default function search() {
                 ) : field === "collections" ? (
                     isLoading ? (
                         <CollectionSkeleton />
-                    ) : field !== "collections" && isFetching ? (
+                    ) : prevField !== "collections" && isFetching ? (
                         <CollectionSkeleton />
                     ) : (
                         <CollectionList data={data?.results} />
@@ -365,7 +378,7 @@ export default function search() {
                 ) : field === "users" ? (
                     isLoading ? (
                         <UserCardSkeleton />
-                    ) : field !== "likes" && isFetching ? (
+                    ) : prevField !== "users" && isFetching ? (
                         <UserCardSkeleton />
                     ) : (
                         <UsersList data={data?.results} />
@@ -375,9 +388,9 @@ export default function search() {
                 )}
 
                 <Flex w="100%" justify="center" mt="4rem">
-                    <Pagination
+                    <MemoPagination
                         changePage={changePage}
-                        itemsPerPage={18}
+                        page={page}
                         totalPages={data?.total_pages}
                     />
                 </Flex>

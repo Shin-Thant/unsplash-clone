@@ -43,12 +43,14 @@ export default function explore() {
         staleTime: 3600000,
     });
 
+    // scroll up
     useEffect(() => {
         if (typeof window !== "undefined") {
             window.scrollTo(0, 0);
         }
     }, [page]);
 
+    // image text handler
     useEffect(() => {
         function scrolled() {
             if (typeof window !== "undefined" && outline.current?.style) {
@@ -72,12 +74,14 @@ export default function explore() {
         };
     }, []);
 
+    // set average cards
     useEffect(() => {
         if (images?.length) {
             setAvgCards(Math.floor(images?.length / 3));
         }
     }, [images, images?.length]);
 
+    // pagination handler functions
     const goPrevious = () => {
         if (page > 1) {
             setPage(page - 1);
@@ -193,12 +197,14 @@ export default function explore() {
                 </Box>
 
                 {/* <Box
-                    className={styles.listContainer}
                     w="100%"
-                    padding="1.3rem"
-                    borderRadius="10px"
-                    zIndex="10"
-                > */}
+                    p="1rem"
+                    borderRadius="13px"
+                    bg="rgba(255, 255, 255, 0.5)"
+                    // zIndex="5"
+                    backdropFilter="blur(3px)"
+                >
+                    <Text>hello world</Text> */}
                 {isLoading ? (
                     // <h2
                     //     style={{
@@ -210,19 +216,18 @@ export default function explore() {
                     // </h2>
                     <CardSkeleton />
                 ) : (
-                    // * presentational component
                     <CardList data={images} avgCards={avgCards} />
                 )}
-
-                <Flex w="100%" justify="center" align="center" mt="5rem">
-                    <NormalPagination
-                        goNext={goNext}
-                        goPrevious={goPrevious}
-                        current={page}
-                    />
-                </Flex>
-                {/* </Box> */}
             </Box>
+
+            <Flex w="100%" justify="center" align="center" mt="5rem">
+                <NormalPagination
+                    goNext={goNext}
+                    goPrevious={goPrevious}
+                    current={page}
+                />
+            </Flex>
+            {/* </Box> */}
         </>
     );
 }

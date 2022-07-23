@@ -1,0 +1,20 @@
+.userCard {
+    transform: translateY(20px);
+    opacity: 0;
+    animation: fadeIn 800ms ease forwards;
+}
+@keyframes fadeIn {
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.normalImg {
+    width: 18%;
+}
+.focusImg {
+    width: 60%;
+    opacity: 1;
+    box-shadow: 0 2px 8px 1px rgba(0, 0, 0, 0.3);
+}

@@ -18,6 +18,7 @@ const breakpoints = createBreakpoints({
     collectionBreak: "680px",
     md: "850px",
     lg: "960px",
+    userBreak: '990px',
     xl: "1200px",
     "2xl": "1536px",
 });

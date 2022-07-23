@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../../styles/Pagination.module.css";
 import ReactPaginate from "react-paginate";
 
-export const Pagination = ({ changePage, totalPages }) => {
+export const Pagination = ({ page, changePage, totalPages }) => {
     const [pageCount, setPageCount] = useState(0);
 
     useEffect(() => {
@@ -33,8 +33,11 @@ export const Pagination = ({ changePage, totalPages }) => {
                 pageRangeDisplayed={3}
                 marginPagesDisplayed={1}
                 onPageChange={onChangeHandler}
+                forcePage={page - 1}
                 pageCount={pageCount}
             />
         </Flex>
     );
 };
+
+export const MemoPagination = React.memo(Pagination);

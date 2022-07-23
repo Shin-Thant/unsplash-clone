@@ -15,7 +15,7 @@ export const CardSkeleton = () => {
             <Box display="grid" gridRowGap="1.2rem" height="max-content">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
                     <Skeleton
-                        key={item}
+                        key={`img-${item}`}
                         startColor="#F0F0F0"
                         endColor="#6A6A6A"
                         borderRadius="15px"
@@ -32,9 +32,9 @@ export const CardSkeleton = () => {
                 ))}
             </Box>
             <Box display="grid" gridRowGap="1.2rem" height="max-content">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
+                {[11,12,13,14,15,16,17,18,19,20].map((item) => (
                     <Skeleton
-                        key={item}
+                        key={`img-${item}`}
                         startColor="#F0F0F0"
                         endColor="#6A6A6A"
                         borderRadius="15px"
@@ -57,9 +57,9 @@ export const CardSkeleton = () => {
                 gridRowGap="1.2rem"
                 height="max-content"
             >
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item) => (
+                {[21,22,23,24,25,26,27,28,29,30].map((item) => (
                     <Skeleton
-                        key={item}
+                        key={`img-${item}`}
                         startColor="#F0F0F0"
                         endColor="#6A6A6A"
                         borderRadius="15px"
