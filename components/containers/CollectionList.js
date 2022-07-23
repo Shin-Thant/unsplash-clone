@@ -3,26 +3,22 @@ import { Box, Flex, Grid, Text, Image, GridItem } from "@chakra-ui/react";
 import { CollectionCard } from "../shared-items/CollectionCard";
 
 export const CollectionList = ({ data }) => {
-    console.log(data?.length);
     return (
-        <Box w="100%">
+        <Box width="100%">
             {data?.length > 0 ? (
                 <Grid
                     mx="auto"
-                    w="100%"
+                    width="100%"
                     justifyContent="space-between"
-                    // wrap="wrap"
                     templateColumns={{
                         base: "1fr",
                         collectionBreak: "repeat(2, 1fr)",
                         lg: "repeat(3, 1fr)",
                     }}
-                    // bg="blue.200"
                     gap={{
-                        base: "1.3rem",
-                        collectionBreak: "0.9rem",
-                        md: "1rem",
-                        lg: "0.9rem",
+                        base: "1.5rem",
+                        collectionBreak: "1rem",
+                        xl: "1.3rem",
                     }}
                 >
                     {data?.map((item) => (

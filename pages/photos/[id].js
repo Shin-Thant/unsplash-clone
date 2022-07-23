@@ -22,11 +22,13 @@ import {
     selectAllIds,
 } from "../../features/SavedImgSlice";
 import { FaRegEye } from "react-icons/fa";
-import { BsFillCalendarFill, BsFillCameraFill } from "react-icons/bs";
+import { BsEye, BsFillCalendarFill, BsFillCameraFill } from "react-icons/bs";
 import { IoLocationSharp } from "react-icons/io5";
 import { CollectionList } from "../../components/containers/CollectionList";
 import { motion } from "framer-motion";
 import axios from "../../services/axios";
+import { CardSkeleton } from "../../components/skeletons/CardSkeleton";
+import { CardList } from "../../components/containers/CardList";
 
 const getPhotoDetails = async ({ queryKey }) => {
     const [_key, id] = queryKey;
@@ -38,19 +40,46 @@ const getPhotoDetails = async ({ queryKey }) => {
     return data;
 };
 
+const getUserPhotos = async ({ queryKey }) => {
+    const [_key, username] = queryKey;
+
+    const { data } = await axios.get(
+        `users/${username}/photos?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}`
+    );
+
+    return data;
+};
+
 function ImageDetail() {
     const router = useRouter();
     const dispatch = useDispatch();
+    const [avgCards, setAvgCards] = useState(0);
 
     const ids = useSelector((state) => selectAllIds(state));
 
-    const {
-        isLoading,
-        data: image,
-        error,
-    } = useQuery(["imgDetails", router?.query?.id], getPhotoDetails, {
-        staleTime: 10800000,
-    });
+    const { isLoading, data: image } = useQuery(
+        ["imgDetails", router?.query?.id],
+        getPhotoDetails,
+        {
+            staleTime: 10800000,
+        }
+    );
+
+    const { isLoading: photoLoading, data: userPhotos } = useQuery(
+        ["relatedPhotos", image?.user?.username],
+        getUserPhotos,
+        {
+            enabled: image?.user?.username?.length > 0,
+            staleTime: 10800000,
+        }
+    );
+
+    // set average cards
+    useEffect(() => {
+        if (userPhotos?.length) {
+            setAvgCards(Math.floor(userPhotos?.length / 3));
+        }
+    }, [userPhotos, userPhotos?.length]);
 
     const saveAndRemove = () => {
         if (ids?.includes(image?.id)) {
@@ -59,6 +88,10 @@ function ImageDetail() {
         } else {
             dispatch(addImage({ ...image }));
         }
+    };
+
+    const goUserDetails = () => {
+        image?.user?.username && router.push(`/user/${image?.user?.username}`);
     };
 
     return (
@@ -91,28 +124,38 @@ function ImageDetail() {
                         mb="2rem"
                     >
                         <GridItem>
-                            <Image
-                                width="42px"
-                                height="42px"
-                                objectFit="cover"
-                                borderRadius="50%"
-                                src={image?.user?.profile_image?.large}
-                                alt={image?.user?.username}
-                            />
+                            <a
+                                href={`/user/${image?.user?.image?.name}`}
+                                target="_blank"
+                            >
+                                <Image
+                                    width="42px"
+                                    height="42px"
+                                    objectFit="cover"
+                                    borderRadius="50%"
+                                    src={image?.user?.profile_image?.large}
+                                    alt={image?.user?.username}
+                                />
+                            </a>
                         </GridItem>
                         <GridItem>
-                            <Text
-                                fontSize="1.05rem"
-                                fontWeight="600"
-                                opacity="0.7"
-                                cursor="pointer"
-                                _hover={{
-                                    opacity: "1",
-                                }}
-                                transition="all 250ms ease"
+                            <a
+                                href={`/user/${image?.user?.username}`}
+                                target="_blank"
                             >
-                                {image?.user?.name ?? image?.user?.username}
-                            </Text>
+                                <Text
+                                    fontSize="1.05rem"
+                                    fontWeight="600"
+                                    opacity="0.7"
+                                    cursor="pointer"
+                                    _hover={{
+                                        opacity: "1",
+                                    }}
+                                    transition="all 230ms ease"
+                                >
+                                    {image?.user?.name ?? image?.user?.username}
+                                </Text>
+                            </a>
                         </GridItem>
                         <GridItem justifySelf="flex-end">
                             <Flex gap="0.5rem">
@@ -252,26 +295,16 @@ function ImageDetail() {
                                 <Flex gap="1rem" mb="2rem">
                                     <Flex
                                         width="max-content"
-                                        minWidth="150px"
                                         align="center"
-                                        border="2px solid"
+                                        border="1.5px solid"
                                         borderColor="myblack"
-                                        borderRadius="10px"
-                                        gap="1rem"
-                                        pr="0.8rem"
-                                        overflow="hidden"
+                                        borderRadius="8px"
+                                        p="0.3rem 0.8rem"
+                                        gap="1.5rem"
                                     >
-                                        <Flex
-                                            bg="brown.1000"
-                                            color="white"
-                                            p="0.7rem 0.8rem"
-                                        >
-                                            <FaRegEye fontSize="1.2rem" />
-                                        </Flex>
-                                        <Text
-                                            fontSize="0.95rem"
-                                            fontWeight="500"
-                                        >
+                                        {/* <Text fontSize="0.9rem">Views</Text> */}
+                                        <BsEye fontSize="1.2rem" />
+                                        <Text fontWeight="600">
                                             {isLoading
                                                 ? "--"
                                                 : image?.views || "--"}
@@ -280,26 +313,16 @@ function ImageDetail() {
 
                                     <Flex
                                         width="max-content"
-                                        minWidth="150px"
                                         align="center"
-                                        border="2px solid"
+                                        border="1.5px solid"
                                         borderColor="myblack"
-                                        borderRadius="10px"
-                                        gap="1rem"
-                                        pr="0.8rem"
-                                        overflow="hidden"
+                                        borderRadius="8px"
+                                        p="0.3rem 0.8rem"
+                                        gap="1.5rem"
                                     >
-                                        <Flex
-                                            bg="brown.1000"
-                                            color="white"
-                                            p="0.7rem 0.8rem"
-                                        >
-                                            <FiDownload fontSize="1.2rem" />
-                                        </Flex>
-                                        <Text
-                                            fontSize="0.95rem"
-                                            fontWeight="500"
-                                        >
+                                        {/* <Text fontSize="0.9rem">Views</Text> */}
+                                        <FiDownload fontSize="1.2rem" />
+                                        <Text fontWeight="600">
                                             {isLoading
                                                 ? "--"
                                                 : image?.downloads || "--"}
@@ -315,29 +338,41 @@ function ImageDetail() {
                                     >
                                         <IoLocationSharp fontSize="1.3rem" />
                                         {image?.location?.title ? (
-                                            <Box
-                                                fontWeight="500"
-                                                position="relative"
-                                                overflow="hidden"
+                                            <a
+                                                href={`https://www.google.com/maps/search/${image?.location?.name?.replaceAll(
+                                                    ",",
+                                                    ""
+                                                )}/`}
+                                                target="_blank"
                                             >
-                                                <motion.p
-                                                    whileInView={{
-                                                        x: "100%",
+                                                <Box
+                                                    fontWeight="500"
+                                                    position="relative"
+                                                    overflow="hidden"
+                                                    _hover={{
+                                                        textDecoration:
+                                                            "underline",
                                                     }}
-                                                    viewport={{
-                                                        once: true,
-                                                        margin: "0px 0px -40px 0px",
-                                                    }}
-                                                    transition={{
-                                                        type: "tween",
-                                                        duration: 1.4,
-                                                    }}
-                                                    className={
-                                                        styles["text-cover"]
-                                                    }
-                                                ></motion.p>
-                                                {image?.location?.title}
-                                            </Box>
+                                                >
+                                                    <motion.p
+                                                        whileInView={{
+                                                            x: "100%",
+                                                        }}
+                                                        viewport={{
+                                                            once: true,
+                                                            margin: "0px 0px -40px 0px",
+                                                        }}
+                                                        transition={{
+                                                            type: "tween",
+                                                            duration: 1.4,
+                                                        }}
+                                                        className={
+                                                            styles["text-cover"]
+                                                        }
+                                                    ></motion.p>
+                                                    {image?.location?.title}
+                                                </Box>
+                                            </a>
                                         ) : (
                                             <Text>--</Text>
                                         )}
@@ -426,9 +461,46 @@ function ImageDetail() {
                                 </Box>
                             </Box>
 
+                            {/* related photos */}
+                            {userPhotos?.length > 0 ? (
+                                <motion.h2
+                                    initial={{
+                                        x: -25,
+                                        opacity: 0,
+                                    }}
+                                    whileInView={{
+                                        x: 0,
+                                        opacity: 1,
+                                    }}
+                                    viewport={{
+                                        once: true,
+                                        margin: "0px 0px -25px 0px",
+                                    }}
+                                    transition={{
+                                        type: "tween",
+                                        duration: 0.6,
+                                    }}
+                                    className={styles["related-text"]}
+                                >
+                                    Related Photos
+                                </motion.h2>
+                            ) : (
+                                ""
+                            )}
+                            <Box width="100%" mb="4rem">
+                                {photoLoading ? (
+                                    <CardSkeleton />
+                                ) : (
+                                    <CardList
+                                        data={userPhotos}
+                                        avgCards={avgCards}
+                                    />
+                                )}
+                            </Box>
+
                             {/* related collection */}
                             {image?.related_collections?.total ? (
-                                <Box px="2rem" mb="2rem">
+                                <Box w="100%" mb="2rem">
                                     <motion.h2
                                         initial={{
                                             x: -25,
@@ -472,14 +544,7 @@ function ImageDetail() {
 
 export default ImageDetail;
 
-export const getStaticPaths = async () => {
-    return {
-        paths: [],
-        fallback: "blocking",
-    };
-};
-
-export const getStaticProps = async (context) => {
+export const getServerSideProps = async (context) => {
     const queryClient = new QueryClient();
 
     const id = context.params?.id;

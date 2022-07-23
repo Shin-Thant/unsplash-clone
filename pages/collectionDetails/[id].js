@@ -1,4 +1,4 @@
-import { Box, Flex, Image, Text } from "@chakra-ui/react";
+import { Box, Flex, Image, Link, Text } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -10,6 +10,8 @@ import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import { Pagination } from "../../components/shared-items/Pagination";
 import { CardSkeleton } from "../../components/skeletons/CardSkeleton";
 import axios from "../../services/axios";
+import { CollectionSkeleton } from "../../components/skeletons/CollectionSkeleton";
+import { CollectionList } from "../../components/containers/CollectionList";
 
 const getCollectionPhotos = async ({ queryKey }) => {
     const [_key, id, page] = queryKey;
@@ -34,6 +36,19 @@ const getCollection = async ({ queryKey }) => {
     return [];
 };
 
+const getRelatedCollections = async ({ queryKey }) => {
+    const [_key, id] = queryKey;
+
+    if (id) {
+        const { data } = await axios.get(
+            `collections/${id}/related?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}`
+        );
+        return data;
+    }
+
+    return [];
+};
+
 export default function CollectionDetails() {
     const router = useRouter();
     const [page, setPage] = useState(1);
@@ -43,6 +58,7 @@ export default function CollectionDetails() {
         ["collectionPhotos", router?.query?.id, page],
         getCollectionPhotos,
         {
+            keepPreviousData: true,
             staleTime: 10800000,
         }
     );
@@ -53,12 +69,21 @@ export default function CollectionDetails() {
             staleTime: 10800000,
         }
     );
-
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            window.scrollTo(0, 0);
+    const { data: relatedCollection, isLoading: relatedLoading } = useQuery(
+        ["related-collection", router?.query?.id],
+        getRelatedCollections,
+        {
+            staleTime: 10800000,
         }
-    }, [page]);
+    );
+
+    // const {data: }
+
+    // useEffect(() => {
+    //     if (typeof window !== "undefined") {
+    //         window.scrollTo(0, 0);
+    //     }
+    // }, [page]);
 
     useEffect(() => {
         if (collection?.total_photos) {
@@ -89,14 +114,13 @@ export default function CollectionDetails() {
             </Head>
             <Box
                 w="100%"
-                // px={{ base: "0.8rem", sm: "1.1rem", lg: "1.3rem" }}
-                mb="5rem"
+                mb={{ base: "0.9rem", lgMobile: "1rem", lg: "1.5rem" }}
                 className={styles.colDetailsContainer}
             >
                 <Box
                     w="100%"
                     position="relative"
-                    pt="53vh"
+                    pt="54vh"
                     className={styles["content-container"]}
                 >
                     <Flex
@@ -127,23 +151,24 @@ export default function CollectionDetails() {
                             className={styles["heading-content"]}
                             opacity="0.95"
                         >
-                            <motion.h1
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{
-                                    type: "tween",
-                                    delay: 0.6,
-                                    duration: 1.3,
-                                }}
+                            <Text
+                                as="h1"
+                                fontSize="2.5rem"
+                                fontWeight="700"
+                                mb="0.9rem"
                             >
-                                <Text
-                                    fontSize="2.5rem"
-                                    fontWeight="700"
-                                    mb="0.9rem"
+                                <motion.p
+                                    initial={{ opacity: 0, y: 15 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{
+                                        type: "tween",
+                                        delay: 0.6,
+                                        duration: 0.8,
+                                    }}
                                 >
                                     {collection?.title}
-                                </Text>
-                            </motion.h1>
+                                </motion.p>
+                            </Text>
 
                             <motion.div
                                 style={{
@@ -154,7 +179,7 @@ export default function CollectionDetails() {
                                 transition={{
                                     type: "tween",
                                     duration: 0.7,
-                                    delay: 1.8,
+                                    delay: 1,
                                 }}
                             >
                                 <Flex
@@ -175,15 +200,22 @@ export default function CollectionDetails() {
                                         }
                                         alt=""
                                     />
-                                    <Text
-                                        onClick={goUserDetails}
-                                        cursor="pointer"
-                                        _hover={{
-                                            textDecoration: "underline",
+                                    <Link
+                                        _focus={{
+                                            border: "0px",
                                         }}
+                                        href={`/user/${collection?.user?.username}`}
                                     >
-                                        @{collection?.user?.username}
-                                    </Text>
+                                        <Text
+                                            onClick={goUserDetails}
+                                            cursor="pointer"
+                                            _hover={{
+                                                textDecoration: "underline",
+                                            }}
+                                        >
+                                            @{collection?.user?.username}
+                                        </Text>
+                                    </Link>
                                     <Text
                                         ml="1rem"
                                         border="2px solid white"
@@ -204,23 +236,26 @@ export default function CollectionDetails() {
 
                     <Box
                         w="100%"
-                        px="1.5rem"
+                        px={{
+                            base: "0",
+                            lgMobile: "1rem",
+                            lg: "1.5rem",
+                        }}
                         pt="2rem"
-                        pb="3rem"
                         borderRadius="20px"
                         bg="background"
                         className={styles.mainContent}
                     >
                         {page === 1 ? (
                             <Box
+                                px={{ base: "0.5rem", lgMobile: "0" }}
                                 fontSize="2rem"
                                 fontWeight="700"
                                 mb="3.5rem"
                                 minHeight="40px"
                                 w="100%"
-                                overflow="hidden"
                             >
-                                {collection?.title ? (
+                                {collection?.title?.length ? (
                                     <motion.h1
                                         initial={{
                                             opacity: 0,
@@ -232,9 +267,7 @@ export default function CollectionDetails() {
                                             delay: 0.9,
                                         }}
                                     >
-                                        {page === 1
-                                            ? `Photos for ${collection?.title}`
-                                            : ""}
+                                        {`Photos for ${collection?.title}`}
                                     </motion.h1>
                                 ) : (
                                     ""
@@ -249,12 +282,51 @@ export default function CollectionDetails() {
                         ) : (
                             <CardList data={photos} avgCards={avgCards} />
                         )}
-                    </Box>
 
-                    <Pagination
-                        changePage={changePage}
-                        totalPages={totalPages}
-                    />
+                        <Box width="100%" mt="5rem">
+                            <Pagination
+                                changePage={changePage}
+                                page={page}
+                                totalPages={totalPages}
+                            />
+                        </Box>
+
+                        <Box px={{ base: "0.5rem", lgMobile: "0" }}>
+                            <motion.h1
+                                initial={{
+                                    x: -30,
+                                    opacity: 0,
+                                }}
+                                whileInView={{
+                                    x: 0,
+                                    opacity: 1,
+                                }}
+                                viewport={{
+                                    once: true,
+                                    margin: "0px 0px -30px 0px",
+                                }}
+                                transition={{
+                                    type: "tween",
+                                    duration: 0.7,
+                                }}
+                            >
+                                <Text
+                                    mt="3rem"
+                                    fontSize="1.4rem"
+                                    fontWeight="600"
+                                    mb="2rem"
+                                >
+                                    Related Collections
+                                </Text>
+                            </motion.h1>
+
+                            {relatedLoading ? (
+                                <CollectionSkeleton />
+                            ) : (
+                                <CollectionList data={relatedCollection} />
+                            )}
+                        </Box>
+                    </Box>
                 </Box>
             </Box>
         </>

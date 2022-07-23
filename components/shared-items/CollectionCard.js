@@ -1,7 +1,8 @@
-import { Box, Flex, Grid, GridItem, Image, Text } from "@chakra-ui/react";
+import { Box, Flex, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react";
 import React from "react";
 import { useRouter } from "next/router";
 import styles from "../../styles/CollectionCard.module.css";
+// import Link from "next/link";
 
 export const CollectionCard = ({ collection }) => {
     const router = useRouter();
@@ -187,52 +188,64 @@ export const CollectionCard = ({ collection }) => {
             </Grid>
 
             <Box p="0.5rem" w="100%">
-                <Text
-                    onClick={goDetails}
-                    fontSize="1.1rem"
-                    fontWeight="bold"
-                    mb="1rem"
-                    cursor="pointer"
-                    w="max-content"
+                <Link
+                    _focus={{
+                        border: "0px",
+                    }}
+                    href={`/user/${collection?.user?.username}`}
                 >
-                    {collection?.title}
-                </Text>
+                    <Text
+                        onClick={goDetails}
+                        fontSize="1.1rem"
+                        fontWeight="bold"
+                        mb="1rem"
+                        cursor="pointer"
+                        w="max-content"
+                    >
+                        {collection?.title}
+                    </Text>
+                </Link>
 
                 <Box>
                     <Box fontWeight="500" color="myblack" mb="0.2rem">
-                        <Text
-                            display="inline-block"
+                        <Flex
+                            justify="center"
+                            align="center"
+                            display="inline-flex"
                             fontWeight="600"
-                            // border="2.5px solid"
-                            // bg="brown.1000"
-                            // borderColor="brown.1000"
+                            border="1.5px solid"
+                            borderColor="rgba(0, 0, 0, 0.8)"
                             color="brown-tea"
-                            // px="0.5rem"
-                            // py="0.1rem"
+                            px="0.4rem"
                             borderRadius="5px"
                             fontSize="1rem"
                             mr="0.1rem"
                             position="relative"
                         >
                             {collection?.total_photos}
-                        </Text>{" "}
+                        </Flex>{" "}
                         photo{collection?.total_photos > 1 && "s"}
                     </Box>
                     <Box fontWeight="500" color="myblack" mb="1rem">
                         Created by{" "}
-                        <Text
-                            onClick={goUserDetails}
-                            className={styles.username}
-                            display="inline-block"
-                            fontWeight="600"
-                            fontSize="1.1rem"
-                            color="myblack"
-                            cursor="pointer"
+                        <Link
+                            _focus={{
+                                border: "0px",
+                            }}
+                            href={`/user/${collection?.user?.username}`}
                         >
-                            {collection?.user?.name
-                                ? collection?.user?.name
-                                : collection?.user?.username}
-                        </Text>
+                            <Text
+                                className={styles.username}
+                                display="inline-block"
+                                fontWeight="600"
+                                color="myblack"
+                                cursor="pointer"
+                            >
+                                {collection?.user?.name
+                                    ? collection?.user?.name
+                                    : collection?.user?.username}
+                            </Text>
+                        </Link>
                     </Box>
                     <Flex align="center" gap="0.8rem" wrap="wrap">
                         {collection?.tags?.filter(

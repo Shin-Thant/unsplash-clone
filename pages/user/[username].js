@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { dehydrate, QueryClient, useQuery } from "react-query";
 import styles from "../../styles/UserDetails.module.css";
 import { Box, Flex, Grid, GridItem, Image, Text } from "@chakra-ui/react";
@@ -15,6 +15,131 @@ import axios from "../../services/axios";
 import { Pagination } from "../../components/shared-items/Pagination";
 import { CollectionSkeleton } from "../../components/skeletons/CollectionSkeleton";
 import { CollectionList } from "../../components/containers/CollectionList";
+
+const IconBox = ({ alone, link, children }) => {
+    return (
+        <a
+            style={{ display: "inline-block" }}
+            target="_blank"
+            href={`https://instagram.com/${link}`}
+        >
+            <motion.div
+                initial={{
+                    y: 15,
+                    opacity: 0,
+                }}
+                animate={{
+                    y: 0,
+                    opacity: 1,
+                }}
+                transition={{
+                    type: "tween",
+                    duration: 0.7,
+                    delay: 0.7,
+                }}
+            >
+                <Flex
+                    w="max-content"
+                    h="max-content"
+                    fontSize="1.6rem"
+                    border={alone ? "" : "1.5px solid"}
+                    borderColor="myblack"
+                    borderRadius="8px"
+                    p={alone ? "" : "0.4rem"}
+                    cursor="pointer"
+                    opacity="0.65"
+                    _hover={{
+                        opacity: "1",
+                    }}
+                    _focus={{
+                        opacity: "1",
+                    }}
+                    transition="opacity 250ms ease"
+                >
+                    {children}
+                </Flex>
+            </motion.div>
+        </a>
+    );
+};
+
+const UserImgInfo = ({ count, name }) => {
+    return (
+        <Flex flexDir="column" align="center">
+            <motion.h1
+                initial={{
+                    y: 15,
+                    opacity: 0,
+                }}
+                animate={{
+                    y: 0,
+                    opacity: 1,
+                }}
+                transition={{
+                    type: "tween",
+                    duration: 0.7,
+                    delay: 1,
+                }}
+            >
+                <Text
+                    fontSize={{
+                        base: "1.3rem",
+                        md: "1.4rem",
+                    }}
+                    fontWeight="600"
+                >
+                    {count || "-"}
+                </Text>
+            </motion.h1>
+
+            <motion.h1
+                initial={{
+                    y: 15,
+                    opacity: 0,
+                }}
+                animate={{
+                    y: 0,
+                    opacity: 1,
+                }}
+                transition={{
+                    type: "tween",
+                    duration: 0.6,
+                    delay: 1.3,
+                }}
+            >
+                <Text fontSize="0.9rem" fontWeight="500" opacity="0.9">
+                    {name}
+                </Text>
+            </motion.h1>
+        </Flex>
+    );
+};
+
+const Divider = ({ duration, delay }) => {
+    return (
+        <motion.div
+            initial={{
+                height: 0,
+            }}
+            animate={{
+                height: 25,
+            }}
+            transition={{
+                type: "tween",
+                duration,
+                delay,
+            }}
+        >
+            <Box
+                bg="black"
+                opacity="0.4"
+                w="1px"
+                height="100%"
+                borderRadius="50px"
+            ></Box>
+        </motion.div>
+    );
+};
 
 const getUserProfile = async ({ queryKey }) => {
     const [_key, username] = queryKey;
@@ -42,43 +167,15 @@ const getUserPhotosAndCollection = async ({ queryKey }) => {
     return [];
 };
 
-const IconBox = ({ alone, link, children }) => {
-    return (
-        <a
-            style={{ display: "inline-block" }}
-            target="_blank"
-            href={`https://instagram.com/${link}`}
-        >
-            <Flex
-                w="max-content"
-                h="max-content"
-                fontSize="1.6rem"
-                border={alone ? "" : "1.5px solid"}
-                borderColor="myblack"
-                borderRadius="8px"
-                p={alone ? "" : "0.4rem"}
-                cursor="pointer"
-                opacity="0.65"
-                _hover={{
-                    opacity: "1",
-                }}
-                _focus={{
-                    opacity: "1",
-                }}
-                transition="opacity 250ms ease"
-            >
-                {children}
-            </Flex>
-        </a>
-    );
-};
-
 export default function UserDetails() {
     const router = useRouter();
     const [page, setPage] = useState(1);
     const [field, setField] = useState("photos");
     const [avgCards, setAvgCards] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
+
+    // track previous field
+    const [prevField, setPrevField] = useState("");
 
     const {
         isLoading: dataLoading,
@@ -90,11 +187,13 @@ export default function UserDetails() {
         { keepPreviousData: true, staleTime: 10800000 }
     );
 
-    const { isLoading: profileLoading, data: profile } = useQuery(
-        ["userProfile", router?.query?.username],
-        getUserProfile,
-        { staleTime: 10800000 }
-    );
+    const {
+        isLoading: profileLoading,
+        data: profile,
+        isFetched,
+    } = useQuery(["userProfile", router?.query?.username], getUserProfile, {
+        staleTime: 10800000,
+    });
 
     useEffect(() => {
         if (field === "photos") {
@@ -107,9 +206,9 @@ export default function UserDetails() {
     }, [profile, field]);
 
     // scrolling top
-    // useEffect(() => {
-    //     if (typeof window !== undefined) window.scrollTo(0, 0);
-    // }, []);
+    useEffect(() => {
+        if (typeof window !== undefined) window.scrollTo(0, 0);
+    }, []);
 
     // reset field and page number when url changed
     useEffect(() => {
@@ -128,13 +227,17 @@ export default function UserDetails() {
         }
     }, [data]);
 
-    const changePage = (num) => {
+    const changePage = useCallback((num) => {
+        setPrevField(field);
+
         setPage(num);
         window.scrollTo(0, 0);
-    };
+    }, []);
 
-    const changeField = (field) => {
-        setField(field);
+    const changeField = (newField) => {
+        setPrevField(field);
+
+        setField(newField);
         setPage(1);
     };
 
@@ -357,42 +460,56 @@ export default function UserDetails() {
                                         gap="1rem"
                                         mb={{ base: "1.2rem", md: "1rem" }}
                                     >
-                                        <Flex
-                                            width="max-content"
-                                            height="100%"
-                                            align="center"
-                                            gap="0.2rem"
-                                            fontSize={{
-                                                base: "1rem",
-                                                lg: "1.1rem",
+                                        <motion.div
+                                            style={{ width: "max-content" }}
+                                            initial={{
+                                                y: 20,
+                                                opacity: 0,
+                                            }}
+                                            animate={{
+                                                y: 0,
+                                                opacity: 1,
+                                            }}
+                                            transition={{
+                                                type: "tween",
+                                                duration: 0.6,
+                                                delay: 0.7,
                                             }}
                                         >
-                                            <IoLocationOutline
-                                                className={styles.icons}
-                                            />
-
-                                            <a
-                                                href={`https://www.google.com/maps/search/${profile?.location?.replaceAll(
-                                                    ",",
-                                                    ""
-                                                )}/`}
-                                                target="_blank"
-                                                className={styles.location}
+                                            <Flex
+                                                width="max-content"
+                                                height="100%"
+                                                align="center"
+                                                gap="0.2rem"
+                                                fontSize={{
+                                                    base: "1rem",
+                                                    lg: "1.1rem",
+                                                }}
                                             >
-                                                {profile?.location}
-                                            </a>
-                                        </Flex>
+                                                <IoLocationOutline
+                                                    className={styles.icons}
+                                                />
+
+                                                <a
+                                                    href={`https://www.google.com/maps/search/${profile?.location?.replaceAll(
+                                                        ",",
+                                                        ""
+                                                    )}/`}
+                                                    target="_blank"
+                                                    className={styles.location}
+                                                >
+                                                    {profile?.location}
+                                                </a>
+                                            </Flex>
+                                        </motion.div>
 
                                         {!profile?.social?.instagram_username &&
                                         profile?.social?.twitter_username ? (
                                             <>
-                                                <Box
-                                                    bg="black"
-                                                    opacity="0.4"
-                                                    w="1px"
-                                                    height="20px"
-                                                    borderRadius="50px"
-                                                ></Box>
+                                                <Divider
+                                                    duration={0.6}
+                                                    delay={0}
+                                                />
 
                                                 <IconBox
                                                     link={
@@ -423,13 +540,10 @@ export default function UserDetails() {
                                         {!profile?.social?.twitter_username &&
                                         profile?.social?.instagram_username ? (
                                             <>
-                                                <Box
-                                                    bg="black"
-                                                    opacity="0.4"
-                                                    w="1px"
-                                                    height="20px"
-                                                    borderRadius="50px"
-                                                ></Box>
+                                                <Divider
+                                                    duration={0.6}
+                                                    delay={0}
+                                                />
 
                                                 <IconBox
                                                     link={
@@ -515,14 +629,30 @@ export default function UserDetails() {
                                                         />
                                                     </IconBox>
 
-                                                    <Text
-                                                        fontSize="0.9rem"
-                                                        fontWeight="500"
-                                                        opacity="0.9"
-                                                        cursor="pointer"
+                                                    <motion.h1
+                                                        initial={{
+                                                            y: 15,
+                                                            opacity: 0,
+                                                        }}
+                                                        animate={{
+                                                            y: 0,
+                                                            opacity: 1,
+                                                        }}
+                                                        transition={{
+                                                            type: "tween",
+                                                            duration: 0.7,
+                                                            delay: 0.9,
+                                                        }}
                                                     >
-                                                        Twitter
-                                                    </Text>
+                                                        <Text
+                                                            fontSize="0.9rem"
+                                                            fontWeight="500"
+                                                            opacity="0.9"
+                                                            cursor="pointer"
+                                                        >
+                                                            Twitter
+                                                        </Text>
+                                                    </motion.h1>
                                                 </Flex>
                                             </GridItem>
                                         ) : (
@@ -531,13 +661,10 @@ export default function UserDetails() {
 
                                         {profile?.social?.twitter_username &&
                                         profile?.social?.instagram_username ? (
-                                            <Box
-                                                bg="black"
-                                                opacity="0.4"
-                                                w="1px"
-                                                height="25px"
-                                                borderRadius="50px"
-                                            ></Box>
+                                            <Divider
+                                                duration={0.6}
+                                                delay={0.7}
+                                            />
                                         ) : (
                                             ""
                                         )}
@@ -577,14 +704,30 @@ export default function UserDetails() {
                                                             objectFit="cover"
                                                         />
                                                     </IconBox>
-                                                    <Text
-                                                        fontSize="0.9rem"
-                                                        fontWeight="500"
-                                                        opacity="0.9"
-                                                        cursor="pointer"
+                                                    <motion.h1
+                                                        initial={{
+                                                            y: 15,
+                                                            opacity: 0,
+                                                        }}
+                                                        animate={{
+                                                            y: 0,
+                                                            opacity: 1,
+                                                        }}
+                                                        transition={{
+                                                            type: "tween",
+                                                            duration: 0.7,
+                                                            delay: 0.9,
+                                                        }}
                                                     >
-                                                        Instagram
-                                                    </Text>
+                                                        <Text
+                                                            fontSize="0.9rem"
+                                                            fontWeight="500"
+                                                            opacity="0.9"
+                                                            cursor="pointer"
+                                                        >
+                                                            Instagram
+                                                        </Text>
+                                                    </motion.h1>
                                                 </Flex>
                                             </GridItem>
                                         ) : (
@@ -596,85 +739,35 @@ export default function UserDetails() {
                                 )}
 
                                 {/* follower, following and likes */}
-                                <Flex
-                                    w="100%"
-                                    justify="center"
-                                    align="center"
-                                    gap="2rem"
-                                >
-                                    <Flex flexDir="column" align="center">
-                                        <Text
-                                            fontSize={{
-                                                base: "1.3rem",
-                                                md: "1.4rem",
-                                            }}
-                                            fontWeight="600"
-                                        >
-                                            {profile?.following_count || "-"}
-                                        </Text>
-                                        <Text
-                                            fontSize="0.9rem"
-                                            fontWeight="500"
-                                            opacity="0.9"
-                                        >
-                                            Following
-                                        </Text>
+                                {isFetched ? (
+                                    <Flex
+                                        w="100%"
+                                        justify="center"
+                                        align="center"
+                                        gap="2rem"
+                                    >
+                                        <UserImgInfo
+                                            count={profile?.following_count}
+                                            name={"Following"}
+                                        />
+
+                                        <Divider duration={0.6} delay={1} />
+
+                                        <UserImgInfo
+                                            count={profile?.followers_count}
+                                            name={"Followers"}
+                                        />
+
+                                        <Divider duration={0.6} delay={1} />
+
+                                        <UserImgInfo
+                                            count={profile?.total_likes}
+                                            name={"Likes"}
+                                        />
                                     </Flex>
-
-                                    <Box
-                                        bg="black"
-                                        opacity="0.4"
-                                        w="1px"
-                                        height="20px"
-                                        borderRadius="50px"
-                                    ></Box>
-
-                                    <Flex flexDir="column" align="center">
-                                        <Text
-                                            fontSize={{
-                                                base: "1.3rem",
-                                                md: "1.4rem",
-                                            }}
-                                            fontWeight="600"
-                                        >
-                                            {profile?.followers_count || "-"}
-                                        </Text>
-                                        <Text
-                                            fontSize="0.9rem"
-                                            fontWeight="500"
-                                            opacity="0.9"
-                                        >
-                                            Followers
-                                        </Text>
-                                    </Flex>
-
-                                    <Box
-                                        bg="black"
-                                        opacity="0.4"
-                                        w="1px"
-                                        height="20px"
-                                        borderRadius="50px"
-                                    ></Box>
-
-                                    <Flex flexDir="column" align="center">
-                                        <Text
-                                            fontSize={{
-                                                base: "1.3rem",
-                                                md: "1.4rem",
-                                            }}
-                                            fontWeight="600"
-                                        >
-                                            {profile?.total_likes || "-"}
-                                        </Text>
-                                        <Text
-                                            fontSize="0.9rem"
-                                            fontWeight="500"
-                                            opacity="0.9"
-                                        >
-                                            Likes
-                                        </Text>
-                                    </Flex>
-                                </Flex>
+                                ) : (
+                                    ""
+                                )}
 
                                 {/* porfolio url */}
                                 {profile?.porfolio_url?.length > 0 ? (
@@ -863,7 +956,7 @@ export default function UserDetails() {
                         {field === "photos" ? (
                             dataLoading ? (
                                 <CardSkeleton />
-                            ) : field !== "photos" && isFetching ? (
+                            ) : prevField !== "photos" && isFetching ? (
                                 <CardSkeleton />
                             ) : (
                                 <CardList data={data} avgCards={avgCards} />
@@ -871,7 +964,7 @@ export default function UserDetails() {
                         ) : field === "collections" ? (
                             dataLoading ? (
                                 <CollectionSkeleton />
-                            ) : field !== "collections" && isFetching ? (
+                            ) : prevField !== "collections" && isFetching ? (
                                 <CollectionSkeleton />
                             ) : (
                                 <CollectionList data={data} />
@@ -879,7 +972,7 @@ export default function UserDetails() {
                         ) : field === "likes" ? (
                             dataLoading ? (
                                 <CardSkeleton />
-                            ) : field !== "likes" && isFetching ? (
+                            ) : prevField !== "likes" && isFetching ? (
                                 <CardSkeleton />
                             ) : (
                                 <CardList data={data} avgCards={avgCards} />
@@ -893,6 +986,7 @@ export default function UserDetails() {
                         <Flex w="100%" justify="center">
                             <Pagination
                                 changePage={changePage}
+                                page={page}
                                 totalPages={totalPages}
                             />
                         </Flex>

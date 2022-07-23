@@ -13,7 +13,7 @@ export const UserCardSkeleton = () => {
         <Grid templateColumns="repeat(3, 1fr)" gap="1.3rem">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((item) => (
                 <Box
-                    key={item}
+                    key={`user-card-${item}`}
                     w="100%"
                     bg="white"
                     px="0.8rem"
@@ -74,7 +74,7 @@ export const UserCardSkeleton = () => {
                         mb="1.5rem"
                     >
                         {[1, 2, 3]?.map((item) => (
-                            <GridItem key={item}>
+                            <GridItem key={`user-img-${item}`}>
                                 <Skeleton
                                     startColor="#e7e7e7"
                                     endColor="#6A6A6A"

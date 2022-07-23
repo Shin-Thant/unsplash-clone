@@ -7,7 +7,7 @@ export const CollectionSkeleton = () => {
         <Grid templateColumns="repeat(3, 1fr)" gap="1.5rem">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((item) => (
                 <Box
-                    key={item}
+                    key={`collection-${item}`}
                     className={styles.collection}
                     borderRadius="13px"
                     p="0.7rem"

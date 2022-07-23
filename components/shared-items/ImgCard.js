@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, Skeleton } from "react";
 import styles from "../../styles/ImgCard.module.css";
-import { Box, Flex, Image, Text } from "@chakra-ui/react";
+import { Box, Flex, Image, Link, Text } from "@chakra-ui/react";
 // import Image from "next/image";
 import { FiDownload } from "react-icons/fi";
 import { BsPlusLg } from "react-icons/bs";
@@ -147,37 +147,55 @@ export const ImgCard = ({
             >
                 <Flex align="center" gap="0.8rem" className={styles.userInfo}>
                     <Box>
-                        <LazyLoadImage
-                            onClick={goUserDetails}
-                            src={user?.profile_image?.large}
-                            alt={user?.username}
-                            width="40px"
-                            height="40px"
-                            style={{
-                                backgroundColor: "#CBC7C0",
-                                cursor: "pointer",
-                                borderRadius: "50%",
-                                objectFit: "cover",
+                        <Link
+                            _focus={{
+                                border: "0px",
                             }}
-                        />
+                            href={`/user/${user?.username}`}
+                        >
+                            <LazyLoadImage
+                                onClick={goUserDetails}
+                                src={user?.profile_image?.large}
+                                alt={user?.username}
+                                width="40px"
+                                height="40px"
+                                style={{
+                                    backgroundColor: "#CBC7C0",
+                                    cursor: "pointer",
+                                    borderRadius: "50%",
+                                    objectFit: "cover",
+                                }}
+                            />
+                        </Link>
                     </Box>
-                    <Text
-                        onClick={goUserDetails}
-                        fontWeight={600}
-                        opacity="0.7"
-                        cursor="pointer"
-                        fontSize={{
-                            base: "0.9rem",
-                            mobile: "0.95rem",
-                            lg: "1rem",
+                    <Link
+                        _focus={{
+                            border: "0px",
                         }}
-                        transition="all 250ms ease"
                         _hover={{
-                            opacity: 1,
+                            textDecoration: "none",
                         }}
+                        href={`/user/${user?.username}`}
                     >
-                        {user?.name}
-                    </Text>
+                        <Text
+                            fontWeight={600}
+                            opacity="0.7"
+                            cursor="pointer"
+                            fontSize={{
+                                base: "0.9rem",
+                                mobile: "0.95rem",
+                                lg: "1rem",
+                            }}
+                            transition="all 250ms ease"
+                            textDecoration="none"
+                            _hover={{
+                                opacity: 1,
+                                textDecoration: "none",
+                            }}
+                        >
+                            {user?.name}
+                        </Text>
+                    </Link>
                 </Flex>
 
                 <Box
