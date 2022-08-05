@@ -5,9 +5,10 @@ import { extendTheme } from "@chakra-ui/react";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
-import { Store } from "../app/store";
+import { persistor, Store } from "../app/store";
 import { Provider } from "react-redux";
 import { useState } from "react";
+import { PersistGate } from "redux-persist/integration/react";
 
 const breakpoints = createBreakpoints({
     base: "320px",
@@ -18,7 +19,7 @@ const breakpoints = createBreakpoints({
     collectionBreak: "680px",
     md: "850px",
     lg: "960px",
-    userBreak: '990px',
+    userBreak: "990px",
     xl: "1200px",
     "2xl": "1536px",
 });
@@ -52,16 +53,18 @@ function MyApp({ Component, pageProps }) {
 
     return (
         <Provider store={Store}>
-            <QueryClientProvider client={queryClient}>
-                <Hydrate state={pageProps.dehydratedState}>
-                    <ChakraProvider theme={theme}>
-                        <Layout>
-                            <ReactQueryDevtools initialIsOpen={false} />
-                            <Component {...pageProps} />
-                        </Layout>
-                    </ChakraProvider>
-                </Hydrate>
-            </QueryClientProvider>
+            <PersistGate loading={null} persistor={persistor}>
+                <QueryClientProvider client={queryClient}>
+                    <Hydrate state={pageProps.dehydratedState}>
+                        <ChakraProvider theme={theme}>
+                            <Layout>
+                                <ReactQueryDevtools initialIsOpen={false} />
+                                <Component {...pageProps} />
+                            </Layout>
+                        </ChakraProvider>
+                    </Hydrate>
+                </QueryClientProvider>
+            </PersistGate>
         </Provider>
     );
 }

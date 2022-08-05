@@ -1,17 +1,14 @@
-import React, { useEffect, useRef, useState, Skeleton } from "react";
+import React, { useEffect, useRef, useState, Skeleton, useMemo } from "react";
 import styles from "../../styles/ImgCard.module.css";
-import { Box, Flex, Image, Link, Text } from "@chakra-ui/react";
-// import Image from "next/image";
+import { Box, Flex, Image, Link, Text, useDisclosure } from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
 import { BsPlusLg } from "react-icons/bs";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useDispatch, useSelector } from "react-redux";
-import {
-    addImage,
-    removeImage,
-    selectAllIds,
-} from "../../features/SavedImgSlice";
+import { useSelector } from "react-redux";
+import { selectImageIds } from "../../features/CollectionSlice";
 import { useRouter } from "next/router";
+import { AiFillHeart } from "react-icons/ai";
+import { ImageModal } from "../modal/ImageModal";
 
 export const ImgCard = ({
     id,
@@ -26,26 +23,19 @@ export const ImgCard = ({
     user,
     item,
 }) => {
-    const dispatch = useDispatch();
     const router = useRouter();
 
-    const ids = useSelector((state) => selectAllIds(state));
+    const ids = useSelector((state) => selectImageIds(state));
+
+    // modal controller
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const goUserDetails = () => {
         user?.username && router.push(`/user/${user?.username}`);
     };
 
-    const saveAndRemove = () => {
-        if (ids?.includes(id)) {
-            console.log("existed");
-            dispatch(removeImage(id));
-        } else {
-            dispatch(addImage({ ...item }));
-        }
-    };
-
-    const goDetail = () => {
-        id && router.push(`/photos/${id}`);
+    const saveImg = () => {
+        onOpen();
     };
 
     if (!imgs?.regular || !imgs?.thumb || !imgs?.full || !imgs?.raw)
@@ -70,74 +60,102 @@ export const ImgCard = ({
             borderRadius={{ base: "8px", lgMobile: "15px" }}
             className={styles.card}
         >
-            {/* giving min height to image container make the cards more good looking, while the images are loading users can see the card with 250px. */}
-            <Box
-                className={styles.imgContainer}
-                w="100%"
-                borderRadius={{ base: "8px 8px 0 0", lgMobile: "15px" }}
-                bg="rgb(168, 168, 168)"
-                cursor="pointer"
-            >
-                {imgs?.regular || imgs?.thumb || imgs?.full || imgs?.raw ? (
-                    <LazyLoadImage
-                        onClick={goDetail}
-                        src={
-                            imgs?.regular ||
-                            imgs?.thumb ||
-                            imgs?.full ||
-                            imgs?.raw
-                        }
-                        alt={description || ""}
-                        width="100%"
-                        height="100%"
-                        style={{
-                            objectFit: "cover",
-                            minHeight:
-                                height > 3000
-                                    ? height > 4000
-                                        ? height > 5000
-                                            ? height >= 6000
-                                                ? "400px"
-                                                : "270px"
-                                            : "250px"
-                                        : "210px"
-                                    : "200px",
-                        }}
-                    />
-                ) : (
-                    <Flex
-                        w="100%"
-                        h="450px"
-                        bg="grey.first"
-                        justify="center"
-                        align="center"
-                        borderRadius="15px"
-                    >
-                        Image not available!
-                    </Flex>
-                )}
+            {/* model to handle saving img */}
+            {isOpen && (
+                <ImageModal image={item} isOpen={isOpen} onClose={onClose} />
+            )}
 
+            {/* giving min height to image container make the cards more good looking, while the images are loading users can see the card with 250px. */}
+            {imgs?.regular || imgs?.full || imgs?.thumb || imgs?.raw ? (
                 <Box
-                    fontSize="1.1rem"
-                    bg="white"
+                    className={styles.imgContainer}
+                    w="100%"
+                    borderRadius={{ base: "8px 8px 0 0", lgMobile: "15px" }}
+                    bg="rgb(168, 168, 168)"
                     cursor="pointer"
-                    borderRadius="5px"
-                    className={styles.addBtn}
-                    onClick={saveAndRemove}
-                    title={
-                        ids?.includes(id) ? "Remove from list" : "Add to list"
-                    }
                 >
-                    <Box
-                        className={`${styles.addIcon} ${
-                            ids?.includes(id) ? styles.added : ""
-                        }`}
-                        bg="black"
-                        borderRadius="50px"
-                    ></Box>
-                    {/* <BsPlusLg className={styles.addIcon} /> */}
+                    <Link href={`/photos/${id}`}>
+                        <LazyLoadImage
+                            src={
+                                imgs?.regular ||
+                                imgs?.thumb ||
+                                imgs?.full ||
+                                imgs?.raw
+                            }
+                            alt={description || ""}
+                            width="100%"
+                            height="100%"
+                            style={{
+                                objectFit: "cover",
+                                minHeight:
+                                    height > 3000
+                                        ? height > 4000
+                                            ? height > 5000
+                                                ? height >= 6000
+                                                    ? "400px"
+                                                    : "270px"
+                                                : "250px"
+                                            : "210px"
+                                        : "200px",
+                            }}
+                        />
+                    </Link>
+
+                    {/* todo: set up liked image list in redux toolkit and change icon title */}
+                    <Flex
+                        position="absolute"
+                        top="1rem"
+                        right="1rem"
+                        align="center"
+                        gap="0.7rem"
+                        className={styles.iconsContainer}
+                    >
+                        <Box
+                            fontSize="1.2rem"
+                            bg="grey.third"
+                            cursor="pointer"
+                            borderRadius="5px"
+                            className={styles.likeBtn}
+                            title="Like"
+                        >
+                            <AiFillHeart className={styles.likeBtnIcon} />
+                        </Box>
+
+                        <Box
+                            bg="grey.third"
+                            cursor="pointer"
+                            borderRadius="5px"
+                            className={styles.addBtn}
+                            onClick={saveImg}
+                            title={
+                                ids?.includes(id)
+                                    ? "Remove from list"
+                                    : "Add to list"
+                            }
+                        >
+                            <Box
+                                className={`${styles.addIcon} ${
+                                    ids?.includes(id) ? styles.added : ""
+                                }`}
+                                bg="black"
+                                borderRadius="50px"
+                            ></Box>
+                        </Box>
+                    </Flex>
                 </Box>
-            </Box>
+            ) : (
+                <Flex
+                    weight="100%"
+                    height="450px"
+                    bg="rgb(168, 168, 168)"
+                    justify="center"
+                    align="center"
+                    borderRadius="15px"
+                    zIndex={3}
+                >
+                    Image not available!
+                </Flex>
+            )}
 
             <Flex
                 className={styles.info}
@@ -206,7 +224,12 @@ export const ImgCard = ({
                     borderRadius="8px"
                     className={styles.downloadBtn}
                 >
-                    <a href={links?.download} target="_blank" download>
+                    <a
+                        href={links?.download}
+                        rel="noreferrer"
+                        target="_blank"
+                        download
+                    >
                         <FiDownload className={styles.downloadIcon} />
                     </a>
                 </Box>

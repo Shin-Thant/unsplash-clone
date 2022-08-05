@@ -5,38 +5,50 @@ import ReactPaginate from "react-paginate";
 
 export const Pagination = ({ page, changePage, totalPages }) => {
     const [pageCount, setPageCount] = useState(0);
+    const [forcePage, setForcePage] = useState(0);
 
+    // set force page
+    useEffect(() => {
+        if (page && page > 0) {
+            setForcePage(page - 1);
+        }
+    }, [page]);
+
+    // set page count
     useEffect(() => {
         setPageCount(Math.ceil(parseInt(totalPages)));
-        // console.log(totalPages);
     }, [totalPages]);
-
-    // console.log(pageCount);
 
     const onChangeHandler = ({ selected }) => {
         changePage(selected + 1);
     };
 
     return (
-        <Flex w="100%" justify="center">
-            <ReactPaginate
-                containerClassName={styles.pagination}
-                previousLinkClassName={styles.previous}
-                nextLinkClassName={styles.next}
-                pageLinkClassName={styles.btn}
-                activeLinkClassName={styles.activeBtn}
-                breakLinkClassName={styles.break}
-                disabledLinkClassName={styles.disabledBtn}
-                previousLabel="<"
-                nextLabel=">"
-                breakLabel="..."
-                pageRangeDisplayed={3}
-                marginPagesDisplayed={1}
-                onPageChange={onChangeHandler}
-                forcePage={page - 1}
-                pageCount={pageCount}
-            />
-        </Flex>
+        <>
+            {pageCount > forcePage ? (
+                <Flex w="100%" justify="center">
+                    <ReactPaginate
+                        containerClassName={styles.pagination}
+                        previousLinkClassName={styles.previous}
+                        nextLinkClassName={styles.next}
+                        pageLinkClassName={styles.btn}
+                        activeLinkClassName={styles.activeBtn}
+                        breakLinkClassName={styles.break}
+                        disabledLinkClassName={styles.disabledBtn}
+                        previousLabel="<"
+                        nextLabel=">"
+                        breakLabel="..."
+                        pageRangeDisplayed={3}
+                        marginPagesDisplayed={1}
+                        onPageChange={onChangeHandler}
+                        forcePage={forcePage}
+                        pageCount={pageCount}
+                    />
+                </Flex>
+            ) : (
+                ""
+            )}
+        </>
     );
 };
 

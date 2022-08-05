@@ -6,6 +6,7 @@ import {
     Image,
     Skeleton,
     Text,
+    useDisclosure,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import React, { useEffect, useRef, useState } from "react";
@@ -16,11 +17,7 @@ import { dehydrate, QueryClient, useQuery } from "react-query";
 import { pageNum } from "../explore";
 import { FiDownload } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-import {
-    addImage,
-    removeImage,
-    selectAllIds,
-} from "../../features/SavedImgSlice";
+import { selectImageIds } from "../../features/CollectionSlice";
 import { FaRegEye } from "react-icons/fa";
 import { BsEye, BsFillCalendarFill, BsFillCameraFill } from "react-icons/bs";
 import { IoLocationSharp } from "react-icons/io5";
@@ -29,6 +26,8 @@ import { motion } from "framer-motion";
 import axios from "../../services/axios";
 import { CardSkeleton } from "../../components/skeletons/CardSkeleton";
 import { CardList } from "../../components/containers/CardList";
+import { AiFillHeart } from "react-icons/ai";
+import { ImageModal } from "../../components/modal/ImageModal";
 
 const getPhotoDetails = async ({ queryKey }) => {
     const [_key, id] = queryKey;
@@ -55,7 +54,7 @@ function ImageDetail() {
     const dispatch = useDispatch();
     const [avgCards, setAvgCards] = useState(0);
 
-    const ids = useSelector((state) => selectAllIds(state));
+    const ids = useSelector((state) => selectImageIds(state));
 
     const { isLoading, data: image } = useQuery(
         ["imgDetails", router?.query?.id],
@@ -74,21 +73,18 @@ function ImageDetail() {
         }
     );
 
+    // modal controller
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const saveImg = () => {
+        onOpen();
+    };
+
     // set average cards
     useEffect(() => {
         if (userPhotos?.length) {
             setAvgCards(Math.floor(userPhotos?.length / 3));
         }
     }, [userPhotos, userPhotos?.length]);
-
-    const saveAndRemove = () => {
-        if (ids?.includes(image?.id)) {
-            console.log("existed");
-            dispatch(removeImage(image?.id));
-        } else {
-            dispatch(addImage({ ...image }));
-        }
-    };
 
     const goUserDetails = () => {
         image?.user?.username && router.push(`/user/${image?.user?.username}`);
@@ -126,7 +122,7 @@ function ImageDetail() {
                         <GridItem>
                             <a
                                 href={`/user/${image?.user?.image?.name}`}
-                                target="_blank"
+                                rel="noreferrer"
                             >
                                 <Image
                                     width="42px"
@@ -141,7 +137,7 @@ function ImageDetail() {
                         <GridItem>
                             <a
                                 href={`/user/${image?.user?.username}`}
-                                target="_blank"
+                                rel="noreferrer"
                             >
                                 <Text
                                     fontSize="1.05rem"
@@ -158,13 +154,26 @@ function ImageDetail() {
                             </a>
                         </GridItem>
                         <GridItem justifySelf="flex-end">
-                            <Flex gap="0.5rem">
+                            <Flex gap="0.8rem">
+                                <Box
+                                    fontSize="1.2rem"
+                                    bg="grey.third"
+                                    cursor="pointer"
+                                    borderRadius="5px"
+                                    className={styles.likeBtn}
+                                    title="Like"
+                                >
+                                    <AiFillHeart
+                                        className={styles.likeBtnIcon}
+                                    />
+                                </Box>
+
                                 <Box
                                     fontSize="1.1rem"
                                     bg="grey.third"
                                     cursor="pointer"
                                     borderRadius="5px"
-                                    onClick={saveAndRemove}
+                                    onClick={saveImg}
                                     className={styles.addBtn}
                                     title={
                                         ids?.includes(image?.id)
@@ -184,26 +193,38 @@ function ImageDetail() {
                                 </Box>
 
                                 <Box
-                                    fontSize="1.4rem"
+                                    height="100%"
                                     bg="grey.third"
                                     p="0.5rem 0.6rem"
                                     cursor="pointer"
                                     borderRadius="8px"
+                                    fontSize="0.9rem"
+                                    fontWeight="500"
+                                    color="myblack"
                                     className={styles.downloadBtn}
+                                    title="Download"
                                 >
                                     <a
                                         href={image?.links?.download}
                                         target="_blank"
+                                        rel="noreferrer"
                                         download
                                     >
-                                        <FiDownload
-                                            className={styles.downloadIcon}
-                                        />
+                                        Download
                                     </a>
                                 </Box>
                             </Flex>
                         </GridItem>
                     </Grid>
+
+                    {/* model to handle saving img */}
+                    {isOpen && (
+                        <ImageModal
+                            image={image}
+                            isOpen={isOpen}
+                            onClose={onClose}
+                        />
+                    )}
 
                     {/* image display */}
                     <Flex
@@ -251,8 +272,12 @@ function ImageDetail() {
                                 className={styles.imgContainer}
                                 bg="rgb(168, 168, 168)"
                             >
-                                <img
-                                    className={styles.image}
+                                <Image
+                                    // className={styles.image}
+                                    width="100%"
+                                    height="100%"
+                                    objectFit="cover"
+                                    borderRadius="10px"
                                     src={
                                         image?.urls?.regular ||
                                         image?.urls?.full ||
@@ -343,6 +368,7 @@ function ImageDetail() {
                                                     ",",
                                                     ""
                                                 )}/`}
+                                                rel="noreferrer"
                                                 target="_blank"
                                             >
                                                 <Box
@@ -465,7 +491,7 @@ function ImageDetail() {
                             {userPhotos?.length > 0 ? (
                                 <motion.h2
                                     initial={{
-                                        x: -25,
+                                        x: -30,
                                         opacity: 0,
                                     }}
                                     whileInView={{
@@ -503,7 +529,7 @@ function ImageDetail() {
                                 <Box w="100%" mb="2rem">
                                     <motion.h2
                                         initial={{
-                                            x: -25,
+                                            x: -30,
                                             opacity: 0,
                                         }}
                                         whileInView={{

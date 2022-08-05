@@ -23,7 +23,7 @@
     height: 100%;
     border-radius: inherit;
     background-color: white;
-    /* z-index: -1; */
+    z-index: -1;
     pointer-events: none;
     box-shadow: 0 2px 8px 0px rgba(0, 0, 0, 0.3);
     transition: height 400ms ease, box-shadow 330ms ease;
@@ -34,22 +34,51 @@
     overflow: hidden;
     transition: all 300ms ease;
 }
+.imgContainer:hover {
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
+}
 
-.addBtn {
-    --icon-width: 20px;
-    --icon-height: 2.4px;
-
-    width: 38px;
-    height: 38px;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
+.iconsContainer {
     opacity: 0;
-    pointer-events: none;
     transition: all 300ms ease;
+}
+.imgContainer:hover .iconsContainer {
+    opacity: 1;
+}
+
+.likeBtn {
+    width: 40px;
+    height: 35px;
     display: flex;
     justify-content: center;
     align-items: center;
+    color: hsl(0, 0%, 20%);
+    transition: background 220ms ease;
+}
+.likeBtn:hover {
+    background-color: white;
+}
+.likeBtnIcon {
+    opacity: 0.8;
+    transition: opacity 220ms ease;
+}
+.likeBtn:hover .likeBtnIcon {
+    opacity: 1;
+}
+
+.addBtn {
+    --icon-width: 18px;
+    --icon-height: 2.4px;
+
+    width: 40px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 220ms ease;
+}
+.addBtn:hover {
+    background-color: white;
 }
 
 .addIcon {
@@ -57,7 +86,7 @@
     position: relative;
     height: var(--icon-height);
     opacity: 0.7;
-    transition: all 180ms ease;
+    transition: all 220ms ease;
 }
 .addIcon.added {
     transform: rotate(45deg);
@@ -80,14 +109,6 @@
     transform: rotate(270deg);
 }
 .addBtn:hover .addIcon {
-    opacity: 1;
-}
-
-.imgContainer:hover {
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
-}
-.imgContainer:hover .addBtn {
-    pointer-events: all;
     opacity: 1;
 }
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import styles from "../styles/Explore.module.css";
 import React, { useEffect, useRef, useState } from "react";
@@ -196,43 +197,27 @@ export default function explore() {
                     </Box>
                 </Box>
 
-                {/* <Box
-                    w="100%"
-                    p="1rem"
-                    borderRadius="13px"
-                    bg="rgba(255, 255, 255, 0.5)"
-                    // zIndex="5"
-                    backdropFilter="blur(3px)"
-                >
-                    <Text>hello world</Text> */}
                 {isLoading ? (
-                    // <h2
-                    //     style={{
-                    //         backgroundColor: "tomato",
-                    //         height: "50vh",
-                    //     }}
-                    // >
-                    //     loading
-                    // </h2>
                     <CardSkeleton />
                 ) : (
                     <CardList data={images} avgCards={avgCards} />
                 )}
+
+                <Flex w="100%" justify="center" align="center" mt="5rem">
+                    <NormalPagination
+                        goNext={goNext}
+                        goPrevious={goPrevious}
+                        current={page}
+                    />
+                </Flex>
             </Box>
 
-            <Flex w="100%" justify="center" align="center" mt="5rem">
-                <NormalPagination
-                    goNext={goNext}
-                    goPrevious={goPrevious}
-                    current={page}
-                />
-            </Flex>
             {/* </Box> */}
         </>
     );
 }
 
-export const getStaticProps = async () => {
+export const getServerSideProps = async () => {
     const queryClient = new QueryClient();
 
     await queryClient.prefetchQuery(["getPhotos", 1], getPhotos);

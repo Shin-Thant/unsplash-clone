@@ -2,18 +2,12 @@ import { Box, Flex, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react";
 import React from "react";
 import { useRouter } from "next/router";
 import styles from "../../styles/CollectionCard.module.css";
-// import Link from "next/link";
 
 export const CollectionCard = ({ collection }) => {
     const router = useRouter();
 
     const goDetails = () => {
         collection?.id && router.push(`/collectionDetails/${collection?.id}`);
-    };
-
-    const goUserDetails = () => {
-        collection?.user?.username &&
-            router.push(`/user/${collection?.user?.username}`);
     };
 
     return (
@@ -192,15 +186,22 @@ export const CollectionCard = ({ collection }) => {
                     _focus={{
                         border: "0px",
                     }}
-                    href={`/user/${collection?.user?.username}`}
+                    _hover={{
+                        textDecoration: "none",
+                    }}
+                    href={`/collectionDetails/${collection?.id}`}
                 >
                     <Text
-                        onClick={goDetails}
                         fontSize="1.1rem"
                         fontWeight="bold"
                         mb="1rem"
                         cursor="pointer"
                         w="max-content"
+                        opacity="0.9"
+                        transition="opacity 230ms ease"
+                        _hover={{
+                            opacity: "1",
+                        }}
                     >
                         {collection?.title}
                     </Text>

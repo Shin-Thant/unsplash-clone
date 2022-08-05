@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -21,6 +22,7 @@ const IconBox = ({ alone, link, children }) => {
         <a
             style={{ display: "inline-block" }}
             target="_blank"
+            rel="noreferrer"
             href={`https://instagram.com/${link}`}
         >
             <motion.div
@@ -195,6 +197,21 @@ export default function UserDetails() {
         staleTime: 10800000,
     });
 
+    // methods
+    const changePage = useCallback((num) => {
+        setPrevField(field);
+        setPage(num);
+        window.scrollTo(0, 0);
+    }, []);
+
+    const changeField = useCallback((newField) => {
+        setPrevField(field);
+
+        setField(newField);
+        setPage(1);
+    }, []);
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
         if (field === "photos") {
             setTotalPages(Math.ceil(profile?.total_photos / 10));
@@ -207,39 +224,30 @@ export default function UserDetails() {
 
     // scrolling top
     useEffect(() => {
-        if (typeof window !== undefined) window.scrollTo(0, 0);
-    }, []);
-
-    // reset field and page number when url changed
-    useEffect(() => {
         let isMounted = true;
-        if (isMounted) changeField("photos");
+        if (isMounted && typeof window !== undefined) {
+            window.scrollTo(0, 0);
+            return null;
+        }
 
         return () => {
             isMounted = false;
         };
-    }, [router?.pathname]);
+    }, []);
+
+    // reset field and page number when url changed
+    useEffect(() => {
+        if (router?.pathname === "/user/[username]" && field !== "photos")
+            changeField("photos");
+    }, [router?.pathname, changeField]);
 
     // setting average card
     useEffect(() => {
         if (data?.length) {
             setAvgCards(Math.floor(data?.length / 3));
+            return null;
         }
     }, [data]);
-
-    const changePage = useCallback((num) => {
-        setPrevField(field);
-
-        setPage(num);
-        window.scrollTo(0, 0);
-    }, []);
-
-    const changeField = (newField) => {
-        setPrevField(field);
-
-        setField(newField);
-        setPage(1);
-    };
 
     const list = {
         hidden: {
@@ -495,6 +503,7 @@ export default function UserDetails() {
                                                         ",",
                                                         ""
                                                     )}/`}
+                                                    rel="noreferrer"
                                                     target="_blank"
                                                     className={styles.location}
                                                 >
@@ -774,6 +783,7 @@ export default function UserDetails() {
                                     <a
                                         style={{ display: "inline-block" }}
                                         target="_blank"
+                                        rel="noreferrer"
                                         href={`${profile?.porfolio_url}`}
                                     >
                                         <Flex
@@ -871,7 +881,7 @@ export default function UserDetails() {
                                     miniTablet: "inline-block",
                                 }}
                             >
-                                {profile?.total_photos}
+                                {profile?.total_photos ?? ""}
                             </Text>
                         </Flex>
                         <Flex
@@ -909,7 +919,7 @@ export default function UserDetails() {
                                     miniTablet: "inline-block",
                                 }}
                             >
-                                {profile?.total_collections}
+                                {profile?.total_collections ?? ""}
                             </Text>
                         </Flex>
                         <Flex
@@ -947,7 +957,7 @@ export default function UserDetails() {
                                     miniTablet: "inline-block",
                                 }}
                             >
-                                {profile?.total_likes}
+                                {profile?.total_likes ?? ""}
                             </Text>
                         </Flex>
                     </Flex>

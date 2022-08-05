@@ -1,0 +1,82 @@
+.collections {
+    scroll-behavior: smooth;
+}
+
+.collections::-webkit-scrollbar {
+    width: 13px;
+}
+
+.collections::-webkit-scrollbar-track {
+    width: 10px;
+    background-color: hsl(0, 0%, 65%);
+    border-radius: 50px;
+}
+
+.collections::-webkit-scrollbar-thumb {
+    width: 5px !important;
+    border-radius: 50px;
+    border-block: 4px solid hsl(0, 0%, 65%);
+    border-inline: 4px solid hsl(0, 0%, 65%);
+    background-color: hsl(0, 0%, 25%);
+}
+.collections::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(0, 0%, 10%);
+}
+
+/* * collection box */
+.collectionBox {
+    /* border: 1.5px solid hsl(0, 0%, 15%);
+    border-left: 8px solid; */
+}
+
+.collectionImg::before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: hsla(0, 0%, 5%, 0.2);
+    transition: all 200ms ease;
+}
+.collectionBox:hover .collectionImg::before {
+    background-color: hsla(0, 0%, 5%, 0.3);
+}
+
+.plus {
+    width: 60%;
+    height: 2.5px;
+    border-radius: 50px;
+    position: relative;
+}
+.plus::before {
+    content: "";
+    width: 100%;
+    height: 3px;
+    background-color: inherit;
+    border-radius: inherit;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%) rotate(90deg);
+    transition: transform 400ms ease;
+}
+
+.plus.added::before {
+    transform: translate(-50%) rotate(360deg);
+}
+
+.title-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+}
+
+/* * form styles */
+/* .form-label {
+    font-weight: 500;
+    margin-bottom: 0.8rem;
+} */

@@ -47,7 +47,7 @@ export default function Navbar() {
         if (storage) setRecent(storage);
     }, []);
 
-    // const { images } = useSelector((state) => state.savedImg);
+    // const { images } = useSelector((state) => state.collection);
 
     useEffect(() => {
         if (typeof window !== undefined) {

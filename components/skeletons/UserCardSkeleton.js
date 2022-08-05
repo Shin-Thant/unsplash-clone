@@ -10,7 +10,14 @@ import React from "react";
 
 export const UserCardSkeleton = () => {
     return (
-        <Grid templateColumns="repeat(3, 1fr)" gap="1.3rem">
+        <Grid
+            templateColumns={{
+                base: "1fr",
+                miniTablet: "repeat(2, 1fr)",
+                userBreak: "repeat(3, 1fr)",
+            }}
+            gap="1.3rem"
+        >
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((item) => (
                 <Box
                     key={`user-card-${item}`}
@@ -22,7 +29,7 @@ export const UserCardSkeleton = () => {
                 >
                     <Grid
                         h="max-content"
-                        templateColumns="max-content max-content 1fr"
+                        templateColumns="max-content 1fr"
                         align="center"
                         gap="1rem"
                         mb="1.5rem"
@@ -56,15 +63,6 @@ export const UserCardSkeleton = () => {
                                     borderRadius="50px"
                                 />
                             </Flex>
-                        </GridItem>
-                        <GridItem justifySelf="flex-end">
-                            <Skeleton
-                                startColor="#e7e7e7"
-                                endColor="#6A6A6A"
-                                width="35px"
-                                height="35px"
-                                borderRadius="7px"
-                            />
                         </GridItem>
                     </Grid>
 
