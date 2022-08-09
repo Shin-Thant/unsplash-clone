@@ -1,5 +1,4 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import FollowSlice from "../features/FollowSlice";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import collectionSlice from "../features/CollectionSlice";
 import favoriteImgSlice from "../features/FavoriteImgSlice";
 import {

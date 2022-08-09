@@ -1,242 +1,260 @@
 .card {
-    --hover_padding: 1rem;
+	--hover_padding: 1rem;
 
-    position: relative;
-    transform: translateY(20px);
-    opacity: 0;
-    transition: padding 300ms ease, height 300ms ease;
-    animation: fadeIn 800ms ease forwards;
+	position: relative;
+	transform: translateY(20px);
+	opacity: 0;
+	transition: padding 300ms ease, height 300ms ease;
+	animation: fadeIn 800ms ease forwards;
 }
 @keyframes fadeIn {
-    100% {
-        transform: translateY(0);
-        opacity: 1;
-    }
+	100% {
+		transform: translateY(0);
+		opacity: 1;
+	}
 }
 
 .card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    background-color: white;
-    z-index: -1;
-    pointer-events: none;
-    box-shadow: 0 2px 8px 0px rgba(0, 0, 0, 0.3);
-    transition: height 400ms ease, box-shadow 330ms ease;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border-radius: inherit;
+	background-color: white;
+	z-index: -1;
+	pointer-events: none;
+	box-shadow: 0 2px 8px 0px rgba(0, 0, 0, 0.3);
+	transition: height 400ms ease, box-shadow 330ms ease;
 }
 
 .imgContainer {
-    position: relative;
-    overflow: hidden;
-    transition: all 300ms ease;
+	position: relative;
+	overflow: hidden;
+	transition: all 300ms ease;
 }
 .imgContainer:hover {
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
+	box-shadow: 0 5px 12px rgba(0, 0, 0, 0.25);
 }
 
 .iconsContainer {
-    opacity: 0;
-    transition: all 300ms ease;
+	opacity: 0;
+	transition: all 300ms ease;
 }
 .imgContainer:hover .iconsContainer {
-    opacity: 1;
+	opacity: 1;
 }
 
 .likeBtn {
-    width: 40px;
-    height: 35px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: hsl(0, 0%, 20%);
-    transition: background 220ms ease;
+	width: 40px;
+	height: 35px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: hsl(0, 0%, 20%);
+	transition: background 220ms ease;
+}
+.likeBtn.favorited {
+	background-color: hsl(0, 100%, 60%);
+	color: white;
+}
+.likeBtn.favorited:hover {
+	background-color: hsl(0, 100%, 60%) !important;
 }
 .likeBtn:hover {
-    background-color: white;
+	background-color: white;
+}
+
+.likeBtn.favorited .likeBtnIcon {
+	opacity: 1;
 }
 .likeBtnIcon {
-    opacity: 0.8;
-    transition: opacity 220ms ease;
+	opacity: 0.8;
+	transition: opacity 220ms ease, color 250ms ease;
+}
+.likeBtn.favorited .likeBtnIcon {
+	opacity: 1;
 }
 .likeBtn:hover .likeBtnIcon {
-    opacity: 1;
+	opacity: 1;
 }
 
 .addBtn {
-    --icon-width: 18px;
-    --icon-height: 2.4px;
+	--icon-width: 18px;
+	--icon-height: 2.4px;
 
-    width: 40px;
-    height: 35px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background 220ms ease;
+	width: 40px;
+	height: 35px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: background 220ms ease;
+}
+.addBtn.added {
+	background-color: white;
 }
 .addBtn:hover {
-    background-color: white;
+	background-color: white;
 }
 
 .addIcon {
-    width: var(--icon-width);
-    position: relative;
-    height: var(--icon-height);
-    opacity: 0.7;
-    transition: all 220ms ease;
+	width: var(--icon-width);
+	position: relative;
+	height: var(--icon-height);
+	opacity: 0.7;
+	transition: all 220ms ease;
 }
-.addIcon.added {
-    transform: rotate(45deg);
-    transition: transform 300ms ease;
+.added .addIcon {
+	opacity: 1;
+	transform: rotate(45deg);
+	transition: transform 300ms ease;
 }
 .addIcon::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--icon-width);
-    height: var(--icon-height);
-    background-color: black;
-    border-radius: 50px;
-    z-index: 2;
-    transform: rotate(90deg);
-    transition: transform 300ms ease;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: var(--icon-width);
+	height: var(--icon-height);
+	background-color: black;
+	border-radius: 50px;
+	z-index: 2;
+	transform: rotate(90deg);
+	transition: transform 300ms ease;
 }
-.addIcon.added::before {
-    transform: rotate(270deg);
+.added .addIcon::before {
+	transform: rotate(270deg);
 }
 .addBtn:hover .addIcon {
-    opacity: 1;
+	opacity: 1;
 }
 
 .info {
-    position: relative;
-    overflow: hidden;
-    padding: 0;
-    transition: all 300ms ease;
-    display: none;
+	position: relative;
+	overflow: hidden;
+	padding: 0;
+	transition: all 300ms ease;
+	display: none;
 }
 
 .userInfo {
-    position: absolute;
-    top: -30px;
-    left: var(--hover_padding);
-    opacity: 0;
-    transition: top 450ms ease, opacity 400ms ease, left 300ms ease;
+	position: absolute;
+	top: -30px;
+	left: var(--hover_padding);
+	opacity: 0;
+	transition: top 450ms ease, opacity 400ms ease, left 300ms ease;
 }
 
 .downloadBtn {
-    position: absolute;
-    top: -30px;
-    right: var(--hover_padding);
-    opacity: 0;
-    transition: top 450ms ease, opacity 400ms ease, right 300ms ease;
+	position: absolute;
+	top: -30px;
+	right: var(--hover_padding);
+	opacity: 0;
+	transition: top 450ms ease, opacity 400ms ease, right 300ms ease;
 }
 
 .downloadIcon {
-    opacity: 0.7;
-    transition: all 180ms ease;
+	opacity: 0.7;
+	transition: all 180ms ease;
 }
 .downloadBtn:hover .downloadIcon {
-    opacity: 1;
+	opacity: 1;
 }
 
 .card:hover {
-    padding: var(--hover_padding);
+	padding: var(--hover_padding);
 }
 .card:hover::before {
-    box-shadow: 0 4px 14px 1px rgba(0, 0, 0, 0.3);
-    height: 100%;
+	box-shadow: 0 4px 14px 1px rgba(0, 0, 0, 0.3);
+	height: 100%;
 }
 .card:hover .info {
-    padding: var(--hover_padding) 0 0 0;
+	padding: var(--hover_padding) 0 0 0;
 }
 .card:hover .userInfo {
-    opacity: 1;
-    position: relative;
-    top: 0;
-    left: 0;
+	opacity: 1;
+	position: relative;
+	top: 0;
+	left: 0;
 }
 .card:hover .downloadBtn {
-    opacity: 1;
-    position: relative;
-    top: 0;
-    right: 0;
+	opacity: 1;
+	position: relative;
+	top: 0;
+	right: 0;
 }
 
 @media screen and (max-width: 1000px) {
-    .card:hover {
-        padding: calc(var(--hover_padding) - 0.2rem);
-    }
+	.card:hover {
+		padding: calc(var(--hover_padding) - 0.2rem);
+	}
 }
 
 @media screen and (max-width: 950px) {
-    .addBtn {
-        top: 0.8rem;
-        right: 0.8rem;
-    }
+	.addBtn {
+		top: 0.8rem;
+		right: 0.8rem;
+	}
 }
 
 @media screen and (max-width: 599px) {
-    .card {
-        padding-bottom: var(--hover_padding) !important;
-        /* box-shadow: 0 2px 10px 0px rgba(0, 0, 0, 0.2); */
-    }
+	.card {
+		padding-bottom: var(--hover_padding) !important;
+		/* box-shadow: 0 2px 10px 0px rgba(0, 0, 0, 0.2); */
+	}
 
-    .card:hover {
-        padding-top: 0;
-        padding-inline: 0;
-        box-shadow: none;
-    }
+	.card:hover {
+		padding-top: 0;
+		padding-inline: 0;
+		box-shadow: none;
+	}
 
-    .imgContainer:hover {
-        box-shadow: none;
-    }
+	.imgContainer:hover {
+		box-shadow: none;
+	}
 
-    .card:hover .addBtn {
-        pointer-events: all;
-        opacity: 1;
-    }
+	.card:hover .addBtn {
+		pointer-events: all;
+		opacity: 1;
+	}
 
-    /* .imgContainer {
+	/* .imgContainer {
         border-radius: 8px 8px 0 0 !important;
     } */
 
-    .info {
-        padding: var(--hover_padding) var(--hover_padding) 0
-            var(--hover_padding);
-    }
+	.info {
+		padding: var(--hover_padding) var(--hover_padding) 0
+			var(--hover_padding);
+	}
 
-    .userInfo,
-    .downloadBtn {
-        opacity: 1;
-        position: relative;
-        top: 0;
-    }
+	.userInfo,
+	.downloadBtn {
+		opacity: 1;
+		position: relative;
+		top: 0;
+	}
 
-    .userInfo {
-        left: 0;
-    }
-    .card:hover .userInfo {
-        left: var(--hover_padding);
-    }
-    .downloadBtn {
-        right: 0;
-    }
-    .card:hover .downloadBtn {
-        right: var(--hover_padding);
-    }
+	.userInfo {
+		left: 0;
+	}
+	.card:hover .userInfo {
+		left: var(--hover_padding);
+	}
+	.downloadBtn {
+		right: 0;
+	}
+	.card:hover .downloadBtn {
+		right: var(--hover_padding);
+	}
 
-    .addBtn {
-        opacity: 1;
-    }
+	.addBtn {
+		opacity: 1;
+	}
 }
 
 @media screen and (max-width: 445px) {
-    .card {
-        --hover_padding: 0.8rem;
-    }
+	.card {
+		--hover_padding: 0.8rem;
+	}
 }

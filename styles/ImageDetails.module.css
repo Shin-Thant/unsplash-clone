@@ -1,119 +1,123 @@
 .image-side {
-    /* background-color: tomato; */
-    overflow: hidden;
-    height: 83vh;
+	/* background-color: tomato; */
+	overflow: hidden;
+	height: 83vh;
 }
 
 .imgContainer {
-    overflow: hidden;
-    max-width: 100%;
-    /* width: max-content;
+	overflow: hidden;
+	max-width: 100%;
+	/* width: max-content;
     height: 83vh; */
-    width: 300px;
-    height: 300px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: scale 600ms ease 1.2s forwards;
+	width: 300px;
+	height: 300px;
+	border-radius: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	animation: scale 600ms ease 1.2s forwards;
 }
 
-/* .image {
-    border-radius: 10px;
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-} */
-
 @keyframes scale {
-    100% {
-        width: max-content;
-        height: 100%;
-    }
+	100% {
+		width: max-content;
+		height: 100%;
+	}
 }
 
 .likeBtn {
-    width: 40px;
-    min-height: 38px;
-    max-height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: hsl(0, 0%, 20%);
-    transition: background 220ms ease;
+	width: 40px;
+	min-height: 38px;
+	max-height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: hsl(0, 0%, 20%);
+	transition: background 220ms ease;
+}
+.likeBtn.favorited {
+	background-color: hsl(0, 100%, 60%);
+	color: white;
+}
+.likeBtn.favorited:hover {
+	background-color: hsl(0, 100%, 60%) !important;
 }
 .likeBtnIcon {
-    opacity: 0.8;
-    transition: opacity 220ms ease;
+	opacity: 0.8;
+	transition: opacity 220ms ease;
+}
+.likeBtn.favorited .likeBtnIcon {
+	opacity: 1;
 }
 .likeBtn:hover .likeBtnIcon {
-    opacity: 1;
+	opacity: 1;
 }
 
 .addBtn {
-    --icon-width: 18px;
-    --icon-height: 2.4px;
+	--icon-width: 18px;
+	--icon-height: 2.4px;
 
-    width: 43px;
-    min-height: 38px;
-    max-height: 100%;
-    position: relative;
-    transition: all 300ms ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+	width: 43px;
+	min-height: 38px;
+	max-height: 100%;
+	position: relative;
+	transition: all 300ms ease;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 .addIcon {
-    width: var(--icon-width);
-    position: relative;
-    height: var(--icon-height);
-    opacity: 0.6;
-    transition: all 180ms ease;
+	width: var(--icon-width);
+	position: relative;
+	height: var(--icon-height);
+	opacity: 0.6;
+	transition: all 180ms ease;
 }
-.addIcon.added {
-    transform: rotate(45deg);
-    transition: transform 300ms ease;
+.added .addIcon {
+	opacity: 1;
+	transform: rotate(45deg);
+	transition: transform 300ms ease;
 }
 .addIcon::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--icon-width);
-    height: var(--icon-height);
-    background-color: black;
-    border-radius: 50px;
-    z-index: 2;
-    transform: rotate(90deg);
-    transition: transform 300ms ease;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: var(--icon-width);
+	height: var(--icon-height);
+	background-color: black;
+	border-radius: 50px;
+	z-index: 2;
+	transform: rotate(90deg);
+	transition: transform 300ms ease;
 }
-.addIcon.added::before {
-    transform: rotate(270deg);
+.added .addIcon::before {
+	transform: rotate(270deg);
 }
 .addBtn:hover .addIcon {
-    opacity: 0.9;
+	opacity: 0.9;
 }
 
 .downloadBtn a {
-    opacity: 0.8;
-    transition: opacity 250ms ease;
+	opacity: 0.8;
+	transition: opacity 250ms ease;
 }
 .downloadBtn:hover a {
-    opacity: 1;
+	opacity: 1;
 }
 
 .text-cover {
-    background-color: white;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
+	background-color: white;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 
 .related-text {
-    font-size: 1.3rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
+	font-size: 1.3rem;
+	font-weight: 600;
+	margin-bottom: 1.5rem;
 }

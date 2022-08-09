@@ -1,8 +1,9 @@
-import { Box, Flex, Image, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Image, Spinner, Text } from "@chakra-ui/react";
 import React, { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
 	addImage,
+	initAction,
 	removeImage,
 	selectCollectionById,
 } from "../../../features/CollectionSlice";
@@ -10,6 +11,7 @@ import styles from "../../../styles/ImageModal.module.css";
 import { motion } from "framer-motion";
 
 const CollectionBox = ({ image, collectionId }) => {
+	const isLoading = useSelector((state) => state.collection?.loading);
 	const { name, previewImgs, images } = useSelector((state) =>
 		selectCollectionById(state, collectionId)
 	);
@@ -21,11 +23,10 @@ const CollectionBox = ({ image, collectionId }) => {
 
 	const imgAction = () => {
 		// add and remove image to and from collection
+		dispatch(initAction());
 		if (!isExisted) {
-			console.log("add");
 			dispatch(addImage({ collectionId, image }));
 		} else {
-			console.log("remove");
 			dispatch(removeImage({ collectionId, imgId: image.id }));
 		}
 	};
@@ -47,8 +48,8 @@ const CollectionBox = ({ image, collectionId }) => {
 				align="center"
 				gap="0.4rem"
 				width="100%"
+				height={{ base: "5.2rem", modalBreak: "6rem" }}
 				borderRadius="8px"
-				height="6rem"
 				p="1rem"
 				mb="1rem"
 				bg={isExisted ? "#9B5D31" : "hsl(0, 0%, 20%)"}
@@ -67,7 +68,10 @@ const CollectionBox = ({ image, collectionId }) => {
 			>
 				<Box zIndex="3">
 					<Text
-						fontSize="1.2rem"
+						fontSize={{
+							base: "1.1rem",
+							modalBreak: "1.15rem",
+						}}
 						color={images?.length ? "white" : "myblack"}
 						fontWeight="600"
 					>
@@ -80,7 +84,10 @@ const CollectionBox = ({ image, collectionId }) => {
 						color={images?.length ? "white" : "myblack"}
 						mt="0.5rem"
 						fontWeight="600"
-						fontSize="0.9rem"
+						fontSize={{
+							base: "0.88rem",
+							modalBreak: "0.95rem",
+						}}
 					>
 						{images?.length}{" "}
 						{images?.length > 1 || images?.length === 0
@@ -89,13 +96,35 @@ const CollectionBox = ({ image, collectionId }) => {
 					</Text>
 				</Box>
 
-				<Flex
+				<Button
+					isLoading={isLoading}
+					spinner={
+						<Spinner
+							size="md"
+							thickness="3.5px"
+							colorScheme="white"
+							color="white"
+						/>
+					}
+					color="white"
+					bg="transparent"
+					_hover={{
+						bg: "transparent",
+					}}
+					_active={{
+						bg: "transparent",
+					}}
+					_focus={{
+						border: 0,
+					}}
+					display="flex"
 					justify="center"
 					align="center"
 					width="30px"
 					height="30px"
+					p="0"
+					zIndex={2}
 					position="relative"
-					cursor="pointer"
 					onClick={imgAction}
 				>
 					<Box
@@ -104,7 +133,7 @@ const CollectionBox = ({ image, collectionId }) => {
 							isExisted ? styles.added : ""
 						}`}
 					></Box>
-				</Flex>
+				</Button>
 
 				{/* bg image */}
 				{images?.length >= 1 ? (
@@ -116,7 +145,7 @@ const CollectionBox = ({ image, collectionId }) => {
 						left="0"
 						width="100%"
 						height="100%"
-						zIndex="-1"
+						zIndex={1}
 						overflow="hidden"
 						borderRadius="7px"
 						className={styles.collectionImg}
@@ -135,9 +164,8 @@ const CollectionBox = ({ image, collectionId }) => {
 						left="0"
 						width="100%"
 						height="100%"
-						zIndex="-1"
 						borderRadius="7px"
-						bg="hsl(0, 0%, 98%)"
+						bg="hsl(0, 0%, 96%)"
 					></Box>
 				)}
 			</Flex>
