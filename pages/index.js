@@ -129,6 +129,7 @@ export default function Home() {
                             )}
                             <img
                                 src="./circle-text.svg"
+                                alt='circle-image'
                                 className={styles.circle}
                             />
                         </Box>

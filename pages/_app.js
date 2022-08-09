@@ -11,62 +11,63 @@ import { useState } from "react";
 import { PersistGate } from "redux-persist/integration/react";
 
 const breakpoints = createBreakpoints({
-    base: "320px",
-    mobile: "490px",
-    sm: "550px",
-    lgMobile: "600px",
-    miniTablet: "650px",
-    collectionBreak: "680px",
-    md: "850px",
-    lg: "960px",
-    userBreak: "990px",
-    xl: "1200px",
-    "2xl": "1536px",
+	base: "320px",
+	mobile: "490px",
+	sm: "550px",
+	lgMobile: "600px",
+	miniTablet: "650px",
+	collectionBreak: "680px",
+	modalBreak: "750px",
+	md: "850px",
+	lg: "960px",
+	userBreak: "990px",
+	xl: "1200px",
+	"2xl": "1536px",
 });
 
 const theme = extendTheme({
-    colors: {
-        background: "#CDC8B7",
-        text: "#9E6E44",
-        brown: {
-            tea: "#df853c",
-            1000: "#95633A",
-            2000: "#684026",
-            3000: "#230D0D",
-        },
-        grey: {
-            first: "#CBC7C0",
-            second: "#C4C4C4",
-            third: "#EBEBEB",
-        },
-        myblack: "#242423",
-    },
-    fonts: {
-        condensed: "Roboto Condensed, sans-serif",
-        saira: "Saira Condensed, sans-serif",
-    },
-    breakpoints,
+	colors: {
+		background: "#CDC8B7",
+		text: "#9E6E44",
+		brown: {
+			tea: "#df853c",
+			1000: "#95633A",
+			2000: "#684026",
+			3000: "#230D0D",
+		},
+		grey: {
+			first: "#CBC7C0",
+			second: "#C4C4C4",
+			third: "#EBEBEB",
+		},
+		myblack: "#242423",
+	},
+	fonts: {
+		condensed: "Roboto Condensed, sans-serif",
+		saira: "Saira Condensed, sans-serif",
+	},
+	breakpoints,
 });
 
 function MyApp({ Component, pageProps }) {
-    const [queryClient] = useState(() => new QueryClient());
+	const [queryClient] = useState(() => new QueryClient());
 
-    return (
-        <Provider store={Store}>
-            <PersistGate loading={null} persistor={persistor}>
-                <QueryClientProvider client={queryClient}>
-                    <Hydrate state={pageProps.dehydratedState}>
-                        <ChakraProvider theme={theme}>
-                            <Layout>
-                                <ReactQueryDevtools initialIsOpen={false} />
-                                <Component {...pageProps} />
-                            </Layout>
-                        </ChakraProvider>
-                    </Hydrate>
-                </QueryClientProvider>
-            </PersistGate>
-        </Provider>
-    );
+	return (
+		<Provider store={Store}>
+			<PersistGate loading={null} persistor={persistor}>
+				<QueryClientProvider client={queryClient}>
+					<Hydrate state={pageProps.dehydratedState}>
+						<ChakraProvider theme={theme}>
+							<Layout>
+								<ReactQueryDevtools initialIsOpen={false} />
+								<Component {...pageProps} />
+							</Layout>
+						</ChakraProvider>
+					</Hydrate>
+				</QueryClientProvider>
+			</PersistGate>
+		</Provider>
+	);
 }
 
 export default MyApp;
