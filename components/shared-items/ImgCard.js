@@ -1,6 +1,21 @@
 import React, { useEffect, useRef, useState, Skeleton, useMemo } from "react";
 import styles from "../../styles/ImgCard.module.css";
-import { Box, Flex, Image, Link, Text, useDisclosure } from "@chakra-ui/react";
+import {
+	Box,
+	Button,
+	Flex,
+	Image,
+	Link,
+	Text,
+	Popover,
+	PopoverTrigger,
+	PopoverContent,
+	PopoverHeader,
+	PopoverBody,
+	PopoverFooter,
+	PopoverArrow,
+	useDisclosure,
+} from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
 import { BsPlusLg } from "react-icons/bs";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -44,9 +59,13 @@ export const ImgCard = ({
 	// modal controller
 	const { isOpen, onOpen, onClose } = useDisclosure();
 
-	const goUserDetails = () => {
-		user?.username && router.push(`/user/${user?.username}`);
-	};
+	// popover controller
+	const {
+		isOpen: isPopOpen,
+		onToggle: onPopToggle,
+		onClose: onPopClose,
+		onOpen: onPopOpen,
+	} = useDisclosure();
 
 	const saveImg = () => {
 		onOpen();
@@ -79,6 +98,7 @@ export const ImgCard = ({
 			zIndex={10}
 			w="100%"
 			h="max-content"
+			position="relative"
 			borderRadius={{ base: "8px", lgMobile: "15px" }}
 			className={styles.card}
 		>
@@ -90,6 +110,7 @@ export const ImgCard = ({
 			{/* giving min height to image container make the cards more good looking, while the images are loading users can see the card with 250px. */}
 			{imgs?.regular || imgs?.full || imgs?.thumb || imgs?.raw ? (
 				<Box
+					zIndex={5}
 					className={styles.imgContainer}
 					w="100%"
 					borderRadius={{ base: "8px 8px 0 0", lgMobile: "15px" }}
@@ -178,14 +199,28 @@ export const ImgCard = ({
 				</Flex>
 			)}
 
+			{/* <Popover
+				onClose={onPopClose}
+				isOpen={isPopOpen}
+				placement="top-start"
+				zIndex={1000}
+			> */}
 			<Flex
 				className={styles.info}
 				w="100%"
 				justify="space-between"
 				align="center"
 			>
-				<Flex align="center" gap="0.8rem" className={styles.userInfo}>
-					<Box>
+				{/* <PopoverTrigger> */}
+				<Flex
+					align="center"
+					gap="0.8rem"
+					className={styles.userInfo}
+					// onMouseLeave={onPopClose}
+				>
+					<Box
+					// onMouseOver={onPopOpen}
+					>
 						<Link
 							_focus={{
 								border: "0px",
@@ -193,7 +228,6 @@ export const ImgCard = ({
 							href={`/user/${user?.username}`}
 						>
 							<LazyLoadImage
-								onClick={goUserDetails}
 								src={user?.profile_image?.large}
 								alt={user?.username}
 								width="40px"
@@ -207,6 +241,7 @@ export const ImgCard = ({
 							/>
 						</Link>
 					</Box>
+
 					<Link
 						_focus={{
 							border: "0px",
@@ -217,8 +252,10 @@ export const ImgCard = ({
 						href={`/user/${user?.username}`}
 					>
 						<Text
+							color="myblack"
+							// onMouseOver={onPopOpen}
 							fontWeight={600}
-							opacity="0.7"
+							opacity="0.8"
 							cursor="pointer"
 							fontSize={{
 								base: "0.9rem",
@@ -236,6 +273,7 @@ export const ImgCard = ({
 						</Text>
 					</Link>
 				</Flex>
+				{/* </PopoverTrigger> */}
 
 				<Box
 					fontSize="1.4rem"
@@ -243,6 +281,7 @@ export const ImgCard = ({
 					p="0.5rem 0.6rem"
 					cursor="pointer"
 					borderRadius="8px"
+					color="myblack"
 					className={styles.downloadBtn}
 				>
 					<a
@@ -255,6 +294,23 @@ export const ImgCard = ({
 					</a>
 				</Box>
 			</Flex>
+
+			{/* <PopoverContent
+					border="1px solid black"
+					shadow="md"
+					_focus={{
+						outline: 0,
+					}}
+				>
+					<Box
+						p="0.5rem 0.5rem"
+						onMouseLeave={onPopClose}
+						onMouseOver={onPopOpen}
+					>
+						<UserMiniCard user={user} />
+					</Box>
+				</PopoverContent>
+			</Popover> */}
 		</Box>
 	);
 };

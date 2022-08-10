@@ -321,6 +321,7 @@ export const ImageModal = ({ image, isOpen, onClose }) => {
 												p="0 1rem"
 												position="relative"
 												cursor="pointer"
+												transition="all 220ms ease"
 												_hover={{
 													boxShadow:
 														"0 3px 10px 0px hsla(0, 0%, 0%, 0.25)",

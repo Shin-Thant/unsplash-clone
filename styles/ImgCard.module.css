@@ -26,7 +26,7 @@
 	z-index: -1;
 	pointer-events: none;
 	box-shadow: 0 2px 8px 0px rgba(0, 0, 0, 0.3);
-	transition: height 400ms ease, box-shadow 330ms ease;
+	transition: height 400ms ease, box-shadow 200ms ease;
 }
 
 .imgContainer {
@@ -44,6 +44,11 @@
 }
 .imgContainer:hover .iconsContainer {
 	opacity: 1;
+}
+@media (max-width: 599px) {
+	.iconsContainer {
+		opacity: 1;
+	}
 }
 
 .likeBtn {
