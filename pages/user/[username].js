@@ -17,7 +17,7 @@ import { Pagination } from "../../components/shared-items/Pagination";
 import { CollectionSkeleton } from "../../components/skeletons/CollectionSkeleton";
 import { CollectionList } from "../../components/containers/CollectionList";
 
-const IconBox = ({ alone, link, children, to }) => {
+const IconBox = ({ alone, link, children, to, delay }) => {
 	return (
 		<Link
 			href={`https://${to}/${link}`}
@@ -35,8 +35,8 @@ const IconBox = ({ alone, link, children, to }) => {
 				}}
 				transition={{
 					type: "tween",
+					delay,
 					duration: 0.7,
-					delay: 0.7,
 				}}
 			>
 				<Flex
@@ -78,8 +78,8 @@ const UserImgInfo = ({ count, name }) => {
 				}}
 				transition={{
 					type: "tween",
+					delay: 1.7,
 					duration: 0.7,
-					delay: 1,
 				}}
 			>
 				<Text
@@ -104,8 +104,8 @@ const UserImgInfo = ({ count, name }) => {
 				}}
 				transition={{
 					type: "tween",
+					delay: 1.8,
 					duration: 0.6,
-					delay: 1.3,
 				}}
 			>
 				<Text fontSize="0.9rem" fontWeight="500" opacity="0.9">
@@ -256,8 +256,8 @@ export default function UserDetails() {
 			opacity: 1,
 			transition: {
 				type: "tween",
-				duration: 0.5,
-				delay: 0.7,
+				delay: 0.3,
+				duration: 0.4,
 				when: "beforeChildren",
 				staggerChildren: 0.3,
 			},
@@ -274,6 +274,51 @@ export default function UserDetails() {
 			y: 0,
 			transition: {
 				duration: 0.6,
+			},
+		},
+	};
+
+	const infoList = {
+		hidden: {
+			opacity: 0,
+		},
+		visible: {
+			opacity: 1,
+			transition: {
+				type: "tween",
+				delay: 1.3,
+				duration: 0.8,
+				when: "beforeChildren",
+				staggerChildren: 0.3,
+			},
+		},
+	};
+
+	const infoItem = {
+		hidden: {
+			opacity: 0,
+		},
+		visible: {
+			opacity: 1,
+			transition: {
+				type: "tween",
+				duration: 0.3,
+			},
+		},
+	};
+
+	const portfolio = {
+		hidden: {
+			y: 20,
+			opacity: 0,
+		},
+		visible: {
+			y: 0,
+			opacity: 1,
+			transition: {
+				type: "tween",
+				delay: 2,
+				duration: 0.5,
 			},
 		},
 	};
@@ -316,7 +361,7 @@ export default function UserDetails() {
 						miniTablet: "15px",
 						lg: "20px",
 					}}
-					bg="white"
+					bg="hsl(0, 0%, 96%)"
 					px={{ base: "0.5rem", miniTablet: "1rem" }}
 					py="2rem"
 					shadow="lg"
@@ -355,10 +400,12 @@ export default function UserDetails() {
 							</Flex>
 						) : (
 							<>
+								{/* name */}
 								<h1 className={styles["profile-name"]}>
 									{profile?.name}
 								</h1>
 
+								{/* bio */}
 								{profile?.bio?.length > 0 ? (
 									<Flex
 										width={{
@@ -457,165 +504,77 @@ export default function UserDetails() {
 									""
 								)}
 
-								{/* location and link */}
-								{profile?.location?.length > 0 ? (
-									<Flex
-										width="max-content"
-										height="max-content"
-										justify="center"
-										align="center"
-										gap="1rem"
-										mb={{ base: "1.2rem", md: "1rem" }}
-									>
-										<motion.div
-											style={{ width: "max-content" }}
-											initial={{
-												y: 20,
-												opacity: 0,
-											}}
-											animate={{
-												y: 0,
-												opacity: 1,
-											}}
-											transition={{
-												type: "tween",
-												duration: 0.6,
-												delay: 0.7,
-											}}
+								<motion.div
+									variants={infoList}
+									initial="hidden"
+									animate="visible"
+								>
+									{/* location and link */}
+									{profile?.location?.length > 0 ? (
+										<Flex
+											width="100%"
+											height="max-content"
+											justify="center"
+											align="center"
+											gap="1rem"
+											mb={{ base: "1.2rem", md: "1rem" }}
 										>
-											<Flex
-												width="max-content"
-												height="100%"
-												align="center"
-												gap="0.2rem"
-												fontSize={{
-													base: "1rem",
-													lg: "1.1rem",
+											<motion.div
+												style={{ width: "max-content" }}
+												initial={{
+													y: 20,
+													opacity: 0,
+												}}
+												animate={{
+													y: 0,
+													opacity: 1,
+												}}
+												transition={{
+													type: "tween",
+													delay: 1.2,
+													duration: 0.6,
 												}}
 											>
-												<IoLocationOutline
-													className={styles.icons}
-												/>
-
-												<a
-													href={`https://www.google.com/maps/search/${profile?.location?.replaceAll(
-														",",
-														""
-													)}/`}
-													rel="noreferrer"
-													target="_blank"
-													className={styles.location}
-												>
-													{profile?.location}
-												</a>
-											</Flex>
-										</motion.div>
-
-										{!profile?.social?.instagram_username &&
-										profile?.social?.twitter_username ? (
-											<>
-												<Divider
-													duration={0.6}
-													delay={0}
-												/>
-
-												<IconBox
-													link={
-														profile?.social
-															?.twitter_username
-													}
-													alone={
-														profile?.social
-															?.instagram_username
-															? false
-															: true
-													}
-													to={"twitter.com"}
-												>
-													<Image
-														src="/custom-twitter.svg"
-														alt="Twitter-icon"
-														width="36px"
-														height="36px"
-														objectFit="cover"
-													/>
-												</IconBox>
-											</>
-										) : (
-											""
-										)}
-
-										{!profile?.social?.twitter_username &&
-										profile?.social?.instagram_username ? (
-											<>
-												<Divider
-													duration={0.6}
-													delay={0}
-												/>
-
-												<IconBox
-													link={
-														profile?.social
-															?.instagram_username
-													}
-													alone={
-														profile?.social
-															?.twitter_username
-															? false
-															: true
-													}
-													to={"instagram.com"}
-												>
-													<Image
-														src="/custom-instagram.svg"
-														alt="Instagram-icon"
-														width="36px"
-														height="36px"
-														objectFit="cover"
-													/>
-												</IconBox>
-											</>
-										) : (
-											""
-										)}
-									</Flex>
-								) : (
-									""
-								)}
-
-								{/* social links */}
-								{(!profile?.location &&
-									!profile?.social?.instagram_username) ||
-								(!profile?.location &&
-									!profile?.social?.twitter_username) ||
-								(profile?.social?.twitter_username &&
-									profile?.social?.instagram_username) ||
-								(!profile?.location &&
-									profile?.social?.instagram_username &&
-									profile?.social?.twitter_username) ? (
-									<Grid
-										minWidth="200px"
-										templateColumns="45% 3% 45%"
-										justifyContent="center"
-										alignItems="center"
-										gap="1rem"
-										mb={{ base: "1.2rem", md: "1rem" }}
-									>
-										{profile?.social?.twitter_username ? (
-											<GridItem
-												colSpan={
-													profile?.social
-														?.instagram_username
-														? ""
-														: 3
-												}
-											>
 												<Flex
-													flexDir="column"
-													justify="center"
+													width="max-content"
+													height="100%"
 													align="center"
-													gap="0.5rem"
+													gap="0.2rem"
+													fontSize={{
+														base: "1rem",
+														lg: "1.1rem",
+													}}
 												>
+													<IoLocationOutline
+														className={styles.icons}
+													/>
+
+													<a
+														href={`https://www.google.com/maps/search/${profile?.location?.replaceAll(
+															",",
+															""
+														)}/`}
+														rel="noreferrer"
+														target="_blank"
+														className={
+															styles.location
+														}
+													>
+														{profile?.location}
+													</a>
+												</Flex>
+											</motion.div>
+
+											{!profile?.social
+												?.instagram_username &&
+											profile?.social
+												?.twitter_username ? (
+												<>
+													<Divider
+														duration={0.6}
+														delay={0}
+													/>
+
 													<IconBox
 														link={
 															profile?.social
@@ -628,71 +587,31 @@ export default function UserDetails() {
 																: true
 														}
 														to={"twitter.com"}
+														delay={1.2}
 													>
 														<Image
 															src="/custom-twitter.svg"
 															alt="Twitter-icon"
-															width="28px"
-															height="28px"
+															width="36px"
+															height="36px"
 															objectFit="cover"
 														/>
 													</IconBox>
+												</>
+											) : (
+												""
+											)}
 
-													<motion.h1
-														initial={{
-															y: 15,
-															opacity: 0,
-														}}
-														animate={{
-															y: 0,
-															opacity: 1,
-														}}
-														transition={{
-															type: "tween",
-															duration: 0.7,
-															delay: 0.9,
-														}}
-													>
-														<Text
-															fontSize="0.9rem"
-															fontWeight="500"
-															opacity="0.9"
-															cursor="pointer"
-														>
-															Twitter
-														</Text>
-													</motion.h1>
-												</Flex>
-											</GridItem>
-										) : (
-											""
-										)}
+											{!profile?.social
+												?.twitter_username &&
+											profile?.social
+												?.instagram_username ? (
+												<>
+													<Divider
+														duration={0.6}
+														delay={0}
+													/>
 
-										{profile?.social?.twitter_username &&
-										profile?.social?.instagram_username ? (
-											<Divider
-												duration={0.6}
-												delay={0.7}
-											/>
-										) : (
-											""
-										)}
-
-										{profile?.social?.instagram_username ? (
-											<GridItem
-												colSpan={
-													profile?.social
-														?.twitter_username
-														? ""
-														: 3
-												}
-											>
-												<Flex
-													flexDir="column"
-													justify="center"
-													align="center"
-													gap="0.5rem"
-												>
 													<IconBox
 														link={
 															profile?.social
@@ -705,110 +624,272 @@ export default function UserDetails() {
 																: true
 														}
 														to={"instagram.com"}
+														delay={1.2}
 													>
 														<Image
 															src="/custom-instagram.svg"
 															alt="Instagram-icon"
-															width="28px"
-															height="28px"
+															width="36px"
+															height="36px"
 															objectFit="cover"
 														/>
 													</IconBox>
-													<motion.h1
-														initial={{
-															y: 15,
-															opacity: 0,
-														}}
-														animate={{
-															y: 0,
-															opacity: 1,
-														}}
-														transition={{
-															type: "tween",
-															duration: 0.7,
-															delay: 0.9,
-														}}
+												</>
+											) : (
+												""
+											)}
+										</Flex>
+									) : (
+										""
+									)}
+
+									{/* social links */}
+									{(!profile?.location &&
+										!profile?.social?.instagram_username) ||
+									(!profile?.location &&
+										!profile?.social?.twitter_username) ||
+									(profile?.social?.twitter_username &&
+										profile?.social?.instagram_username) ||
+									(!profile?.location &&
+										profile?.social?.instagram_username &&
+										profile?.social?.twitter_username) ? (
+										<Grid
+											minWidth="200px"
+											templateColumns="45% 3% 45%"
+											justifyContent="center"
+											alignItems="center"
+											gap="1rem"
+											mb={{ base: "1.2rem", md: "1rem" }}
+										>
+											{profile?.social
+												?.twitter_username ? (
+												<GridItem
+													colSpan={
+														profile?.social
+															?.instagram_username
+															? ""
+															: 3
+													}
+												>
+													<Flex
+														flexDir="column"
+														justify="center"
+														align="center"
+														gap="0.5rem"
 													>
-														<Text
-															fontSize="0.9rem"
-															fontWeight="500"
-															opacity="0.9"
-															cursor="pointer"
+														<IconBox
+															link={
+																profile?.social
+																	?.twitter_username
+															}
+															alone={
+																profile?.social
+																	?.instagram_username
+																	? false
+																	: true
+															}
+															to={"twitter.com"}
+															delay={1.5}
 														>
-															Instagram
-														</Text>
-													</motion.h1>
-												</Flex>
-											</GridItem>
-										) : (
-											""
-										)}
-									</Grid>
-								) : (
-									""
-								)}
+															<Image
+																src="/custom-twitter.svg"
+																alt="Twitter-icon"
+																width="28px"
+																height="28px"
+																objectFit="cover"
+															/>
+														</IconBox>
 
-								{/* follower, following and likes */}
-								{isFetched ? (
-									<Flex
-										w="100%"
-										justify="center"
-										align="center"
-										gap="2rem"
-									>
-										<UserImgInfo
-											count={profile?.following_count}
-											name={"Following"}
-										/>
+														<motion.h1
+															initial={{
+																y: 15,
+																opacity: 0,
+															}}
+															animate={{
+																y: 0,
+																opacity: 1,
+															}}
+															transition={{
+																type: "tween",
+																duration: 1.5,
+																delay: 0.9,
+															}}
+														>
+															<Text
+																fontSize="0.9rem"
+																fontWeight="500"
+																opacity="0.9"
+																cursor="pointer"
+															>
+																Twitter
+															</Text>
+														</motion.h1>
+													</Flex>
+												</GridItem>
+											) : (
+												""
+											)}
 
-										<Divider duration={0.6} delay={1} />
+											{profile?.social
+												?.twitter_username &&
+											profile?.social
+												?.instagram_username ? (
+												<Divider
+													duration={0.6}
+													delay={0.7}
+												/>
+											) : (
+												""
+											)}
 
-										<UserImgInfo
-											count={profile?.followers_count}
-											name={"Followers"}
-										/>
+											{profile?.social
+												?.instagram_username ? (
+												<GridItem
+													colSpan={
+														profile?.social
+															?.twitter_username
+															? ""
+															: 3
+													}
+												>
+													<Flex
+														flexDir="column"
+														justify="center"
+														align="center"
+														gap="0.5rem"
+													>
+														<IconBox
+															link={
+																profile?.social
+																	?.instagram_username
+															}
+															alone={
+																profile?.social
+																	?.twitter_username
+																	? false
+																	: true
+															}
+															to={"instagram.com"}
+															delay={1.5}
+														>
+															<Image
+																src="/custom-instagram.svg"
+																alt="Instagram-icon"
+																width="28px"
+																height="28px"
+																objectFit="cover"
+															/>
+														</IconBox>
+														<motion.h1
+															initial={{
+																y: 15,
+																opacity: 0,
+															}}
+															animate={{
+																y: 0,
+																opacity: 1,
+															}}
+															transition={{
+																type: "tween",
+																duration: 1.5,
+																delay: 0.9,
+															}}
+														>
+															<Text
+																fontSize="0.9rem"
+																fontWeight="500"
+																opacity="0.9"
+																cursor="pointer"
+															>
+																Instagram
+															</Text>
+														</motion.h1>
+													</Flex>
+												</GridItem>
+											) : (
+												""
+											)}
+										</Grid>
+									) : (
+										""
+									)}
 
-										<Divider duration={0.6} delay={1} />
-
-										<UserImgInfo
-											count={profile?.total_likes}
-											name={"Likes"}
-										/>
-									</Flex>
-								) : (
-									""
-								)}
-
-								{/* porfolio url */}
-								{profile?.porfolio_url?.length > 0 ? (
-									<a
-										style={{ display: "inline-block" }}
-										target="_blank"
-										rel="noreferrer"
-										href={`${profile?.porfolio_url}`}
-									>
+									{/* follower, following and likes */}
+									{isFetched ? (
 										<Flex
-											w="max-content"
+											w="100%"
 											justify="center"
 											align="center"
-											mt="1.7rem"
-											gap="0.5rem"
-											opacity="0.9"
-											transition="all 190ms ease"
-											_hover={{
-												opacity: 1,
-											}}
+											gap="2rem"
 										>
-											<GoGlobe className={styles.icons} />
+											<UserImgInfo
+												count={profile?.following_count}
+												name={"Following"}
+											/>
 
-											<Text fontWeight="500">
-												{profile?.porfolio_url}
-											</Text>
+											<Divider duration={0.6} delay={1} />
+
+											<UserImgInfo
+												count={profile?.followers_count}
+												name={"Followers"}
+											/>
+
+											<Divider duration={0.6} delay={1} />
+
+											<UserImgInfo
+												count={profile?.total_likes}
+												name={"Likes"}
+											/>
 										</Flex>
-									</a>
-								) : (
-									""
-								)}
+									) : (
+										""
+									)}
+
+									{/* portfolio url */}
+									{profile?.portfolio_url?.length > 0 ? (
+										<motion.h1
+											style={{
+												width: "100%",
+											}}
+											variants={portfolio}
+											initial="hidden"
+											animate="visible"
+										>
+											<Link
+												_focus={{
+													border: "0",
+												}}
+												target="_blank"
+												href={`${profile?.portfolio_url}`}
+											>
+												<Flex
+													w="max-content"
+													mx="auto"
+													justify="center"
+													align="center"
+													mt="1.7rem"
+													gap="0.5rem"
+													opacity="0.9"
+													transition="all 190ms ease"
+													_hover={{
+														opacity: 1,
+													}}
+													title="Portfolio"
+												>
+													<GoGlobe
+														className={styles.icons}
+													/>
+
+													<Text fontWeight="500">
+														{profile?.portfolio_url}
+													</Text>
+												</Flex>
+											</Link>
+										</motion.h1>
+									) : (
+										""
+									)}
+								</motion.div>
 							</>
 						)}
 					</Flex>

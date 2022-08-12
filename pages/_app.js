@@ -40,6 +40,10 @@ const theme = extendTheme({
 			second: "#C4C4C4",
 			third: "#EBEBEB",
 		},
+		red: {
+			favorited: 'hsl(0, 100%, 60%)',
+			error: 'hsl(0, 100%, 55%)'
+		},
 		myblack: "#242423",
 	},
 	fonts: {

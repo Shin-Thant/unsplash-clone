@@ -4,6 +4,7 @@ import {
 	Grid,
 	GridItem,
 	Image,
+	Link,
 	Skeleton,
 	Text,
 	useDisclosure,
@@ -53,6 +54,14 @@ const getUserPhotos = async ({ queryKey }) => {
 
 	return data;
 };
+
+function IconBox({ children }) {
+	return (
+		<Flex justify="center" minWidth="22px">
+			{children}
+		</Flex>
+	);
+}
 
 function ImageDetail() {
 	const router = useRouter();
@@ -122,60 +131,102 @@ function ImageDetail() {
 			</Head>
 			<Box
 				w="100%"
-				px={{ base: "0.8rem", sm: "1.1rem", xl: "1.2rem" }}
-				mt="1.5rem"
-				mb="1.5rem"
+				px={{ base: "0.6rem", sm: "1.1rem", xl: "1.2rem" }}
+				my={{ base: "1rem", sm: "1.1rem", lgMobile: "1.5rem" }}
 			>
 				<Box
 					w="100%"
 					minHeight="80vh"
 					borderRadius="10px"
-					p="1rem"
-					bg="white"
+					p={{ base: "0.8rem", sm: "1rem" }}
+					bg="hsl(0, 0%, 96%)"
 				>
 					<Grid
-						templateColumns="max-content max-content 1fr"
+						templateColumns={{
+							base: "1fr 3fr",
+							miniTablet: "3fr 1fr",
+						}}
+						templateRows={{
+							base: "repeat(2, 2fr)",
+							miniTablet: "1fr",
+						}}
 						alignItems="center"
-						gap="1rem"
-						px="2rem"
+						gap="0.8rem"
+						px={{ base: "0", lg: "1rem" }}
 						mb="2rem"
 					>
-						<GridItem>
-							<a
-								href={`/user/${image?.user?.image?.name}`}
-								rel="noreferrer"
-							>
-								<Image
-									width="42px"
-									height="42px"
-									objectFit="cover"
-									borderRadius="50%"
-									src={image?.user?.profile_image?.large}
-									alt={image?.user?.username}
-								/>
-							</a>
-						</GridItem>
-						<GridItem>
-							<a
-								href={`/user/${image?.user?.username}`}
-								rel="noreferrer"
-							>
-								<Text
-									fontSize="1.05rem"
-									fontWeight="600"
-									opacity="0.7"
-									cursor="pointer"
-									_hover={{
-										opacity: "1",
+						<GridItem
+							gridColumn={{
+								base: "span 3",
+								miniTablet: "1 / 2",
+							}}
+						>
+							<Flex height="100%" align="center" gap="0.5rem">
+								<Link
+									href={`/user/${image?.user?.image?.name}`}
+									border="0"
+									_focus={{
+										border: 0,
 									}}
-									transition="all 230ms ease"
 								>
-									{image?.user?.name ?? image?.user?.username}
-								</Text>
-							</a>
+									<Image
+										width={{ base: "42px", sm: "45px" }}
+										height={{ base: "42px", sm: "45px" }}
+										objectFit="cover"
+										borderRadius="50%"
+										src={image?.user?.profile_image?.large}
+										alt={image?.user?.username}
+									/>
+								</Link>
+
+								<Link
+									height="max-content"
+									href={`/user/${image?.user?.username}`}
+									border="0"
+									_hover={{
+										textDecoration: "none",
+									}}
+									_focus={{
+										border: 0,
+									}}
+								>
+									<Text
+										fontSize={{
+											base: "0.9rem",
+											mobile: "0.95rem",
+											lg: "1rem",
+										}}
+										fontWeight="600"
+										opacity="0.7"
+										cursor="pointer"
+										_hover={{
+											opacity: "1",
+										}}
+										transition="all 230ms ease"
+									>
+										{image?.user?.name ??
+											image?.user?.username}
+									</Text>
+								</Link>
+							</Flex>
 						</GridItem>
-						<GridItem justifySelf="flex-end">
-							<Flex gap="0.8rem">
+
+						<GridItem
+							gridRow={{ base: "2 / 3", miniTablet: "1 / 2" }}
+							gridColumn={{ base: "span 3", miniTablet: "2 / 3" }}
+						>
+							<Grid
+								width="100%"
+								templateColumns={{
+									base: "max-content max-content 2fr",
+									miniTablet: "repeat(3, max-content)",
+								}}
+								justifyContent={{
+									base: "flex-start",
+									miniTablet: "flex-end",
+								}}
+								gap="0.8rem"
+							>
 								<Box
 									onClick={favoriteImg}
 									fontSize="1.2rem"
@@ -215,16 +266,19 @@ function ImageDetail() {
 								</Box>
 
 								<Box
+									justifySelf="flex-end"
+									width="max-content"
 									height="100%"
 									bg="grey.third"
-									p="0.5rem 0.6rem"
+									p="0.5rem 0.8rem"
 									cursor="pointer"
 									borderRadius="8px"
 									fontSize="0.9rem"
-									fontWeight="500"
+									fontWeight="600"
 									color="myblack"
 									className={styles.downloadBtn}
 									title="Download"
+									transition="all 300ms ease"
 								>
 									<a
 										href={image?.links?.download}
@@ -235,7 +289,7 @@ function ImageDetail() {
 										Download
 									</a>
 								</Box>
-							</Flex>
+							</Grid>
 						</GridItem>
 					</Grid>
 
@@ -257,13 +311,6 @@ function ImageDetail() {
 						mb="2.5rem"
 					>
 						{isLoading ? (
-							// <Skeleton
-							//     w="60%"
-							//     h="80vh"
-							//     borderRadius="15px"
-							//     startColor="#F0F0F0"
-							//     endColor="#6A6A6A"
-							// />
 							<div
 								style={{
 									height: "30vh",
@@ -336,10 +383,17 @@ function ImageDetail() {
 							{/* image information */}
 							<Box
 								className={styles["content-side"]}
-								px="2rem"
+								px={{ base: "0", lg: "1rem" }}
 								mb="3rem"
 							>
-								<Flex gap="1rem" mb="2rem">
+								<Flex
+									direction={{
+										base: "column",
+										miniTablet: "row",
+									}}
+									gap={{ base: "0.5rem", miniTablet: "1rem" }}
+									mb="2rem"
+								>
 									<Flex
 										width="max-content"
 										align="center"
@@ -381,9 +435,12 @@ function ImageDetail() {
 									<Flex
 										align="center"
 										gap="0.8rem"
-										mb="0.5rem"
+										mb={{ base: "0.6rem", sm: "0.8rem" }}
 									>
-										<IoLocationSharp fontSize="1.3rem" />
+										<IconBox>
+											<IoLocationSharp fontSize="1.4rem" />
+										</IconBox>
+
 										{image?.location?.title ? (
 											<a
 												href={`https://www.google.com/maps/search/${image?.location?.name?.replaceAll(
@@ -429,9 +486,12 @@ function ImageDetail() {
 									<Flex
 										align="center"
 										gap="0.8rem"
-										mb="0.5rem"
+										mb={{ base: "0.6rem", sm: "0.8rem" }}
 									>
-										<BsFillCalendarFill fontSize="1.2rem" />
+										<IconBox>
+											<BsFillCalendarFill fontSize="1.2rem" />
+										</IconBox>
+
 										{image?.created_at ? (
 											<Box
 												fontWeight="500"
@@ -477,7 +537,10 @@ function ImageDetail() {
 									</Flex>
 
 									<Flex align="center" gap="0.8rem">
-										<BsFillCameraFill fontSize="1.2rem" />
+										<IconBox>
+											<BsFillCameraFill fontSize="1.2rem" />
+										</IconBox>
+
 										{image?.exif?.name ? (
 											<Box
 												fontWeight="500"
@@ -508,79 +571,93 @@ function ImageDetail() {
 									</Flex>
 								</Box>
 							</Box>
-
-							{/* related photos */}
-							{userPhotos?.length > 0 ? (
-								<motion.h2
-									initial={{
-										x: -30,
-										opacity: 0,
-									}}
-									whileInView={{
-										x: 0,
-										opacity: 1,
-									}}
-									viewport={{
-										once: true,
-										margin: "0px 0px -25px 0px",
-									}}
-									transition={{
-										type: "tween",
-										duration: 0.6,
-									}}
-									className={styles["related-text"]}
-								>
-									Related Photos
-								</motion.h2>
-							) : (
-								""
-							)}
-							<Box width="100%" mb="4rem">
-								{photoLoading ? (
-									<CardSkeleton />
-								) : (
-									<CardList
-										data={userPhotos}
-										avgCards={avgCards}
-									/>
-								)}
-							</Box>
-
-							{/* related collection */}
-							{image?.related_collections?.total ? (
-								<Box w="100%" mb="2rem">
-									<motion.h2
-										initial={{
-											x: -30,
-											opacity: 0,
-										}}
-										whileInView={{
-											x: 0,
-											opacity: 1,
-										}}
-										viewport={{
-											once: true,
-											margin: "0px 0px -25px 0px",
-										}}
-										transition={{
-											type: "tween",
-											duration: 0.6,
-										}}
-										className={styles["related-text"]}
-									>
-										Related Collections
-									</motion.h2>
-
-									<CollectionList
-										data={
-											image?.related_collections?.results
-										}
-									/>
-								</Box>
-							) : (
-								""
-							)}
 						</>
+					) : (
+						""
+					)}
+
+					{/* related photos */}
+					{userPhotos?.length > 0 ? (
+						<motion.h2
+							initial={{
+								x: -30,
+								opacity: 0,
+							}}
+							whileInView={{
+								x: 0,
+								opacity: 1,
+							}}
+							viewport={{
+								once: true,
+								margin: "0px 0px -25px 0px",
+							}}
+							transition={{
+								type: "tween",
+								duration: 0.6,
+							}}
+						>
+							<Text
+								fontWeight="600"
+								fontSize={{
+									base: "1.15rem",
+									miniTablet: "1.3rem",
+								}}
+								mb={{ base: "1.3rem", miniTablet: "1.5rem" }}
+							>
+								Related Photos
+							</Text>
+						</motion.h2>
+					) : (
+						""
+					)}
+					<Box width="100%" mb="4rem">
+						{photoLoading ? (
+							<CardSkeleton />
+						) : (
+							<CardList data={userPhotos} avgCards={avgCards} />
+						)}
+					</Box>
+
+					{/* related collection */}
+					{image?.related_collections?.total ? (
+						<Box w="100%" mb="0.5rem">
+							<motion.h2
+								initial={{
+									x: -30,
+									opacity: 0,
+								}}
+								whileInView={{
+									x: 0,
+									opacity: 1,
+								}}
+								viewport={{
+									once: true,
+									margin: "0px 0px -25px 0px",
+								}}
+								transition={{
+									type: "tween",
+									duration: 0.6,
+								}}
+							>
+								<Text
+									fontWeight="600"
+									fontSize={{
+										base: "1.15rem",
+										miniTablet: "1.3rem",
+									}}
+									mb={{
+										base: "1.3rem",
+										miniTablet: "1.5rem",
+									}}
+								>
+									Related Collections
+								</Text>
+							</motion.h2>
+
+							<CollectionList
+								data={image?.related_collections?.results}
+							/>
+						</Box>
 					) : (
 						""
 					)}

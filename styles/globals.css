@@ -17,6 +17,9 @@
     --grey-second: #c4c4c4;
     --grey-third: #ebebeb;
 
+    --red-favorited: hsl(0, 100%, 60%);
+    --red-error: hsl(0, 100%, 55%);
+
     --black: #4a4944;
 
     --roboto: "Roboto Condensed", sans-serif;

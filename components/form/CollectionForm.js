@@ -88,6 +88,23 @@ export const CollectionForm = ({ collectionCount, closeForm }) => {
 			.max(250, "Description must be at most 60 letters!"),
 	});
 
+	const onSubmitHandler = (values, formikBag) => {
+		dispatch(initAction());
+
+		// dispatching action
+		if (values?.name?.length)
+			dispatch(
+				addCollection({
+					name: values.name,
+					description: values.description,
+				})
+			);
+
+		formikBag.resetForm();
+		formikBag.setSubmitting(false);
+		closeForm();
+	};
+
 	return (
 		<Box width="100%" height="100%" position="relative" zIndex={10000}>
 			<Formik
@@ -97,22 +114,7 @@ export const CollectionForm = ({ collectionCount, closeForm }) => {
 				}}
 				validationSchema={collectionSchema}
 				validateOnBlur={false}
-				onSubmit={(values, formikBag) => {
-					dispatch(initAction());
-
-					// dispatching action
-					if (values?.name?.length)
-						dispatch(
-							addCollection({
-								name: values.name,
-								description: values.description,
-							})
-						);
-
-					formikBag.resetForm();
-					formikBag.setSubmitting(false);
-					closeForm();
-				}}
+				onSubmit={onSubmitHandler}
 			>
 				{({ isSubmitting, getFieldProps, errors }) => (
 					<Form height="100%" autoComplete="off">
@@ -196,7 +198,7 @@ export const CollectionForm = ({ collectionCount, closeForm }) => {
 									<Text
 										as="h1"
 										fontSize="0.9rem"
-										color="hsl(0, 100%, 55%)"
+										color="red.error"
 										fontWeight="600"
 										mt="0.3rem"
 									>
