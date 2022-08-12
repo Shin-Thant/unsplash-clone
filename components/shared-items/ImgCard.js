@@ -79,20 +79,6 @@ export const ImgCard = ({
 		}
 	};
 
-	if (!imgs?.regular || !imgs?.thumb || !imgs?.full || !imgs?.raw)
-		return (
-			<Flex
-				w="100%"
-				h="450px"
-				bg="grey.first"
-				justify="center"
-				align="center"
-				borderRadius="15px"
-			>
-				Image not available!
-			</Flex>
-		);
-
 	return (
 		<Box
 			zIndex={10}
@@ -260,7 +246,7 @@ export const ImgCard = ({
 							fontSize={{
 								base: "0.9rem",
 								mobile: "0.95rem",
-								lg: "1rem",
+								lg: "0.98rem",
 							}}
 							transition="all 250ms ease"
 							textDecoration="none"
