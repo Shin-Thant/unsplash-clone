@@ -1,18 +1,13 @@
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 
-const savedImgsFromLocal =
-	typeof window !== "undefined" && localStorage.getItem("savedImgs")
-		? JSON.parse(localStorage.getItem("savedImgs"))
-		: [];
-
 // * example data structure
 /* 
     collectionList: [
         {
             id: string,
-            name: string,
-            desc: string,
-            previewImgs: []
+            title: string,
+            description: string,
+            preview_photos: []
             images: [id(string)]
         },
         ...
@@ -36,16 +31,49 @@ const collectionSlice = createSlice({
 			state.loading = true;
 		},
 		addCollection: (state, action) => {
-			const id = new Date().getTime();
+			const id = new Date().getTime().toString();
 			const newCol = {
 				id,
 				...action.payload,
-				previewImgs: [],
+				total_photos: 0,
+				cover_photo: {},
+				preview_photos: [],
 				images: [],
+				tags: [],
+				created: true,
 			};
 
 			state.collectionList.push(newCol);
 			state.loading = false;
+		},
+		updateCollection: (state, action) => {
+			const { id, title, description } = action.payload;
+
+			const foundCollection = state.collectionList.find(
+				(col) => col.id === id
+			);
+			if (foundCollection) {
+				foundCollection.title = title;
+				foundCollection.description = description;
+
+				state.collectionList = [
+					...state.collectionList?.filter((col) => col.id !== id),
+					foundCollection,
+				];
+			}
+		},
+		deleteCollection: (state, action) => {
+			const id = action.payload;
+
+			const foundCollection = state.collectionList.find(
+				(col) => col.id === id
+			);
+
+			if (foundCollection) {
+				state.collectionList = [
+					...state.collectionList?.filter((col) => col.id !== id),
+				];
+			}
 		},
 		addImage: (state, action) => {
 			const collectionId = action.payload?.collectionId;
@@ -56,10 +84,37 @@ const collectionSlice = createSlice({
 			);
 
 			if (foundCollection) {
+				foundCollection.total_photos += 1;
+
+				// add first image to cover_photo
+				if (foundCollection.images?.length < 1) {
+					foundCollection.cover_photo = { ...image };
+				}
+
 				foundCollection.images.push(image.id);
 
-				if (foundCollection.previewImgs?.length < 4)
-					foundCollection.previewImgs.push(image);
+				// add preview_photos
+				if (foundCollection.preview_photos?.length < 4) {
+					foundCollection.preview_photos.push(image);
+				}
+
+				// add tags
+				if (
+					image?.tags?.length >= 1 &&
+					foundCollection?.tags?.length < 5
+				) {
+					if (
+						!foundCollection?.tags
+							?.map((item) => item?.title)
+							?.includes(image?.tags?.[0]?.title)
+					) {
+						foundCollection.tags.push(image?.tags?.[0]);
+					}
+				}
+
+				// add total_photos
+				state.total_photos += 1;
+
 				state.imageList.push(image);
 
 				state.collectionList = [
@@ -73,7 +128,7 @@ const collectionSlice = createSlice({
 		},
 		removeImage: (state, action) => {
 			const collectionId = action.payload?.collectionId;
-			const imgId = action.payload?.imgId;
+			const image = action.payload?.image;
 
 			const foundCollection = state.collectionList.find(
 				(col) => col.id === collectionId
@@ -81,18 +136,43 @@ const collectionSlice = createSlice({
 
 			if (foundCollection) {
 				foundCollection.images = foundCollection.images?.filter(
-					(id) => id !== imgId
+					(id) => id !== image?.id
 				);
 
-				if (foundCollection.previewImgs?.length >= 1) {
-					foundCollection.previewImgs =
-						foundCollection.previewImgs?.filter(
-							(item) => item.id !== imgId
+				// remove cover_photo
+				if (foundCollection.cover_photo?.id === image?.id) {
+					foundCollection.cover_photo = foundCollection?.imageList
+						?.length
+						? { ...foundCollection?.imageList?.[0] }
+						: {};
+				}
+
+				// remove preview_photos
+				if (foundCollection.preview_photos?.length >= 1) {
+					foundCollection.preview_photos =
+						foundCollection.preview_photos?.filter(
+							(item) => item.id !== image?.id
 						);
 				}
 
-				console.log(foundCollection.previewImgs);
+				// minus total_photos
+				if (foundCollection.total_photos >= 1) {
+					foundCollection.total_photos -= 1;
+				}
 
+				// remove tag
+				if (foundCollection.tags?.length >= 1) {
+					foundCollection.tags = foundCollection.tags?.filter(
+						(t) => t?.title !== image?.tags?.[0]?.title
+					);
+				}
+
+				// remove from imageList
+				state.imageList = state.imageList.filter(
+					(item) => item.id !== image?.id
+				);
+
+				// remove from collectionList
 				state.collectionList = [
 					...state.collectionList?.filter(
 						(col) => col.id !== collectionId
@@ -101,21 +181,24 @@ const collectionSlice = createSlice({
 				];
 			}
 
-			state.imageList = state.imageList.filter(
-				(item) => item.id !== imgId
-			);
-
 			state.loading = false;
 		},
 	},
 });
 
 export const selectAllCollections = createSelector(
-	[(state) => state.collection],
-	(collection) => {
-		return collection.collectionList
+	[(state) => state?.collection?.collectionList],
+	(list) => {
+		return [...list]?.sort((a, b) => parseInt(a?.id) - parseInt(b?.id));
+	}
+);
+
+export const selectCollectionIds = createSelector(
+	[(state) => state.collection.collectionList],
+	(list) => {
+		return list
 			.map((col) => col?.id)
-			?.sort((a, b) => a - b);
+			?.sort((a, b) => parseInt(a) - parseInt(b));
 	}
 );
 
@@ -123,6 +206,26 @@ export const selectCollectionById = createSelector(
 	[(state) => state.collection, (state, id) => id],
 	(collection, id) => {
 		return collection?.collectionList?.find((col) => col?.id === id);
+	}
+);
+
+export const selectCollectionImages = createSelector(
+	[(state) => state.collection, (state, id) => id],
+	(collection, id) => {
+		const foundCollection = collection?.collectionList?.find(
+			(col) => col?.id === id
+		);
+
+		if (!foundCollection) return [];
+
+		const images =
+			foundCollection?.images?.length >= 1
+				? collection?.imageList?.filter((img) =>
+						foundCollection?.images?.includes(img?.id)
+				  )
+				: [];
+
+		return images;
 	}
 );
 
@@ -139,6 +242,12 @@ export const selectSavedImageIds = createSelector(
 		return list?.map((item) => item?.id);
 	}
 );
-export const { initAction, addCollection, addImage, removeImage } =
-	collectionSlice.actions;
+export const {
+	initAction,
+	addCollection,
+	updateCollection,
+	deleteCollection,
+	addImage,
+	removeImage,
+} = collectionSlice.actions;
 export default collectionSlice.reducer;

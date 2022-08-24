@@ -1,0 +1,39 @@
+/* float text styles */
+.floatText {
+	position: absolute;
+	top: -13rem;
+	left: 1%;
+	width: 98%;
+	height: max-content;
+	opacity: 0;
+	transition: transform 0.7s ease;
+	animation: up 0.5s ease forwards;
+}
+@keyframes up {
+	100% {
+		opacity: 1;
+		/* transform: translateY(0); */
+	}
+}
+.floatTextImg {
+	width: 100%;
+	object-fit: cover;
+}
+.letterPath {
+	transition: fill 50ms ease;
+}
+.letter:hover .letterPath {
+	fill: #2a2a27;
+}
+
+/* main page styles */
+.highlight {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	border: 1.5px solid var(--black);
+	opacity: 1 !important;
+	border-radius: 8px;
+}

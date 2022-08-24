@@ -9,6 +9,7 @@ import { persistor, Store } from "../app/store";
 import { Provider } from "react-redux";
 import { useState } from "react";
 import { PersistGate } from "redux-persist/integration/react";
+import EditColProvider from "../context/collectionContext/editColContext";
 
 const breakpoints = createBreakpoints({
 	base: "320px",
@@ -41,8 +42,8 @@ const theme = extendTheme({
 			third: "#EBEBEB",
 		},
 		red: {
-			favorited: 'hsl(0, 100%, 60%)',
-			error: 'hsl(0, 100%, 55%)'
+			favorited: "hsl(0, 100%, 60%)",
+			error: "hsl(0, 100%, 55%)",
 		},
 		myblack: "#242423",
 	},
@@ -61,12 +62,14 @@ function MyApp({ Component, pageProps }) {
 			<PersistGate loading={null} persistor={persistor}>
 				<QueryClientProvider client={queryClient}>
 					<Hydrate state={pageProps.dehydratedState}>
-						<ChakraProvider theme={theme}>
-							<Layout>
-								<ReactQueryDevtools initialIsOpen={false} />
-								<Component {...pageProps} />
-							</Layout>
-						</ChakraProvider>
+						<EditColProvider>
+							<ChakraProvider theme={theme}>
+								<Layout>
+									<ReactQueryDevtools initialIsOpen={false} />
+									<Component {...pageProps} />
+								</Layout>
+							</ChakraProvider>
+						</EditColProvider>
 					</Hydrate>
 				</QueryClientProvider>
 			</PersistGate>

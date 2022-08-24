@@ -14,16 +14,10 @@ import {
 	Flex,
 	Button,
 } from "@chakra-ui/react";
-import React, {
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import styles from "../../styles/ImageModal.module.css";
-import { selectAllCollections } from "../../features/CollectionSlice";
+import { selectCollectionIds } from "../../features/CollectionSlice";
 import { MemoCollectionBox } from "../shared-items/modal/CollectionBox";
 import { motion } from "framer-motion";
 import { CollectionForm } from "../form/CollectionForm";
@@ -33,9 +27,9 @@ import { useInView } from "react-intersection-observer";
 import { MdOutlineCollections } from "react-icons/md";
 
 export const ImageModal = ({ image, isOpen, onClose }) => {
-	const collectionIds = useSelector((state) => selectAllCollections(state));
+	const collectionIds = useSelector((state) => selectCollectionIds(state));
 	// available page = collection / form
-	const [togglePage, setTogglePage] = useState("collection");
+	const [togglePage, setTogglePage] = useState("form");
 
 	// track element in view
 	const { ref, inView } = useInView({
@@ -72,7 +66,17 @@ export const ImageModal = ({ image, isOpen, onClose }) => {
 		setTogglePage("collection");
 	}, []);
 
-	// todo: place the model to the bottom of the page in large phone view
+	useEffect(() => {
+		let isMounted = true;
+
+		if (isMounted && collectionIds?.length >= 1) {
+			setTogglePage("collection");
+		}
+
+		return () => {
+			isMounted = false;
+		};
+	}, [collectionIds?.length]);
 
 	return (
 		<Modal isOpen={isOpen} onClose={onClose}>
@@ -164,8 +168,7 @@ export const ImageModal = ({ image, isOpen, onClose }) => {
 							/>
 						</GridItem>
 
-						{togglePage === "collection" &&
-						collectionIds?.length >= 1 ? (
+						{togglePage === "collection" ? (
 							<GridItem width="100%" height="100%">
 								{/* headings */}
 								<Grid
@@ -187,9 +190,10 @@ export const ImageModal = ({ image, isOpen, onClose }) => {
 									<Text
 										as="h2"
 										fontSize={{
-											base: "1.1rem",
-											miniTablet: "1.15rem",
-											lg: "1.2rem",
+											base: "1.15rem",
+											miniTablet: "1.2rem",
+											modalBreak: "1.3rem",
+											lg: "1.4rem",
 										}}
 										fontWeight="600"
 										position="relative"
@@ -386,13 +390,12 @@ export const ImageModal = ({ image, isOpen, onClose }) => {
 									</motion.div>
 								</Box>
 							</GridItem>
-						) : (
+						) : togglePage === "form" ? (
 							<GridItem>
-								<CollectionForm
-									collectionCount={collectionIds?.length}
-									closeForm={closeForm}
-								/>
+								<CollectionForm closeForm={closeForm} />
 							</GridItem>
+						) : (
+							`loading...`
 						)}
 					</Grid>
 				</ModalBody>

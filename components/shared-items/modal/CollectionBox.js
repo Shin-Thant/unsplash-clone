@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 
 const CollectionBox = ({ image, collectionId }) => {
 	const isLoading = useSelector((state) => state.collection?.loading);
-	const { name, previewImgs, images } = useSelector((state) =>
+	const { title, preview_photos, images } = useSelector((state) =>
 		selectCollectionById(state, collectionId)
 	);
 	const dispatch = useDispatch();
@@ -27,7 +27,7 @@ const CollectionBox = ({ image, collectionId }) => {
 		if (!isExisted) {
 			dispatch(addImage({ collectionId, image }));
 		} else {
-			dispatch(removeImage({ collectionId, imgId: image.id }));
+			dispatch(removeImage({ collectionId, image }));
 		}
 	};
 
@@ -75,8 +75,8 @@ const CollectionBox = ({ image, collectionId }) => {
 						color={images?.length ? "white" : "myblack"}
 						fontWeight="600"
 					>
-						{name
-							?.replace(name[0], name[0].toUpperCase())
+						{title
+							?.replace(title[0], title[0].toUpperCase())
 							.replace("-", " ")}
 					</Text>
 
@@ -148,10 +148,11 @@ const CollectionBox = ({ image, collectionId }) => {
 						zIndex={1}
 						overflow="hidden"
 						borderRadius="7px"
+						color="white"
 						className={styles.collectionImg}
 					>
 						<Image
-							src={previewImgs[0]?.urls?.regular}
+							src={preview_photos?.[0]?.urls?.regular}
 							alt=""
 							width="100%"
 							objectFit="cover"

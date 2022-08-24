@@ -1,122 +1,4 @@
-import { Box, Flex, Image, Link, Text } from "@chakra-ui/react";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
-import { dehydrate, QueryClient, useQuery } from "react-query";
-import { CardList } from "../../components/containers/CardList";
-import styles from "../../styles/CollectionDetails.module.css";
-import { motion } from "framer-motion";
-import { Pagination } from "../../components/shared-items/Pagination";
-import { CardSkeleton } from "../../components/skeletons/CardSkeleton";
-import axios from "../../services/axios";
-import { CollectionSkeleton } from "../../components/skeletons/CollectionSkeleton";
-import { CollectionList } from "../../components/containers/CollectionList";
-
-// * current idea
-// don't have backend => extract the ui for the collection details page then use in current user's collection's details
-// have backend => you can have one common
-
-const getCollectionPhotos = async ({ queryKey }) => {
-	const [_key, id, page] = queryKey;
-
-	const { data } = await axios.get(
-		`collections/${id}/photos?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&per_page=18&page=${page}`
-	);
-
-	return data;
-};
-
-const getCollection = async ({ queryKey }) => {
-	const [_key, id] = queryKey;
-
-	if (id) {
-		const { data } = await axios.get(
-			`collections/${id}?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}`
-		);
-		return data;
-	}
-
-	return [];
-};
-
-const getRelatedCollections = async ({ queryKey }) => {
-	const [_key, id] = queryKey;
-
-	if (id) {
-		const { data } = await axios.get(
-			`collections/${id}/related?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}`
-		);
-		return data;
-	}
-
-	return [];
-};
-
-export default function CollectionDetails() {
-	const router = useRouter();
-	const [page, setPage] = useState(1);
-	const [totalPages, setTotalPages] = useState(0);
-
-	const { data: photos, isLoading } = useQuery(
-		["collectionPhotos", router?.query?.id, page],
-		getCollectionPhotos,
-		{
-			keepPreviousData: true,
-			staleTime: 10800000,
-		}
-	);
-	const { data: collection, isLoading: collectionLoading } = useQuery(
-		["collection", router?.query?.id],
-		getCollection,
-		{
-			staleTime: 10800000,
-		}
-	);
-	const { data: relatedCollection, isLoading: relatedLoading } = useQuery(
-		["related-collection", router?.query?.id],
-		getRelatedCollections,
-		{
-			staleTime: 10800000,
-		}
-	);
-
-	useEffect(() => {
-		if (typeof window !== "undefined") {
-			window.scrollTo(0, 0);
-		}
-	}, [page]);
-
-	useEffect(() => {
-		if (collection?.total_photos) {
-			// total photos / items per page
-			setTotalPages(Math.ceil(collection?.total_photos / 18));
-		}
-	}, [collection?.total_photos]);
-
-	const [avgCards, setAvgCards] = useState(0);
-	useEffect(() => {
-		if (photos?.length) setAvgCards(photos?.length / 3);
-	}, [photos]);
-
-	const changePage = useCallback((num) => {
-		setPage(num);
-	}, []);
-
-	const goUserDetails = () => {
-		if (collection?.user?.username) {
-			router.push(`/user/${collection?.user?.username}`);
-		}
-	};
-
-	return (
-		<>
-			<Head>
-				<title>
-					Collection |{" "}
-					{collection?.title?.length ? collection?.title : "Details"}
-				</title>
-			</Head>
-			<Box
+<Box
 				w="100%"
 				mb={{ base: "0.9rem", lgMobile: "1rem", lg: "1.5rem" }}
 				className={styles.colDetailsContainer}
@@ -136,7 +18,6 @@ export default function CollectionDetails() {
 						}
 						w="100%"
 						height="55vh"
-						zIndex={-5}
 						className={styles.heading}
 					>
 						<Image
@@ -153,17 +34,12 @@ export default function CollectionDetails() {
 					{collection?.title?.length > 0 &&
 					collection?.user?.profile_image?.large?.length > 0 ? (
 						<Box
-							px={{ base: "1.1rem", sm: "2rem" }}
 							className={styles["heading-content"]}
+							opacity="0.95"
 						>
 							<Text
 								as="h1"
-								fontSize={{
-									base: "1.6rem",
-									miniTablet: "1.8rem",
-									md: "2rem",
-									xl: "2.5rem",
-								}}
+								fontSize="2.5rem"
 								fontWeight="700"
 								mb="0.9rem"
 							>
@@ -242,10 +118,6 @@ export default function CollectionDetails() {
 										border="2px solid white"
 										borderRadius="5px"
 										p="0.2rem 0.5rem"
-										fontSize={{
-											base: "0.9rem",
-											miniTablet: "0.95rem",
-										}}
 									>
 										{collection?.total_photos} Photo
 										{collection?.total_photos > 1
@@ -267,35 +139,21 @@ export default function CollectionDetails() {
 							lg: "1.5rem",
 						}}
 						pt="2rem"
-						borderTopRadius={{ base: "10px", sm: "15px" }}
+						borderRadius="20px"
 						bg="background"
 						className={styles.mainContent}
 					>
 						{page === 1 ? (
-							<Text
-								as="h1"
+							<Box
 								px={{ base: "0.5rem", lgMobile: "0" }}
-								fontSize={{
-									base: "1.3rem",
-									sm: "1.4rem",
-									miniTablet: "1.6rem",
-									md: "1.8rem",
-									xl: "2rem",
-								}}
-								fontWeight={{ base: "600", md: "700" }}
-								mb={{
-									base: "1rem",
-									mobile: "1.2rem",
-									sm: "1.4rem",
-									miniTablet: "1.6rem",
-									md: "2rem",
-									xl: "2.8rem",
-								}}
+								fontSize="2rem"
+								fontWeight="700"
+								mb="3.5rem"
 								minHeight="40px"
 								w="100%"
 							>
 								{collection?.title?.length ? (
-									<motion.p
+									<motion.h1
 										initial={{
 											opacity: 0,
 											x: -25,
@@ -307,11 +165,11 @@ export default function CollectionDetails() {
 										}}
 									>
 										{`Photos for ${collection?.title}`}
-									</motion.p>
+									</motion.h1>
 								) : (
 									""
 								)}
-							</Text>
+							</Box>
 						) : (
 							""
 						)}
@@ -368,24 +226,3 @@ export default function CollectionDetails() {
 					</Box>
 				</Box>
 			</Box>
-		</>
-	);
-}
-
-export const getServerSideProps = async (context) => {
-	const id = context?.params?.id;
-	const queryClient = new QueryClient();
-
-	// await queryClient.prefetchQuery(["collection", id], getCollection);
-
-	await queryClient.prefetchQuery(
-		["collectionPhotos", id, 1],
-		getCollectionPhotos
-	);
-
-	return {
-		props: {
-			dehydratedState: dehydrate(queryClient),
-		},
-	};
-};
