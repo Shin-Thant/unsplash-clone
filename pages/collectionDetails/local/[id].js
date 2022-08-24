@@ -9,14 +9,10 @@ import {
 } from "@chakra-ui/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CardList } from "../../../components/containers/CardList";
 import styles from "../../../styles/CollectionDetails.module.css";
 import { motion } from "framer-motion";
-import { Pagination } from "../../../components/shared-items/Pagination";
-import { CardSkeleton } from "../../../components/skeletons/CardSkeleton";
-import { CollectionSkeleton } from "../../../components/skeletons/CollectionSkeleton";
-import { CollectionList } from "../../../components/containers/CollectionList";
 import { useSelector } from "react-redux";
 import {
 	selectCollectionById,
