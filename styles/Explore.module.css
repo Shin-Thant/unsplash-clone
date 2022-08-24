@@ -1,271 +1,271 @@
 .cards {
-    min-height: 200vh;
-    columns: 3;
-    column-gap: 1.5rem;
-    padding: 1.5rem 0;
+	min-height: 200vh;
+	columns: 3;
+	column-gap: 1.5rem;
+	padding: 1.5rem 0;
 }
 
 .introText {
-    word-spacing: 0.1em;
-    position: relative;
-    /* previous value 11rem */
-    margin-bottom: 11.8rem;
+	word-spacing: 0.1em;
+	position: relative;
+	/* previous value 11rem */
+	margin-bottom: 11.8rem;
 }
 
 .intro {
-    height: max-content;
-    z-index: 8;
-    font-size: 2.9rem;
-    position: relative;
+	height: max-content;
+	z-index: 8;
+	font-size: 2.9rem;
+	position: relative;
 }
 .firstText,
 .secondText {
-    font-family: "Saira Condensed", sans-serif !important;
+	font-family: "Saira Condensed", sans-serif !important;
 }
 .intro::before {
-    content: "";
-    position: absolute;
-    transform: scaleX(1);
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    transform-origin: left;
-    background-color: var(--background);
-    animation: showText 2s ease forwards;
+	content: "";
+	position: absolute;
+	transform: scaleX(1);
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	transform-origin: left;
+	background-color: var(--background);
+	animation: showText 2s ease forwards;
 }
 
 @keyframes showText {
-    100% {
-        transform: scaleX(0);
-    }
+	100% {
+		transform: scaleX(0);
+	}
 }
 
 .outline {
-    position: absolute;
-    bottom: -350%;
-    left: 0;
-    width: 100%;
-    height: max-content;
-    opacity: 0;
-    /* z-index: -1; */
-    transition: transform 0.7s ease;
-    animation: up 1s ease forwards;
+	position: absolute;
+	bottom: -350%;
+	left: 0;
+	width: 100%;
+	height: max-content;
+	opacity: 0;
+	/* z-index: -1; */
+	transition: transform 0.7s ease;
+	animation: up 1s ease forwards;
 }
 @keyframes up {
-    100% {
-        opacity: 0.9;
-        bottom: -300%;
-    }
+	100% {
+		opacity: 0.9;
+		bottom: -300%;
+	}
 }
 
 .outlineImg {
-    width: 100%;
-    height: max-content;
-    object-fit: cover;
-    pointer-events: all;
+	width: 100%;
+	height: max-content;
+	object-fit: cover;
+	pointer-events: all;
 }
 
-.letter {
-    border: 10px solid black;
-    transition: color 0.5s ease;
+.letterPath {
+	border: 10px solid black;
+	transition: fill 100ms ease;
 }
-.letter:hover {
-    fill: #2a2a27;
+.letter:hover .letterPath {
+	fill: #2a2a27;
 }
 
 .listContainer {
-    background-color: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(4px);
+	background-color: rgba(255, 255, 255, 0.8);
+	backdrop-filter: blur(4px);
 }
 
 .previousBtn {
-    color: var(--brown-1000);
-    border: 2px solid var(--brown-1000);
-    position: relative;
-    overflow: hidden;
-    transition: all 300ms ease;
+	color: var(--brown-1000);
+	border: 2px solid var(--brown-1000);
+	position: relative;
+	overflow: hidden;
+	transition: all 300ms ease;
 }
 .previousBtn::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--brown-1000);
-    transform: translateX(100%);
-    z-index: -1;
-    transition: transform 300ms ease;
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	background-color: var(--brown-1000);
+	transform: translateX(100%);
+	z-index: -1;
+	transition: transform 300ms ease;
 }
 .previousBtn:hover {
-    color: white;
-    box-shadow: inset 5px 5px 12px 1px rgba(0, 0, 0, 0.3);
+	color: white;
+	box-shadow: inset 5px 5px 12px 1px rgba(0, 0, 0, 0.3);
 }
 .previousBtn:hover::before {
-    transform: translateX(0);
+	transform: translateX(0);
 }
 
 .nextBtn {
-    color: var(--brown-1000);
-    border: 2px solid var(--brown-1000);
-    position: relative;
-    overflow: hidden;
-    transition: all 300ms ease;
+	color: var(--brown-1000);
+	border: 2px solid var(--brown-1000);
+	position: relative;
+	overflow: hidden;
+	transition: all 300ms ease;
 }
 .nextBtn::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--brown-1000);
-    transform: translateX(-100%);
-    z-index: -1;
-    transition: transform 300ms ease;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: var(--brown-1000);
+	transform: translateX(-100%);
+	z-index: -1;
+	transition: transform 300ms ease;
 }
 .nextBtn:hover {
-    color: white;
-    box-shadow: inset 5px 5px 12px 1px rgba(0, 0, 0, 0.3);
+	color: white;
+	box-shadow: inset 5px 5px 12px 1px rgba(0, 0, 0, 0.3);
 }
 .nextBtn:hover::before {
-    transform: translateX(0);
+	transform: translateX(0);
 }
 
 /* * unsplash text image responsize codes */
 @media screen and (max-width: 1320px) {
-    .introText {
-        margin-bottom: 10rem;
-    }
-    @keyframes up {
-        100% {
-            bottom: -270%;
-            opacity: 0.9;
-        }
-    }
+	.introText {
+		margin-bottom: 10rem;
+	}
+	@keyframes up {
+		100% {
+			bottom: -270%;
+			opacity: 0.9;
+		}
+	}
 }
 
 @media screen and (max-width: 1170px) {
-    @keyframes up {
-        100% {
-            bottom: -260%;
-            opacity: 0.9;
-        }
-    }
+	@keyframes up {
+		100% {
+			bottom: -260%;
+			opacity: 0.9;
+		}
+	}
 }
 
 @media screen and (max-width: 1110px) {
-    .introText {
-        margin-bottom: 9.5rem;
-    }
-    @keyframes up {
-        100% {
-            bottom: -245%;
-            opacity: 0.9;
-        }
-    }
+	.introText {
+		margin-bottom: 9.5rem;
+	}
+	@keyframes up {
+		100% {
+			bottom: -245%;
+			opacity: 0.9;
+		}
+	}
 }
 
 @media screen and (max-width: 1060px) {
-    .introText {
-        margin-bottom: 8.8rem;
-    }
+	.introText {
+		margin-bottom: 8.8rem;
+	}
 }
 
 @media screen and (max-width: 959px) {
-    .introText {
-        margin-bottom: 7.5rem;
-    }
-    @keyframes up {
-        100% {
-            bottom: -220%;
-            opacity: 0.9;
-        }
-    }
+	.introText {
+		margin-bottom: 7.5rem;
+	}
+	@keyframes up {
+		100% {
+			bottom: -220%;
+			opacity: 0.9;
+		}
+	}
 }
 
 @media screen and (max-width: 878px) {
-    .introText {
-        margin-bottom: 7rem;
-    }
-    @keyframes up {
-        100% {
-            bottom: -200%;
-            opacity: 0.9;
-        }
-    }
+	.introText {
+		margin-bottom: 7rem;
+	}
+	@keyframes up {
+		100% {
+			bottom: -200%;
+			opacity: 0.9;
+		}
+	}
 }
 
 @media screen and (max-width: 785px) {
-    .introText {
-        margin-bottom: 6rem;
-    }
-    @keyframes up {
-        100% {
-            bottom: -205%;
-            opacity: 0.9;
-        }
-    }
+	.introText {
+		margin-bottom: 6rem;
+	}
+	@keyframes up {
+		100% {
+			bottom: -205%;
+			opacity: 0.9;
+		}
+	}
 }
 
 @media screen and (max-width: 800px) {
-    .introText {
-        margin-bottom: 5.8rem;
-    }
-    @keyframes up {
-        100% {
-            bottom: -170%;
-            opacity: 0.9;
-        }
-    }
+	.introText {
+		margin-bottom: 5.8rem;
+	}
+	@keyframes up {
+		100% {
+			bottom: -170%;
+			opacity: 0.9;
+		}
+	}
 }
 
 @media screen and (max-width: 642px) {
-    .introText {
-        margin-bottom: 5rem;
-    }
+	.introText {
+		margin-bottom: 5rem;
+	}
 }
 
 @media screen and (max-width: 599px) {
-    @keyframes up {
-        100% {
-            bottom: -170%;
-            opacity: 0.9;
-        }
-    }
+	@keyframes up {
+		100% {
+			bottom: -170%;
+			opacity: 0.9;
+		}
+	}
 }
 
 @media screen and (max-width: 584px) {
-    .introText {
-        margin-bottom: 1.5rem;
-    }
-    .outline {
-        display: none;
-    }
+	.introText {
+		margin-bottom: 1.5rem;
+	}
+	.outline {
+		display: none;
+	}
 }
 
 /* * intro text fontsize responseive */
 @media screen and (max-width: 1050px) {
-    .intro {
-        font-size: 2.6rem;
-    }
+	.intro {
+		font-size: 2.6rem;
+	}
 }
 
 @media screen and (max-width: 750px) {
-    .intro {
-        font-size: 2.4rem;
-    }
+	.intro {
+		font-size: 2.4rem;
+	}
 }
 
 @media screen and (max-width: 645px) {
-    .intro {
-        font-size: 2.2rem;
-    }
+	.intro {
+		font-size: 2.2rem;
+	}
 }
 
 @media screen and (max-width: 515px) {
-    .intro {
-        font-size: 2rem;
-    }
+	.intro {
+		font-size: 2rem;
+	}
 }

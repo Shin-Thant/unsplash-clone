@@ -1,92 +1,93 @@
 .heading {
-    position: fixed;
-    top: 4.4rem;
-    left: 0;
-    z-index: -1;
-    transition: all 400ms ease;
+	position: fixed;
+	top: 4.4rem;
+	left: 0;
+	right: 0;
+	z-index: 1;
+	transition: all 400ms ease;
 }
 
 .heading-content {
-    width: 100%;
-    height: max-content;
-    position: fixed;
-    /* * if you set this element to position 'fixed', you will also set top margin '4.5rem' to i don't set top margin, instead add margin value to position value */
-    top: calc(20vh + 4.5rem);
-    left: 0;
-    color: white;
-    /* background-color: tomato; */
-    padding: 0 2rem;
+	width: 100%;
+	height: max-content;
+	position: fixed;
+	/* * if you set this element to position 'fixed', you will also set top margin '4.5rem' to i don't set top margin, instead add margin value to position value */
+	top: calc(20vh + 4.5rem);
+	left: 0;
+	color: white;
+	/* background-color: skyblue; */
 }
 
 .mainContent {
-    position: relative;
+	position: relative;
+	/* z-index: 2; */
 }
-.mainContent::before {
-    content: "";
-    position: absolute;
-    top: -55vh;
-    left: 0;
-    width: 100%;
-    height: 60vh;
-    z-index: -1;
-    pointer-events: none;
-    background-image: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.15),
-        rgba(0, 0, 0, 0.9)
-    );
+.mainContent::after {
+	content: "";
+	position: absolute;
+	top: -55vh;
+	left: 0;
+	width: 100%;
+	height: 60vh;
+	z-index: -1;
+	pointer-events: none;
+	background-image: linear-gradient(
+		to bottom,
+		rgba(0, 0, 0, 0.15),
+		rgba(0, 0, 0, 0.9)
+	);
 }
 
 .previousBtn {
-    color: var(--brown-1000);
-    border: 2px solid var(--brown-1000);
-    position: relative;
-    overflow: hidden;
-    transition: all 300ms ease;
+	color: var(--brown-1000);
+	border: 2px solid var(--brown-1000);
+	position: relative;
+	overflow: hidden;
+	transition: all 300ms ease;
 }
-.previousBtn::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--brown-1000);
-    transform: translateX(100%);
-    z-index: -1;
-    transition: transform 300ms ease;
+.previousBtn::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	background-color: var(--brown-1000);
+	transform: translateX(100%);
+	z-index: -1;
+	transition: transform 300ms ease;
 }
 .previousBtn:hover {
-    color: white;
-    box-shadow: inset 5px 5px 12px 1px rgba(0, 0, 0, 0.3);
+	color: white;
+	box-shadow: inset 5px 5px 12px 1px rgba(0, 0, 0, 0.3);
 }
 .previousBtn:hover::before {
-    transform: translateX(0);
+	transform: translateX(0);
 }
 
 .nextBtn {
-    color: var(--brown-1000);
-    border: 2px solid var(--brown-1000);
-    position: relative;
-    overflow: hidden;
-    transition: all 300ms ease;
+	color: var(--brown-1000);
+	border: 2px solid var(--brown-1000);
+	position: relative;
+	overflow: hidden;
+	transition: all 300ms ease;
 }
 .nextBtn::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--brown-1000);
-    transform: translateX(-100%);
-    z-index: -1;
-    transition: transform 300ms ease;
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: var(--brown-1000);
+	transform: translateX(-100%);
+	z-index: -1;
+	transition: transform 300ms ease;
 }
 .nextBtn:hover {
-    color: white;
-    box-shadow: inset 5px 5px 12px 1px rgba(0, 0, 0, 0.3);
+	color: white;
+	box-shadow: inset 5px 5px 12px 1px rgba(0, 0, 0, 0.3);
 }
 .nextBtn:hover::before {
-    transform: translateX(0);
+	transform: translateX(0);
 }

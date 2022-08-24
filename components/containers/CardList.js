@@ -33,10 +33,10 @@ export const CardList = ({ data, avgCards }) => {
                         fontWeight="600"
                         fontSize="1.1rem"
                     >
-                        No Collections
+                        No Images
                     </Text>
                 </Flex>
-            ) : data?.length > 0 && data?.length < 3 ? (
+            ) : data?.length > 0 && data?.length <= 3 ? (
                 <Grid
                     w="100%"
                     templateColumns={{

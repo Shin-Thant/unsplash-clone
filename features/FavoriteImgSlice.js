@@ -19,6 +19,13 @@ const favoriteImgSlice = createSlice({
 	},
 });
 
+export const selectAllFavoritedImgs = createSelector(
+	[(state) => state.favorite?.imageList],
+	(list) => {
+		return [...list]?.sort((a, b) => a?.id?.localeCompare(b?.id));
+	}
+);
+
 export const selectAllImgIds = createSelector(
 	[(state) => state.favorite?.imageList],
 	(list) => {

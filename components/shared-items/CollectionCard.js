@@ -7,7 +7,13 @@ export const CollectionCard = ({ collection }) => {
 	const router = useRouter();
 
 	const goDetails = () => {
-		collection?.id && router.push(`/collectionDetails/${collection?.id}`);
+		if (collection?.id) {
+			if (collection?.created) {
+				router.push(`/collectionDetails/local/${collection?.id}`);
+			} else {
+				router.push(`/collectionDetails/${collection?.id}`);
+			}
+		}
 	};
 
 	return (
@@ -33,7 +39,20 @@ export const CollectionCard = ({ collection }) => {
 				gap="0.7rem"
 				mb="1rem"
 			>
-				{collection?.preview_photos?.length >= 3 ? (
+				{collection?.preview_photos?.length < 1 ? (
+					<GridItem rowSpan={2}>
+						<Flex
+							justify="center"
+							align="center"
+							width="100%"
+							height="100%"
+							borderRadius="10px"
+							bg="grey.first"
+						>
+							No images are added!
+						</Flex>
+					</GridItem>
+				) : collection?.preview_photos?.length >= 3 ? (
 					<>
 						<GridItem
 							overflow="hidden"
@@ -48,7 +67,7 @@ export const CollectionCard = ({ collection }) => {
 									width="100%"
 									height="100%"
 									src={
-										collection?.preview_photos[0]?.urls
+										collection?.preview_photos?.[0]?.urls
 											?.regular
 									}
 									alt={collection?.title}
@@ -190,7 +209,11 @@ export const CollectionCard = ({ collection }) => {
 					_hover={{
 						textDecoration: "none",
 					}}
-					href={`/collectionDetails/${collection?.id}`}
+					href={
+						collection?.created
+							? `/collectionDetails/local/${collection?.id}`
+							: `/collectionDetails/${collection?.id}`
+					}
 				>
 					<Text
 						d="inline-block"
@@ -199,8 +222,8 @@ export const CollectionCard = ({ collection }) => {
 						mb="1rem"
 						cursor="pointer"
 						w="max-content"
-						opacity="0.9"
-						transition="opacity 230ms ease"
+						opacity="0.8"
+						transition="opacity 150ms ease"
 						_hover={{
 							opacity: "1",
 						}}
@@ -240,25 +263,32 @@ export const CollectionCard = ({ collection }) => {
 						color="myblack"
 						mb="1.2rem"
 					>
-						<Text>Created by</Text>
-						<Link
-							_focus={{
-								border: "0px",
-							}}
-							href={`/user/${collection?.user?.username}`}
-						>
-							<Text
-								className={styles.username}
-								display="inline-block"
-								fontWeight="600"
-								color="myblack"
-								cursor="pointer"
-							>
-								{collection?.user?.name?.length > 16
-									? collection?.user?.name?.slice(0, 17)
-									: collection?.user?.name}
-							</Text>
-						</Link>
+						{collection?.user?.name && (
+							<>
+								<Text>Created by</Text>
+								<Link
+									_focus={{
+										border: "0px",
+									}}
+									href={`/user/${collection?.user?.username}`}
+								>
+									<Text
+										className={styles.username}
+										display="inline-block"
+										fontWeight="600"
+										color="myblack"
+										cursor="pointer"
+									>
+										{collection?.user?.name?.length > 16
+											? collection?.user?.name?.slice(
+													0,
+													17
+											  )
+											: collection?.user?.name}
+									</Text>
+								</Link>
+							</>
+						)}
 					</Flex>
 
 					<Flex align="center" gap="0.8rem" wrap="wrap">
@@ -298,7 +328,7 @@ export const CollectionCard = ({ collection }) => {
 														`/search/${tag?.title}`
 													)
 												}
-												key={`${tag.title}${index}`}
+												key={`${tag?.title}${index}`}
 												className={styles.tags}
 												bg="transparent"
 												fontWeight="600"
