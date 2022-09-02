@@ -10,9 +10,11 @@ import { Provider } from "react-redux";
 import { useState } from "react";
 import { PersistGate } from "redux-persist/integration/react";
 import EditColProvider from "../context/collectionContext/editColContext";
+import { NavbarContextProvider } from "../context/navbarContext/navbarContext";
 
 const breakpoints = createBreakpoints({
-	base: "320px",
+	base: "300px",
+	smMobile: "440px",
 	mobile: "490px",
 	sm: "550px",
 	lgMobile: "600px",
@@ -28,7 +30,7 @@ const breakpoints = createBreakpoints({
 
 const theme = extendTheme({
 	colors: {
-		background: "#CDC8B7",
+		background: "#cdc8b7",
 		text: "#9E6E44",
 		brown: {
 			tea: "#df853c",
@@ -62,14 +64,18 @@ function MyApp({ Component, pageProps }) {
 			<PersistGate loading={null} persistor={persistor}>
 				<QueryClientProvider client={queryClient}>
 					<Hydrate state={pageProps.dehydratedState}>
-						<EditColProvider>
-							<ChakraProvider theme={theme}>
-								<Layout>
-									<ReactQueryDevtools initialIsOpen={false} />
-									<Component {...pageProps} />
-								</Layout>
-							</ChakraProvider>
-						</EditColProvider>
+						<NavbarContextProvider>
+							<EditColProvider>
+								<ChakraProvider theme={theme}>
+									<Layout>
+										<ReactQueryDevtools
+											initialIsOpen={false}
+										/>
+										<Component {...pageProps} />
+									</Layout>
+								</ChakraProvider>
+							</EditColProvider>
+						</NavbarContextProvider>
 					</Hydrate>
 				</QueryClientProvider>
 			</PersistGate>

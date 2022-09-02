@@ -167,6 +167,7 @@ export default function Home() {
 								lineHeight="1.1em"
 								w="max-content"
 								color="hsl(0, 0%, 22%)"
+								zIndex="5"
 							>
 								<Text>For Ultimate</Text>
 								<Box
@@ -174,7 +175,6 @@ export default function Home() {
 									color="brown.1000"
 									position="relative"
 									p="0.3rem 0.5rem"
-									zIndex="5"
 								>
 									<Text>Photos</Text>
 									<Box className={styles.highlight}></Box>
@@ -185,7 +185,6 @@ export default function Home() {
 									color="brown.1000"
 									position="relative"
 									p="0.3rem 0.5rem"
-									zIndex="5"
 								>
 									<Text>Wallpapers</Text>
 									<Box className={styles.highlight}></Box>
