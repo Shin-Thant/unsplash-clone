@@ -1,39 +1,45 @@
-import { Box, Flex, FormControl, Text, useToast } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import {
+	Box,
+	Button,
+	Flex,
+	Grid,
+	GridItem,
+	Input,
+	Link,
+	Text,
+	useDisclosure,
+	useToast,
+} from "@chakra-ui/react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FaUnsplash } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import styles from "../styles/Navbar.module.css";
 import { useRouter } from "next/router";
-import Head from "next/head";
-import { IoClose } from "react-icons/io5";
+import { IoClose, IoSearchCircle } from "react-icons/io5";
 import { CustomToast } from "./CustomToast";
 import { useStorage } from "../hooks/useStorage";
-import { useDispatch, useSelector } from "react-redux";
 import { useRecent } from "../hooks/useRecent";
-import { fetchUserImages } from "../features/FollowSlice";
+import { motion } from "framer-motion";
+import { MdMenu } from "react-icons/md";
+import NavbarDrawer from "./NavbarDrawer";
+import { useNavbarContext } from "../context/navbarContext/navbarContext";
 
 export default function Navbar() {
-	const home = useRef(null);
-	const explore = useRef(null);
-	const collection = useRef(null);
-	const contact = useRef(null);
-
-	const link1 = useRef(null);
-	const link2 = useRef(null);
-	const link3 = useRef(null);
-	const link4 = useRef(null);
-
-	const slider = useRef(null);
-
-	const [currentRoute, setCurrentRoute] = useState(1);
-
+	const { currentRoute, setCurrentRoute } = useNavbarContext();
 	const router = useRouter();
-
 	const search = useRef(null);
-
 	const toast = useToast();
+	const [inputOpen, setInputOpen] = useState(false);
 
 	const [storage, setStorage] = useStorage("search");
+
+	// drawer controller
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	const closeDrawer = useCallback(() => {
+		onClose();
+		document.querySelector("body").style.overflowY = "auto";
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	// * states for recent search list box
 	const [show, setShow] = useState(false);
@@ -41,115 +47,52 @@ export default function Navbar() {
 
 	const historyBox = useRef(null);
 	const recentList = useRef(null);
+	const form = useRef(null);
+	const containerRef = useRef(null);
+	const closeBtnRef = useRef(null);
+	const searchBtnRef = useRef(null);
 
+	const effectRan = useRef(false);
 	useEffect(() => {
 		// * set recent if there is a value in the input
-		if (storage) setRecent(storage);
+		if (!effectRan.current && storage) setRecent(storage);
+
+		return () => {
+			effectRan.current = true;
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	// const { images } = useSelector((state) => state.collection);
-
 	useEffect(() => {
-		if (typeof window !== undefined) {
-			// if (currentRoute === 1) {
-			//     slider.current.width = link1.current?.clientWidth;
-			// }
-			// if (currentRoute === 2) {
-			//     slider.current.width = link2.current?.clientWidth;
-			// }
-			// if (currentRoute === 3) {
-			//     slider.current.width = link3.current?.clientWidth;
-			// }
-			// if (currentRoute === 4) {
-			//     slider.current.width = link1.current?.clientWidth;
-			// }
+		let isMounted = true;
 
-			switch (currentRoute) {
-				case 1:
-					{
-						home.current.checked = true;
-						explore.current.checked = false;
-						collection.current.checked = false;
-						contact.current.checked = false;
-					}
-					break;
-				case 2:
-					{
-						home.current.checked = false;
-						explore.current.checked = true;
-						collection.current.checked = false;
-						contact.current.checked = false;
-					}
-					break;
-				case 3:
-					{
-						home.current.checked = true;
-						explore.current.checked = false;
-						collection.current.checked = true;
-						contact.current.checked = false;
-					}
-					break;
-				case 4:
-					{
-						home.current.checked = true;
-						explore.current.checked = false;
-						collection.current.checked = false;
-						contact.current.checked = true;
-					}
-					break;
-				default: {
-					home.current.checked = false;
-					explore.current.checked = false;
-					collection.current.checked = false;
-					contact.current.checked = false;
+		if (isMounted) {
+			// * handling currentRoute state on router change
+			if (router.pathname === "/") setCurrentRoute(1);
+			else if (router.pathname === "/explore") setCurrentRoute(2);
+			else if (router.pathname === "/collections") setCurrentRoute(3);
+			else if (router.pathname === "/contact") setCurrentRoute(4);
+
+			// * handling search bar value with parameter from url
+			if (router.query?.search) {
+				if (storage !== router?.query?.search) {
+					setStorage(router?.query?.search);
 				}
+				setRecent(router.query?.search);
 			}
-		}
-
-		// slider.current.width = width;
-	}, [currentRoute]);
-
-	const goHome = () => {
-		setCurrentRoute(1);
-		router.push("/");
-	};
-	const goExplore = () => {
-		setCurrentRoute(2);
-		router.push("/explore");
-	};
-	const goCollections = () => {
-		setCurrentRoute(3);
-		router.push("/collections");
-		// router.push({
-		//     pathname: "/collections",
-		//     query: { search: "hello world".replaceAll(" ", "") },
-		// });
-	};
-	const goContact = () => {
-		setCurrentRoute(4);
-		// router.push("/contact");
-	};
-
-	useEffect(() => {
-		// * handling currentRoute state on router change
-		if (router.pathname === "/") setCurrentRoute(1);
-		else if (router.pathname === "/explore") setCurrentRoute(2);
-		else if (router.pathname === "/collections") setCurrentRoute(3);
-		else if (router.pathname === "/contact") setCurrentRoute(4);
-
-		// * handling search bar value with parameter from url
-		if (router.query?.search) {
-			if (storage !== router?.query?.search) {
-				setStorage(router?.query?.search);
-			}
-			setRecent(router.query?.search);
 		}
 
 		// * setting storage if the current page is not search page
-		if (router.pathname !== "/search/[search]") {
-			setStorage("");
-			search.current.value = "";
-		}
+		// ! don't think this is necessary
+		// if (router.pathname !== "/search/[search]") {
+		// 	setStorage("");
+		// 	search.current.value = "";
+		// }
+
+		return () => {
+			isMounted = false;
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [router]);
 
 	// * searching input handler
@@ -183,13 +126,26 @@ export default function Navbar() {
 		}
 	};
 
+	// * routing
+	const changeRoute = useCallback((routeNum, routeName) => {
+		setCurrentRoute(routeNum);
+		router.push(routeName);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
 	// * search input handler
 	const searchController = (e) => {
+		if (e.target.value?.length < 1) {
+			setShow(true);
+		}
 		setStorage(e.target.value);
 	};
 
 	// * reset search input handler
 	const closeSearch = () => {
+		setInputOpen(true);
+		setShow(true);
+		search.current?.focus();
 		setStorage("");
 		search.current.value = "";
 	};
@@ -198,13 +154,20 @@ export default function Navbar() {
 	useEffect(() => {
 		const bodyClickHandler = function (e) {
 			if (
+				e.target !== containerRef.current &&
 				e.target !== historyBox.current &&
 				e.target !== search.current &&
+				e.target !== closeBtnRef.current &&
+				e.target !== searchBtnRef.current &&
+				e.target?.parentElement !== closeBtnRef.current &&
+				e.target?.parentElement !== searchBtnRef.current &&
 				e.target?.parentElement !== historyBox.current &&
 				e.target?.parentElement !== recentList.current
 			) {
+				setInputOpen(false);
 				setShow(false);
 			} else {
+				setInputOpen(true);
 				setShow(true);
 			}
 		};
@@ -215,291 +178,445 @@ export default function Navbar() {
 
 		return () => {
 			document.body.removeEventListener("click", bodyClickHandler);
-			// console.log("event removed");
 		};
 	}, []);
 
-	const dispatch = useDispatch();
-	useEffect(() => {
-		dispatch(fetchUserImages());
-	}, []);
+	const openInput = () => {
+		search.current?.focus();
+		setInputOpen(true);
+		setShow(true);
+	};
 
 	return (
-		<>
-			<Head>
-				<meta
-					name="viewport"
-					content="width=device-width, initial-scale=1.0"
-				/>
-			</Head>
-			<Flex
-				position="sticky"
-				top="0"
-				left="0"
-				right="0"
-				w="100%"
-				mx="auto"
-				align="center"
-				justify="space-between"
-				gap="1.5rem"
-				py="0.8rem"
-				px="1rem"
-				style={{ background: "#D5D2C3" }}
-				shadow="md"
-				zIndex="20"
-			>
-				<Flex
-					w="max-content"
-					h="100%"
-					justify="center"
-					align="center"
-					fontSize="2.5rem"
-					onClick={goHome}
-				>
-					<FaUnsplash title="Unsplash" cursor="pointer" />
-				</Flex>
+		<Grid
+			templateColumns={{
+				base: "max-content 1fr max-content",
+				md: "max-content 1fr max-content",
+			}}
+			justifyContent={{ base: "space-between", md: "flex-start" }}
+			alignItems="center"
+			gap={{ base: "0.7rem", sm: "1rem", lg: "1.5rem", xl: "1.8rem" }}
+			position="sticky"
+			top="0"
+			left="0"
+			right="0"
+			width="100%"
+			mx="auto"
+			py="0.5rem"
+			px={{
+				base: "0.5rem",
+				smMobile: "0.9rem",
+				md: "1rem",
+				lg: "1.5rem",
+			}}
+			bgColor="background"
+			// style={{ background: "#D5D2C3" }}
+			shadow="lg"
+			zIndex="20"
+		>
+			{isOpen ? (
+				<NavbarDrawer changeRoute={changeRoute} onClose={closeDrawer} />
+			) : (
+				""
+			)}
 
+			<Link
+				display="block"
+				href="/"
+				width="max-content"
+				height="max-content"
+				fontSize={{ base: "2.35rem", lg: "2.5rem" }}
+			>
+				<FaUnsplash title="Unsplash" cursor="pointer" />
+			</Link>
+
+			<GridItem
+				width={{ base: "100%", sm: "max-content", md: "100%" }}
+				position="relative"
+				justifySelf={{ base: "flex-end", md: "" }}
+			>
 				<form
-					className={styles.form}
+					ref={form}
+					className={`${styles.form} ${
+						search.current?.value?.length || inputOpen
+							? styles["form--open"]
+							: ""
+					}`}
 					onSubmit={(e) => {
 						e.preventDefault();
 						goSearch();
 					}}
 				>
 					<Flex
-						w="100%"
-						px="0.9rem"
-						py="0.5rem"
+						ref={containerRef}
+						onClick={openInput}
+						className={styles["form__container"]}
+						overflow="hidden"
 						rounded="full"
-						gap="1rem"
-						border="2px solid black"
+						// gap={{ base: "0", md: "0.8rem" }}
+						border="2px solid"
+						borderColor="hsl(0, 0%, 20%)"
 						align="center"
 						position="relative"
 					>
-						<Text
-							w="max-content"
-							fontSize="1.3rem"
+						<Button
+							display={{ base: "none", md: "flex" }}
+							ref={searchBtnRef}
+							p="0"
+							className={
+								styles[
+									"form__container__input-container__searchBtn"
+								]
+							}
+							bgColor="transparent"
+							// bgColor="skyblue"
+							width="35px"
+							minWidth="35px"
+							height="35px"
+							fontSize="1.2rem"
 							cursor="pointer"
 							opacity="0.8"
-							transition="all 200ms ease"
+							transition="all 600ms ease, opacity 200ms ease"
 							_hover={{
+								opacity: "1",
+							}}
+							_focus={{
+								opacity: "1",
+							}}
+							_active={{
 								opacity: "1",
 							}}
 							onClick={goSearch}
 						>
 							<FiSearch />
-						</Text>
-
-						<input
-							onFocus={() => {
-								setShow(true);
-							}}
-							list="recentSearch"
-							ref={search}
-							onChange={searchController}
-							value={storage}
-							type="search"
-							placeholder="Search free high-resolution photos"
-							className={styles.searchInput}
-						/>
-
-						<Text
-							w="max-content"
-							fontSize="1.5rem"
+						</Button>
+						<Button
+							display={{ base: "flex", md: "none" }}
+							ref={searchBtnRef}
+							p="0"
+							className={
+								styles[
+									"form__container__input-container__searchBtn"
+								]
+							}
+							bgColor="transparent"
+							width="35px"
+							minWidth="35px"
+							height="35px"
+							borderRadius="full"
+							fontSize="1.2rem"
 							cursor="pointer"
 							opacity="0.8"
-							transition="all 200ms ease"
+							transition="all 600ms ease, opacity 200ms ease"
 							_hover={{
 								opacity: "1",
 							}}
-							display={
-								search.current?.value?.length < 1
-									? "none"
-									: "block"
+							_focus={{
+								opacity: "1",
+							}}
+							_active={{
+								opacity: "1",
+							}}
+							onClick={() => {
+								if (inputOpen) {
+									goSearch();
+								} else {
+									setShow(true);
+									setInputOpen(true);
+									search.current.focus();
+								}
+							}}
+						>
+							<FiSearch style={{ pointerEvents: "none" }} />
+						</Button>
+
+						<Flex
+							className={
+								styles["form__container__input-container"]
 							}
-							onClick={closeSearch}
+							transition="all 300ms ease"
+							align="center"
+							gap={{ base: "0.1rem", mobile: "0.3rem" }}
+							height="100%"
 						>
-							<IoClose />
-						</Text>
+							<Input
+								transition="all 500ms ease"
+								border="0"
+								padding="0"
+								outline="0"
+								height="100%"
+								color="myblack"
+								_focus={{
+									border: "0",
+								}}
+								width="100%"
+								list="recentSearch"
+								ref={search}
+								onChange={searchController}
+								value={storage}
+								placeholder={
+									"Search free high-resolution photos"
+								}
+								_placeholder={{
+									color: "hsl(0, 0%, 40%)",
+								}}
+							/>
 
-						{/* recent search */}
-						{recentSearch?.length && show && storage?.length < 1 ? (
-							<Box
-								className={styles.recentSearch}
-								// * change display property according to the screend width
-								ref={historyBox}
-								boxShadow="xl"
-								w="100%"
-								bg="white"
-								p="1rem 1.5rem"
-								borderRadius="8px"
+							<Button
+								type="reset"
+								ref={closeBtnRef}
+								p="0"
+								bg="transparent"
+								minWidth="max-content"
+								width="max-content"
+								height="max-content"
+								fontSize="1.5rem"
+								cursor="pointer"
+								opacity="0.7"
+								transition="all 200ms ease"
+								_hover={{
+									opacity: "1",
+								}}
+								_focus={{
+									opacity: "1",
+								}}
+								_active={{
+									opacity: "1",
+								}}
+								display={
+									search.current?.value?.length ||
+									storage?.length
+										? "flex"
+										: "none"
+								}
+								onClick={closeSearch}
 							>
-								<Flex
-									mb="1.5rem"
-									align="center"
-									justify="space-between"
-								>
-									<Text fontWeight="600" fontSize="1.2rem">
-										Recent{" "}
-										{recentSearch?.length > 1
-											? "Searches"
-											: "Search"}
-									</Text>
-									<Text
-										cursor="pointer"
-										fontWeight="500"
-										fontSize="0.8rem"
-										_hover={{
-											textDecoration: "underline",
-										}}
-										onClick={() => setRecent([])}
-									>
-										Clear
-									</Text>
-								</Flex>
-
-								<Flex
-									ref={recentList}
-									align="center"
-									gap="1rem"
-									wrap="wrap"
-								>
-									{recentSearch?.map((item, index) => (
-										<Box
-											key={index}
-											border="1.5px solid"
-											borderColor="myblack"
-											borderRadius="8px"
-											color="myblack"
-											fontWeight="500"
-											p="0.3rem 0.8rem"
-											cursor="pointer"
-											fontSize="0.9rem"
-											bg="white"
-											_hover={{
-												boxShadow: "lg",
-											}}
-											className={styles.recentItem}
-											onClick={() => {
-												router.push(`/search/${item}`);
-												setStorage(item);
-												search.current.value = storage;
-
-												setRecent(item);
-
-												// * hide history box
-												setShow(false);
-											}}
-										>
-											{item}
-										</Box>
-									))}
-								</Flex>
-							</Box>
-						) : (
-							""
-						)}
+								<IoClose />
+							</Button>
+						</Flex>
 					</Flex>
+
+					{/* recent search */}
+					{recentSearch?.length && show && !search.current.value ? (
+						<Box
+							className={styles["form__recentSearch"]}
+							position="absolute"
+							display={{ base: "none", smMobile: "block" }}
+							minWidth={{
+								base: "100%",
+								sm: "400px",
+								md: "100%",
+							}}
+							bg="white"
+							top="120%"
+							zIndex="10"
+							// * change display property according to the screend width
+							ref={historyBox}
+							boxShadow="xl"
+							w="100%"
+							p={{ base: "0.85rem", lg: "1rem 1.5rem 1.2rem" }}
+							borderRadius="8px"
+						>
+							<Flex
+								mb="1.5rem"
+								align="center"
+								justify="space-between"
+							>
+								<Text fontWeight="600" fontSize="1.2rem">
+									Recent{" "}
+									{recentSearch?.length > 1
+										? "Searches"
+										: "Search"}
+								</Text>
+								<Text
+									cursor="pointer"
+									fontWeight="500"
+									fontSize="0.8rem"
+									_hover={{
+										textDecoration: "underline",
+									}}
+									onClick={() => setRecent([])}
+								>
+									Clear
+								</Text>
+							</Flex>
+
+							<Flex
+								ref={recentList}
+								align="center"
+								gap="1rem"
+								wrap="wrap"
+							>
+								{recentSearch?.map((item, index) => (
+									<Box
+										key={index}
+										border="1.5px solid"
+										borderColor="myblack"
+										borderRadius="8px"
+										color="myblack"
+										fontWeight="500"
+										p="0.3rem 0.8rem"
+										cursor="pointer"
+										fontSize="0.9rem"
+										bg="white"
+										_hover={{
+											boxShadow: "lg",
+										}}
+										className={styles.recentItem}
+										onClick={() => {
+											router.push(`/search/${item}`);
+											setStorage(item);
+											search.current.value = storage;
+
+											setRecent(item);
+
+											// * hide history box
+											setShow(false);
+										}}
+									>
+										{item}
+									</Box>
+								))}
+							</Flex>
+						</Box>
+					) : (
+						""
+					)}
 				</form>
+			</GridItem>
 
-				<div className={styles.linksContainer}>
-					<input
-						ref={home}
-						type="radio"
-						id="home"
-						className={styles.home}
-					/>
-					<Box
-						height="100%"
-						ref={link1}
-						fontWeight={currentRoute === 1 ? "700" : "600"}
-						color={currentRoute === 1 ? "white" : "brown.2000"}
-						className={styles.routes}
-					>
-						<label
-							htmlFor="home"
-							className={styles.text}
-							onClick={goHome}
-						>
-							HOME
-						</label>
-					</Box>
+			{/* nav links (desktop) */}
+			<Flex
+				display={{ base: "none", md: "flex" }}
+				height="max-content"
+				align="center"
+				gap={{ md: "0", lg: "0.5rem" }}
+			>
+				<Text
+					as="h1"
+					fontSize={{ base: "0.85rem" }}
+					height="max-content"
+					position="relative"
+					py="0.5rem"
+					px={{ base: "0.78rem", lg: "1rem", xl: "1.2rem" }}
+					fontWeight="500"
+					cursor="pointer"
+					color={currentRoute === 1 ? "white" : "brown.2000"}
+					_hover={{
+						color: "white",
+					}}
+					transition="color 200ms ease"
+					onClick={() => changeRoute(1, "/")}
+				>
+					HOME
+					{currentRoute === 1 && (
+						<motion.div
+							layoutId="slider"
+							className={styles.slider}
+						></motion.div>
+					)}
+				</Text>
 
-					<input
-						ref={explore}
-						type="radio"
-						id="explore"
-						className={styles.explore}
-					/>
-					<Box
-						height="100%"
-						ref={link2}
-						fontWeight={currentRoute === 2 ? "700" : "600"}
-						color={currentRoute === 2 ? "white" : "brown.2000"}
-						className={styles.routes}
-					>
-						<label
-							htmlFor="explore"
-							className={styles.text}
-							onClick={goExplore}
-						>
-							EXPLORE
-						</label>
-					</Box>
+				<Text
+					as="h1"
+					fontSize={{ base: "0.85rem" }}
+					height="max-content"
+					position="relative"
+					py="0.5rem"
+					px={{ base: "0.78rem", lg: "1rem", xl: "1.2rem" }}
+					fontWeight="500"
+					cursor="pointer"
+					color={currentRoute === 2 ? "white" : "brown.2000"}
+					_hover={{
+						color: "white",
+					}}
+					transition="color 200ms ease"
+					onClick={() => changeRoute(2, "/explore")}
+				>
+					EXPLORE
+					{currentRoute === 2 && (
+						<motion.div
+							layoutId="slider"
+							className={styles.slider}
+						></motion.div>
+					)}
+				</Text>
 
-					<input
-						ref={collection}
-						type="radio"
-						id="collection"
-						className={styles.collection}
-					/>
-					<Box
-						height="100%"
-						ref={link3}
-						fontWeight={currentRoute === 3 ? "700" : "600"}
-						color={currentRoute === 3 ? "white" : "brown.2000"}
-						className={styles.routes}
-					>
-						<label
-							htmlFor="collection"
-							className={styles.text}
-							onClick={goCollections}
-						>
-							COLLECTIONS
-						</label>
-					</Box>
+				<Text
+					as="h1"
+					fontSize={{ base: "0.85rem" }}
+					height="max-content"
+					position="relative"
+					py="0.5rem"
+					px={{ base: "0.78rem", lg: "1rem", xl: "1.2rem" }}
+					fontWeight="500"
+					cursor="pointer"
+					color={currentRoute === 3 ? "white" : "brown.2000"}
+					_hover={{
+						color: "white",
+					}}
+					transition="color 200ms ease"
+					onClick={() => changeRoute(3, "/collections")}
+				>
+					COLLECTIONS
+					{currentRoute === 3 && (
+						<motion.div
+							layoutId="slider"
+							className={styles.slider}
+						></motion.div>
+					)}
+				</Text>
 
-					<input
-						ref={contact}
-						type="radio"
-						id="contact"
-						className={styles.contact}
-					/>
-					<Box
-						height="100%"
-						ref={link4}
-						fontWeight={currentRoute === 4 ? "700" : "600"}
-						color={currentRoute === 4 ? "white" : "brown.2000"}
-						className={styles.routes}
-					>
-						<label
-							htmlFor="contact"
-							className={styles.text}
-							onClick={goContact}
-						>
-							CONTACT US
-						</label>
-					</Box>
-
-					<Box
-						ref={slider}
-						bg="brown.1000"
-						borderRadius="50px"
-						h="100%"
-						className={styles.slider}
-					></Box>
-				</div>
+				<Text
+					as="h1"
+					fontSize={{ base: "0.85rem" }}
+					height="max-content"
+					position="relative"
+					py="0.5rem"
+					px={{ base: "0.78rem", lg: "1rem", xl: "1.2rem" }}
+					fontWeight="500"
+					cursor="pointer"
+					color={currentRoute === 4 ? "white" : "brown.2000"}
+					_hover={{
+						color: "white",
+					}}
+					transition="color 200ms ease"
+					onClick={() => changeRoute(4, "/contact")}
+				>
+					CONTACT US
+					{currentRoute === 4 && (
+						<motion.div
+							layoutId="slider"
+							className={styles.slider}
+						></motion.div>
+					)}
+				</Text>
 			</Flex>
-		</>
+
+			{/* toggle btn */}
+			<Button
+				onClick={() => {
+					onOpen();
+					document.querySelector("body").style.overflowY = "hidden";
+				}}
+				fontSize="1.5rem"
+				p="0"
+				height="35px"
+				display={{ base: "flex", md: "none" }}
+				bgColor="hsl(214, 32%, 94%)"
+				_hover={{
+					bgColor: "hsl(214, 35%, 90%)",
+				}}
+				_focus={{
+					border: 0,
+					bgColor: "hsl(214, 30%, 90%)",
+				}}
+				_active={{
+					border: 0,
+				}}
+			>
+				<MdMenu />
+			</Button>
+		</Grid>
 	);
 }

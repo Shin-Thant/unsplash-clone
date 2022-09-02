@@ -40,15 +40,15 @@ html {
 
 ::-webkit-scrollbar-track {
 	width: 10px;
-	background-color: hsl(46, 18%, 68%);
+	background-color: hsl(46, 10%, 68%);
 	/* border-radius: 50px; */
 }
 
 ::-webkit-scrollbar-thumb {
 	width: 5px !important;
 	border-radius: 50px;
-	border-block: 4px solid hsl(46, 18%, 68%);
-	border-inline: 4px solid hsl(46, 18%, 68%);
+	border-block: 4px solid hsl(46, 10%, 68%);
+	border-inline: 4px solid hsl(46, 10%, 68%);
 	background-color: hsl(0, 0%, 25%);
 }
 ::-webkit-scrollbar-thumb:hover {
