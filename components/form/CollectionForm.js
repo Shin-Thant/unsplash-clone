@@ -10,7 +10,7 @@ import {
 	initAction,
 	selectCollectionIds,
 } from "../../features/CollectionSlice";
-import CustomLabel from "../shared-items/CustomLabel";
+import CustomLabel from "./CustomLabel";
 
 export const CollectionForm = ({ closeForm }) => {
 	const dispatch = useDispatch();

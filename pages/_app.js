@@ -11,6 +11,7 @@ import { useState } from "react";
 import { PersistGate } from "redux-persist/integration/react";
 import EditColProvider from "../context/collectionContext/editColContext";
 import { NavbarContextProvider } from "../context/navbarContext/navbarContext";
+import ContactFormProvider from "../context/contactFormContext/contactFormContext";
 
 const breakpoints = createBreakpoints({
 	base: "300px",
@@ -47,6 +48,9 @@ const theme = extendTheme({
 			favorited: "hsl(0, 100%, 60%)",
 			error: "hsl(0, 100%, 55%)",
 		},
+		black: {
+			placeholder: "hsl(0, 0%, 5%, 0.5)",
+		},
 		myblack: "#242423",
 	},
 	fonts: {
@@ -66,14 +70,16 @@ function MyApp({ Component, pageProps }) {
 					<Hydrate state={pageProps.dehydratedState}>
 						<NavbarContextProvider>
 							<EditColProvider>
-								<ChakraProvider theme={theme}>
-									<Layout>
-										<ReactQueryDevtools
-											initialIsOpen={false}
-										/>
-										<Component {...pageProps} />
-									</Layout>
-								</ChakraProvider>
+								<ContactFormProvider>
+									<ChakraProvider theme={theme}>
+										<Layout>
+											<ReactQueryDevtools
+												initialIsOpen={false}
+											/>
+											<Component {...pageProps} />
+										</Layout>
+									</ChakraProvider>
+								</ContactFormProvider>
 							</EditColProvider>
 						</NavbarContextProvider>
 					</Hydrate>

@@ -112,10 +112,8 @@
 	}
 }
 
-/* TODO: adjust the get started button */
 .btn {
-	position: relative;
-	overflow: hidden;
+	min-width: 220px;
 	text-transform: uppercase;
 	border: 1.5px solid hsl(0, 0%, 10%);
 	transition: all 450ms ease;
@@ -127,7 +125,7 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	transform: scaleX(0.04);
+	transform: scaleX(0.03);
 	transform-origin: left;
 	background-color: rgb(255, 255, 255);
 	z-index: -1;
@@ -142,7 +140,7 @@
 	transition: all 300ms ease;
 }
 .btn:hover .arrow {
-	margin-left: 0.5rem;
+	transform: translate(0.5rem);
 }
 
 .followUs {

@@ -1,0 +1,53 @@
+.contactText {
+	position: absolute;
+	left: 2.5rem;
+	top: 1.4rem;
+}
+
+.company-info {
+	--size: 60px;
+
+	transition: all 300ms ease 120ms;
+}
+.company-info:hover {
+	color: white;
+}
+
+.company-info::after {
+	content: "";
+	width: 100%;
+	height: 100%;
+	border: 2px solid var(--brown-1000);
+	border-radius: 8px;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.company-info::before {
+	content: "";
+	width: var(--size);
+	height: var(--size);
+	border-radius: 0 50% 50% 0;
+	background-color: var(--brown-1000);
+	position: absolute;
+	top: calc(-1 * var(--size));
+	left: calc(-1 * var(--size));
+	transform: scale(0);
+	transition: transform 0.8s ease;
+}
+
+.company-info:hover::before {
+	transform: scale(16);
+}
+
+.contactSendIcon {
+	margin-left: "0.5rem";
+	font-size: 1rem;
+	display: block;
+}
+@media screen and (max-width: 599px) {
+	.contactSendIcon {
+		display: none;
+	}
+}

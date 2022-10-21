@@ -19,4 +19,4 @@ const CustomLabel = ({ idName, text }) => {
 	);
 };
 
-export default CustomLabel;
+export default React.memo(CustomLabel);

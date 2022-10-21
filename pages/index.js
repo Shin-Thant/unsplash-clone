@@ -203,12 +203,13 @@ export default function Home() {
 
 						<Flex
 							onClick={goExplore}
+							className={styles.btn}
 							align="center"
-							gap="0.5rem"
+							gap="0.6rem"
 							w="max-content"
 							cursor="pointer"
 							p="0.65rem 1.2rem"
-							className={styles.btn}
+							position="relative"
 						>
 							<Text
 								fontSize="0.95rem"

@@ -16,7 +16,7 @@ import { FiSearch } from "react-icons/fi";
 import styles from "../styles/Navbar.module.css";
 import { useRouter } from "next/router";
 import { IoClose, IoSearchCircle } from "react-icons/io5";
-import { CustomToast } from "./CustomToast";
+import CustomToast from "./CustomToast";
 import { useStorage } from "../hooks/useStorage";
 import { useRecent } from "../hooks/useRecent";
 import { motion } from "framer-motion";
@@ -120,7 +120,11 @@ export default function Navbar() {
 				isClosable: true,
 				// * adding custom toast with close button
 				render: ({ id, onClose }) => (
-					<CustomToast id={id} onClose={onClose} />
+					<CustomToast
+						id={id}
+						onClose={onClose}
+						message={"Enter some inputs to search!"}
+					/>
 				),
 			});
 		}

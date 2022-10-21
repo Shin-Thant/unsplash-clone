@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, Flex, Input, Text, Textarea } from "@chakra-ui/react";
-import CustomLabel from "../shared-items/CustomLabel";
+import CustomLabel from "./CustomLabel";
 import * as yup from "yup";
 import { useFormik, Form } from "formik";
 import { useEditCollection } from "../../context/collectionContext/editColContext";
