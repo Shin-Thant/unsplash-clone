@@ -71,13 +71,15 @@ function ImageDetail() {
 	const ids = useSelector((state) => selectSavedImageIds(state));
 	const imgIds = useSelector((state) => selectAllImgIds(state));
 
-	const { isLoading, data: image } = useQuery(
-		["imgDetails", router?.query?.id],
-		getPhotoDetails,
-		{
-			staleTime: 10800000,
-		}
-	);
+	const {
+		isLoading,
+		data: image,
+		isFetching,
+		isRefetching,
+	} = useQuery(["imgDetails", router?.query?.id], getPhotoDetails, {
+		enabled: !!router.query.id && router.query.id.length > 0,
+		staleTime: 10800000,
+	});
 
 	const { isLoading: photoLoading, data: userPhotos } = useQuery(
 		["relatedPhotos", image?.user?.username],
@@ -131,7 +133,12 @@ function ImageDetail() {
 			</Head>
 			<Box
 				w="100%"
-				px={{ base: "0.6rem", sm: "1.1rem", xl: "1.2rem" }}
+				px={{
+					base: "0",
+					smMobile: "0.6rem",
+					sm: "1.1rem",
+					xl: "1.2rem",
+				}}
 				my={{ base: "1rem", sm: "1.1rem", lgMobile: "1.5rem" }}
 			>
 				<Box
@@ -169,14 +176,33 @@ function ImageDetail() {
 										border: 0,
 									}}
 								>
-									<Image
-										width={{ base: "42px", sm: "45px" }}
-										height={{ base: "42px", sm: "45px" }}
-										objectFit="cover"
-										borderRadius="50%"
-										src={image?.user?.profile_image?.large}
-										alt={image?.user?.username}
-									/>
+									{image?.user?.profile_image?.large &&
+									!router.isFallback ? (
+										<Image
+											width={{ base: "42px", sm: "45px" }}
+											height={{
+												base: "42px",
+												sm: "45px",
+											}}
+											borderRadius="50%"
+											objectFit="cover"
+											src={
+												image?.user?.profile_image
+													?.large
+											}
+											alt={image?.user?.username}
+										/>
+									) : (
+										<Box
+											width={{ base: "42px", sm: "45px" }}
+											height={{
+												base: "42px",
+												sm: "45px",
+											}}
+											borderRadius="50%"
+											bgColor="hsl(0, 0%, 60%)"
+										></Box>
+									)}
 								</Link>
 
 								<Link
@@ -310,15 +336,25 @@ function ImageDetail() {
 						align="center"
 						mb="2.5rem"
 					>
-						{isLoading ? (
-							<div
-								style={{
-									height: "30vh",
-									backgroundColor: "tomato",
-								}}
-							>
-								hello world
-							</div>
+						{isLoading ||
+						isFetching ||
+						isRefetching ||
+						router.isFallback ? (
+							// <div
+							// 	style={{
+							// 		height: "30vh",
+							// 		backgroundColor: "tomato",
+							// 	}}
+							// >
+							// 	hello world
+							// </div>
+							<Skeleton
+								width="40%"
+								height="50vh"
+								startColor="#F0F0F0"
+								endColor="#6A6A6A"
+								borderRadius="8px"
+							/>
 						) : image &&
 						  image?.urls?.regular &&
 						  image?.urls?.thumb &&
@@ -669,16 +705,35 @@ function ImageDetail() {
 
 export default ImageDetail;
 
-export const getServerSideProps = async (context) => {
-	const queryClient = new QueryClient();
-
-	const id = context.params?.id;
-
-	await queryClient.prefetchQuery(["imgDetails", id], getPhotoDetails);
-
+export const getStaticPaths = async () => {
 	return {
-		props: {
-			dehydratedState: dehydrate(queryClient),
-		},
+		paths: [],
+		fallback: true,
 	};
+};
+
+export const getStaticProps = async (context) => {
+	try {
+		console.time("imageDetails props timer!!!");
+		const queryClient = new QueryClient();
+
+		const id = context.params?.id;
+
+		await queryClient.prefetchQuery(["imgDetails", id], getPhotoDetails);
+
+		console.timeEnd("imageDetails props timer!!!");
+
+		return {
+			props: {
+				dehydratedState: dehydrate(queryClient),
+			},
+		};
+	} catch (err) {
+		console.log({ err });
+		return {
+			props: {
+				dehydratedState: dehydrate({ image: {} }),
+			},
+		};
+	}
 };

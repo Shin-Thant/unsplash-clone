@@ -1,120 +1,24 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { dehydrate, QueryClient, useQuery } from "react-query";
 import styles from "../../styles/UserDetails.module.css";
 import { Box, Flex, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react";
-import { IoLocationOutline } from "react-icons/io5";
-import { FiTwitter } from "react-icons/fi";
-import { FaInstagram } from "react-icons/fa";
 import { CardSkeleton } from "../../components/skeletons/CardSkeleton";
 import { CardList } from "../../components/containers/CardList";
 import { motion } from "framer-motion";
 import { GoGlobe } from "react-icons/go";
-import axios from "../../services/axios";
 import { Pagination } from "../../components/shared-items/Pagination";
 import { CollectionSkeleton } from "../../components/skeletons/CollectionSkeleton";
 import { CollectionList } from "../../components/containers/CollectionList";
+import {
+	getUserPhotosAndCollection,
+	getUserProfile,
+} from "../../services/api/userDetails";
+import IconBox from "../../components/IconBox";
+import UserImageInfo from "../../components/UserImageInfo";
+import { IoLocationOutline } from "react-icons/io5";
 
-const IconBox = ({ alone, link, children, to, delay }) => {
-	return (
-		<Link
-			href={`https://${to}/${link}`}
-			target="_blank"
-			_focus={{ border: 0 }}
-		>
-			<motion.div
-				initial={{
-					y: 15,
-					opacity: 0,
-				}}
-				animate={{
-					y: 0,
-					opacity: 1,
-				}}
-				transition={{
-					type: "tween",
-					delay,
-					duration: 0.7,
-				}}
-			>
-				<Flex
-					w="max-content"
-					h="max-content"
-					fontSize="1.6rem"
-					border={alone ? "" : "1.5px solid"}
-					borderColor="myblack"
-					borderRadius="8px"
-					p={alone ? "" : "0.4rem"}
-					cursor="pointer"
-					opacity="0.65"
-					_hover={{
-						opacity: "1",
-					}}
-					_focus={{
-						opacity: "1",
-					}}
-					transition="opacity 250ms ease"
-				>
-					{children}
-				</Flex>
-			</motion.div>
-		</Link>
-	);
-};
-
-const UserImgInfo = ({ count, name }) => {
-	return (
-		<Flex flexDir="column" align="center">
-			<motion.h1
-				initial={{
-					y: 15,
-					opacity: 0,
-				}}
-				animate={{
-					y: 0,
-					opacity: 1,
-				}}
-				transition={{
-					type: "tween",
-					delay: 1.7,
-					duration: 0.7,
-				}}
-			>
-				<Text
-					fontSize={{
-						base: "1.3rem",
-						md: "1.4rem",
-					}}
-					fontWeight="600"
-				>
-					{count || "-"}
-				</Text>
-			</motion.h1>
-
-			<motion.h1
-				initial={{
-					y: 15,
-					opacity: 0,
-				}}
-				animate={{
-					y: 0,
-					opacity: 1,
-				}}
-				transition={{
-					type: "tween",
-					delay: 1.8,
-					duration: 0.6,
-				}}
-			>
-				<Text fontSize="0.9rem" fontWeight="500" opacity="0.9">
-					{name}
-				</Text>
-			</motion.h1>
-		</Flex>
-	);
-};
 
 const Divider = ({ duration, delay }) => {
 	return (
@@ -142,33 +46,7 @@ const Divider = ({ duration, delay }) => {
 	);
 };
 
-const getUserProfile = async ({ queryKey }) => {
-	const [_key, username] = queryKey;
-
-	if (username) {
-		const { data } = await axios.get(
-			`users/${username}?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}`
-		);
-		return data;
-	}
-
-	return [];
-};
-
-const getUserPhotosAndCollection = async ({ queryKey }) => {
-	const [_key, username, field, page] = queryKey;
-
-	if ((username, field, page)) {
-		const { data } = await axios.get(
-			`users/${username}/${field}?client_id=${process.env.NEXT_PUBLIC_ACCESS_KEY}&per_page=10&page=${page}`
-		);
-		return data;
-	}
-
-	return [];
-};
-
-export default function UserDetails() {
+const UserDetails = () => {
 	const router = useRouter();
 	const [page, setPage] = useState(1);
 	const [field, setField] = useState("photos");
@@ -183,7 +61,7 @@ export default function UserDetails() {
 		data,
 		isFetching,
 	} = useQuery(
-		["userPhotos", router?.query?.username, field, page],
+		["userPhotos", router.query?.username, field, page],
 		getUserPhotosAndCollection,
 		{ keepPreviousData: true, staleTime: 10800000 }
 	);
@@ -192,25 +70,10 @@ export default function UserDetails() {
 		isLoading: profileLoading,
 		data: profile,
 		isFetched,
-	} = useQuery(["userProfile", router?.query?.username], getUserProfile, {
+	} = useQuery(["userProfile", router.query?.username], getUserProfile, {
 		staleTime: 10800000,
 	});
 
-	// methods
-	const changePage = useCallback((num) => {
-		setPrevField(field);
-		setPage(num);
-		window.scrollTo(0, 0);
-	}, []);
-
-	const changeField = useCallback((newField) => {
-		setPrevField(field);
-
-		setField(newField);
-		setPage(1);
-	}, []);
-
-	// eslint-disable-next-line react-hooks/rules-of-hooks
 	useEffect(() => {
 		if (field === "photos") {
 			setTotalPages(Math.ceil(profile?.total_photos / 10));
@@ -236,9 +99,16 @@ export default function UserDetails() {
 
 	// reset field and page number when url changed
 	useEffect(() => {
-		if (router?.pathname === "/user/[username]" && field !== "photos")
+		let isMounted = true;
+		
+		if (isMounted && router.pathname === "/user/[username]" && field !== "photos") {
 			changeField("photos");
-	}, [router?.pathname, changeField]);
+		}
+
+		return () => {
+			isMounted = false;
+		}
+	}, [field, router?.pathname, changeField]);
 
 	// setting average card
 	useEffect(() => {
@@ -247,6 +117,24 @@ export default function UserDetails() {
 			return null;
 		}
 	}, [data]);
+
+	// methods
+	const changePage = useCallback(
+		(num) => {
+			setPrevField(field);
+			setPage(num);
+			window.scrollTo(0, 0);
+		},
+		[field]
+	);
+
+	const changeField = useCallback((newField) => {
+		setPrevField(field);
+
+		setField(newField);
+		setPage(1);
+	}, [field]);
+
 
 	const list = {
 		hidden: {
@@ -822,21 +710,21 @@ export default function UserDetails() {
 											align="center"
 											gap="2rem"
 										>
-											<UserImgInfo
+											<UserImageInfo
 												count={profile?.following_count}
 												name={"Following"}
 											/>
 
 											<Divider duration={0.6} delay={1} />
 
-											<UserImgInfo
+											<UserImageInfo
 												count={profile?.followers_count}
 												name={"Followers"}
 											/>
 
 											<Divider duration={0.6} delay={1} />
 
-											<UserImgInfo
+											<UserImageInfo
 												count={profile?.total_likes}
 												name={"Likes"}
 											/>
@@ -1090,6 +978,8 @@ export default function UserDetails() {
 		</>
 	);
 }
+
+export default UserDetails;
 
 export const getServerSideProps = async (context) => {
 	const username = context.params?.username;

@@ -31,6 +31,8 @@ const collectionSlice = createSlice({
 			state.loading = true;
 		},
 		addCollection: (state, action) => {
+			state.loading = true;
+
 			const id = new Date().getTime().toString();
 			const newCol = {
 				id,
@@ -47,6 +49,8 @@ const collectionSlice = createSlice({
 			state.loading = false;
 		},
 		updateCollection: (state, action) => {
+			state.loading = true;
+
 			const { id, title, description } = action.payload;
 
 			const foundCollection = state.collectionList.find(
@@ -61,6 +65,8 @@ const collectionSlice = createSlice({
 					foundCollection,
 				];
 			}
+
+			state.loading = false;
 		},
 		deleteCollection: (state, action) => {
 			const id = action.payload;

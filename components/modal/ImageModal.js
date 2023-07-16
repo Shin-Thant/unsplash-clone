@@ -29,7 +29,7 @@ import { MdOutlineCollections } from "react-icons/md";
 export const ImageModal = ({ image, isOpen, onClose }) => {
 	const collectionIds = useSelector((state) => selectCollectionIds(state));
 	// available page = collection / form
-	const [togglePage, setTogglePage] = useState("form");
+	const [togglePage, setTogglePage] = useState("collection");
 
 	// track element in view
 	const { ref, inView } = useInView({
@@ -69,8 +69,8 @@ export const ImageModal = ({ image, isOpen, onClose }) => {
 	useEffect(() => {
 		let isMounted = true;
 
-		if (isMounted && collectionIds?.length >= 1) {
-			setTogglePage("collection");
+		if (isMounted && !collectionIds?.length) {
+			setTogglePage("form");
 		}
 
 		return () => {

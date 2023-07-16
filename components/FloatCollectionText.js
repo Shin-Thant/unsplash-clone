@@ -3,7 +3,6 @@ import React, { useEffect, useRef } from "react";
 import styles from "../styles/CollectionPage.module.css";
 
 export const FloatCollectionText = () => {
-	// eslint-disable-next-line react-hooks/rules-of-hooks
 	const floatText = useRef(null);
 
 	// image text handler

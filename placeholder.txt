@@ -1,228 +1,38 @@
-<Box
-				w="100%"
-				mb={{ base: "0.9rem", lgMobile: "1rem", lg: "1.5rem" }}
-				className={styles.colDetailsContainer}
+<Flex
+				width={{ modalBreak: "30%", userBreak: "25%" }}
+				className={styles.boxes}
+				onClick={() => changeField("photos", 1)}
+				color={active === 1 ? "brown.2000" : "black"}
+				justify="center"
+				align="center"
+				py="1rem"
+				borderRadius="10px"
+				cursor="pointer"
+				gap="0.8rem"
+				fontWeight="600"
+				title="Photos"
 			>
 				<Box
-					w="100%"
-					position="relative"
-					pt="54vh"
-					className={styles["content-container"]}
+					left={{ modalBreak: "3%", userBreak: "2%" }}
+					fontSize="1.3rem"
+					className={styles.tabIcons}
+					color={active === 1 ? "white" : "myblack"}
 				>
-					<Flex
-						align={
-							collection?.cover_photo?.width >
-							collection?.cover_photo?.height
-								? "flex-start"
-								: "center"
-						}
-						w="100%"
-						height="55vh"
-						className={styles.heading}
-					>
-						<Image
-							zIndex={-1}
-							w="100%"
-							h="100%"
-							bg="white"
-							objectFit="cover"
-							src={collection?.cover_photo?.urls?.regular}
-							alt=""
-						/>
-					</Flex>
-
-					{collection?.title?.length > 0 &&
-					collection?.user?.profile_image?.large?.length > 0 ? (
-						<Box
-							className={styles["heading-content"]}
-							opacity="0.95"
-						>
-							<Text
-								as="h1"
-								fontSize="2.5rem"
-								fontWeight="700"
-								mb="0.9rem"
-							>
-								<motion.p
-									initial={{ opacity: 0, y: 15 }}
-									animate={{ opacity: 1, y: 0 }}
-									transition={{
-										type: "tween",
-										delay: 0.6,
-										duration: 0.8,
-									}}
-								>
-									{collection?.title}
-								</motion.p>
-							</Text>
-
-							<motion.div
-								style={{
-									width: "max-content",
-								}}
-								initial={{ opacity: 0, y: 15 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{
-									type: "tween",
-									duration: 0.7,
-									delay: 1,
-								}}
-							>
-								<Flex
-									w="max-content"
-									align="center"
-									gap="0.5rem"
-								>
-									{collection?.user?.profile_image?.large &&
-										collection?.user?.username && (
-											<>
-												<Image
-													onClick={goUserDetails}
-													cursor="pointer"
-													w="40px"
-													h="40px"
-													borderRadius="50%"
-													bg="gray.100"
-													src={
-														collection?.user
-															?.profile_image
-															?.large
-													}
-													alt=""
-												/>
-												<Link
-													_focus={{
-														border: "0px",
-													}}
-													href={`/user/${collection?.user?.username}`}
-												>
-													<Text
-														onClick={goUserDetails}
-														cursor="pointer"
-														_hover={{
-															textDecoration:
-																"underline",
-														}}
-													>
-														@
-														{
-															collection?.user
-																?.username
-														}
-													</Text>
-												</Link>
-											</>
-										)}
-									<Text
-										ml="1rem"
-										border="2px solid white"
-										borderRadius="5px"
-										p="0.2rem 0.5rem"
-									>
-										{collection?.total_photos} Photo
-										{collection?.total_photos > 1
-											? "s"
-											: ""}
-									</Text>
-								</Flex>
-							</motion.div>
-						</Box>
-					) : (
-						""
-					)}
-
-					<Box
-						w="100%"
-						px={{
-							base: "0",
-							lgMobile: "1rem",
-							lg: "1.5rem",
-						}}
-						pt="2rem"
-						borderRadius="20px"
-						bg="background"
-						className={styles.mainContent}
-					>
-						{page === 1 ? (
-							<Box
-								px={{ base: "0.5rem", lgMobile: "0" }}
-								fontSize="2rem"
-								fontWeight="700"
-								mb="3.5rem"
-								minHeight="40px"
-								w="100%"
-							>
-								{collection?.title?.length ? (
-									<motion.h1
-										initial={{
-											opacity: 0,
-											x: -25,
-										}}
-										animate={{ opacity: 1, x: 0 }}
-										transition={{
-											duration: 0.5,
-											delay: 0.9,
-										}}
-									>
-										{`Photos for ${collection?.title}`}
-									</motion.h1>
-								) : (
-									""
-								)}
-							</Box>
-						) : (
-							""
-						)}
-
-						{isLoading ? (
-							<CardSkeleton />
-						) : (
-							<CardList data={photos} avgCards={avgCards} />
-						)}
-
-						<Box width="100%" mt="5rem">
-							<Pagination
-								changePage={changePage}
-								page={page}
-								totalPages={totalPages}
-							/>
-						</Box>
-
-						<Box px={{ base: "0.5rem", lgMobile: "0" }}>
-							<motion.h1
-								initial={{
-									x: -30,
-									opacity: 0,
-								}}
-								whileInView={{
-									x: 0,
-									opacity: 1,
-								}}
-								viewport={{
-									once: true,
-									margin: "0px 0px -30px 0px",
-								}}
-								transition={{
-									type: "tween",
-									duration: 0.7,
-								}}
-							>
-								<Text
-									mt="3rem"
-									fontSize="1.4rem"
-									fontWeight="600"
-									mb="2rem"
-								>
-									Related Collections
-								</Text>
-							</motion.h1>
-
-							{relatedLoading ? (
-								<CollectionSkeleton />
-							) : (
-								<CollectionList data={relatedCollection} />
-							)}
-						</Box>
-					</Box>
+					<BsImageFill />
 				</Box>
-			</Box>
+
+				<Flex className={styles.tabs} align="center" gap="0.4rem">
+					<Text>Photos</Text>{" "}
+					{active === 1 && (
+						<Text>
+							{total
+								? total >= 1000
+									? `${Math.floor(
+											(total / 1000).toFixed(1)
+									  )}K`
+									: total
+								: "10K"}
+						</Text>
+					)}
+				</Flex>
+			</Flex>

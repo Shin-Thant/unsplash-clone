@@ -222,9 +222,12 @@ export const CollectionCard = ({ collection }) => {
 						mb="1rem"
 						cursor="pointer"
 						w="max-content"
-						opacity="0.8"
+						opacity="0.9"
 						transition="opacity 150ms ease"
 						_hover={{
+							opacity: "1",
+						}}
+						_focus={{
 							opacity: "1",
 						}}
 					>

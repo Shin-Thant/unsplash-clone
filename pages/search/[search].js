@@ -1,19 +1,11 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { Box, Flex, Text, Skeleton } from "@chakra-ui/react";
-// import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { dehydrate, QueryClient, useQuery } from "react-query";
 import { CardSkeleton } from "../../components/skeletons/CardSkeleton";
 import { UpBtn } from "../../components/UpBtn";
-import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import styles from "../../styles/Search.module.css";
-import {
-	BsImageFill,
-	BsFillCollectionFill,
-	BsPeopleFill,
-} from "react-icons/bs";
 import { CollectionSkeleton } from "../../components/skeletons/CollectionSkeleton";
 import { CardList } from "../../components/containers/CardList";
 import { ImageFilter } from "../../components/filter/ImageFilter";
@@ -25,6 +17,7 @@ import {
 	Pagination,
 } from "../../components/shared-items/Pagination";
 import axios from "../../services/axios";
+import SearchFilter from "../../components/filter/SearchFilter";
 
 const getSearchedResults = async ({ queryKey }) => {
 	const [_key, query, field, page, filters] = queryKey;
@@ -51,7 +44,7 @@ const getSearchedResults = async ({ queryKey }) => {
 	return [];
 };
 
-export default function search() {
+export default function Search() {
 	const router = useRouter();
 
 	const [avgCards, setAvgCards] = useState(0);
@@ -60,31 +53,11 @@ export default function search() {
 
 	const [page, setPage] = useState(1);
 
-	// useEffect(() => {
-	//     let isMounted = true;
-
-	//     return () => {
-	//         isMounted = false;
-	//     };
-	// }, [page]);
-
+	// valid fields - ['photos', 'collections', 'users']
 	const [field, setField] = useState("photos");
 
 	// track previous field
 	const [prevField, setPrevField] = useState("");
-
-	const [colors, setColors] = useState([
-		"black",
-		"white",
-		"yellow",
-		"orange",
-		"red",
-		"purple",
-		"magenta",
-		"green",
-		"teal",
-		"blue",
-	]);
 
 	const [orientation, setOrientation] = useState("Any Orientation");
 	const [color, setColor] = useState("Any Color");
@@ -96,6 +69,20 @@ export default function search() {
 		order_by: "",
 	});
 
+	// reset field and page number when url change
+	useEffect(() => {
+		let isMounted = true;
+		if (isMounted) {
+			changeField("photos", 1);
+		}
+
+		console.log("re-rendered");
+
+		return () => {
+			isMounted = false;
+		};
+	}, [router.query?.search, changeField]);
+
 	const { isLoading, data, isFetching, isPreviousData } = useQuery(
 		["search", router.query?.search, field, page, filters],
 		getSearchedResults,
@@ -104,17 +91,6 @@ export default function search() {
 			staleTime: 86400000,
 		}
 	);
-
-	// reset field and page number when url change
-	useEffect(() => {
-		let isMounted = true;
-		if (isMounted && field !== "photos" && active !== 1)
-			changeField("photos", 1);
-
-		return () => {
-			isMounted = false;
-		};
-	}, [router.pathname]);
 
 	// handle page change
 	const changePage = useCallback(
@@ -223,147 +199,27 @@ export default function search() {
 				</Box>
 
 				{/* Tabs */}
-				<Flex
-					borderBottom="1px solid black"
-					w="100%"
-					align="center"
-					justify="space-evenly"
-					gap="5px"
-					h="max-content"
-					position="relative"
-					mb={field === "photos" ? "1.5rem" : "5rem"}
-					pb="1.5rem"
-				>
-					<Flex
-						className={styles.boxes}
-						onClick={() => changeField("photos", 1)}
-						color={active === 1 ? "brown.2000" : "black"}
-						justify="center"
-						align="center"
-						py="0.9rem"
-						borderRadius="10px"
-						cursor="pointer"
-						gap="0.8rem"
-						fontWeight="600"
-						title="Photos"
-					>
-						<Box
-							fontSize="1.5rem"
-							className={styles.tabIcons}
-							color={active === 1 ? "white" : "myblack"}
-						>
-							<BsImageFill className={styles.svgIcon} />
-						</Box>{" "}
-						<Flex
-							className={styles.tabs}
-							align="center"
-							gap="0.4rem"
-						>
-							<Text>Photos</Text>{" "}
-							{active === 1 && (
-								<Text>
-									{data?.total >= 1000
-										? `${Math.floor(
-												(data?.total / 1000).toFixed(1)
-										  )}K`
-										: data?.total}
-								</Text>
-							)}
-						</Flex>
-					</Flex>
-
-					<Flex
-						className={styles.boxes}
-						onClick={() => changeField("collections", 2)}
-						color={active === 2 ? "brown.2000" : "black"}
-						justify="center"
-						align="center"
-						py="1rem"
-						borderRadius="10px"
-						cursor="pointer"
-						gap="0.8rem"
-						fontWeight="600"
-						title="Collections"
-					>
-						<Box
-							fontSize="1.5rem"
-							className={styles.tabIcons}
-							color={active === 2 ? "white" : "myblack"}
-						>
-							<BsFillCollectionFill className={styles.svgIcon} />
-						</Box>{" "}
-						<Flex
-							className={styles.tabs}
-							align="center"
-							gap="0.4rem"
-						>
-							<Text>Collections</Text>{" "}
-							{active === 2 && (
-								<Text>
-									{data?.total >= 1000
-										? `${Math.floor(
-												(data?.total / 1000).toFixed(1)
-										  )}K`
-										: data?.total}
-								</Text>
-							)}
-						</Flex>
-					</Flex>
-
-					<Flex
-						className={styles.boxes}
-						onClick={() => changeField("users", 3)}
-						color={active === 3 ? "brown.2000" : "black"}
-						justify="center"
-						align="center"
-						py="1rem"
-						borderRadius="10px"
-						cursor="pointer"
-						gap="0.8rem"
-						fontWeight="600"
-						title="Users"
-					>
-						<Box
-							fontSize="1.5rem"
-							className={styles.tabIcons}
-							color={active === 3 ? "white" : "myblack"}
-						>
-							<BsPeopleFill className={styles.svgIcon} />
-						</Box>{" "}
-						<Flex
-							className={styles.tabs}
-							align="center"
-							gap="0.4rem"
-						>
-							<Text>Users</Text>{" "}
-							{active === 3 && (
-								<Text>
-									{data?.total >= 1000
-										? `${Math.floor(
-												(data?.total / 1000).toFixed(1)
-										  )}K`
-										: data?.total}
-								</Text>
-							)}
-						</Flex>
-					</Flex>
-				</Flex>
+				<SearchFilter
+					active={active}
+					total={data?.total}
+					field={field}
+					changeField={changeField}
+				/>
 
 				{/* Filters */}
-				{field === "photos" && (
+				{field === "photos" ? (
 					<ImageFilter
 						filters={filters}
 						orientation={orientation}
 						setOrientation={setOrientation}
 						color={color}
-						colors={colors}
 						setColor={setColor}
 						setFilters={setFilters}
 						sort={sort}
 						setSort={setSort}
 						resetFilter={resetFilter}
 					/>
-				)}
+				) : field}
 
 				{/* main */}
 				{field === "photos" ? (

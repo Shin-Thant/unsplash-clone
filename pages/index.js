@@ -175,6 +175,7 @@ export default function Home() {
 									color="brown.1000"
 									position="relative"
 									p="0.3rem 0.5rem"
+									zIndex="2"
 								>
 									<Text>Photos</Text>
 									<Box className={styles.highlight}></Box>
@@ -185,6 +186,7 @@ export default function Home() {
 									color="brown.1000"
 									position="relative"
 									p="0.3rem 0.5rem"
+									zIndex="2"
 								>
 									<Text>Wallpapers</Text>
 									<Box className={styles.highlight}></Box>
@@ -230,16 +232,3 @@ export default function Home() {
 		</>
 	);
 }
-
-// ! new ramdom image is fetched whenever you visit the page
-// export const getStaticProps = async () => {
-//     const queryClient = new QueryClient();
-
-//     await queryClient.prefetchQuery("randomImg", getRandomImg);
-
-//     return {
-//         props: {
-//             dehydratedState: dehydrate(queryClient),
-//         },
-//     };
-// };
